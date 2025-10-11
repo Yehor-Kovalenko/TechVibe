@@ -14,35 +14,6 @@ on:
       - 'frontend/**'
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: frontend
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-    
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
-      # restore dependencies only if package-lock.json changed
-      - name: Install dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: npm ci
-      
-      - name: Lint code
-        run: npm run lint --if-present
-      
-      - name: Fix lint issues in code
-        run: npm run lint:fix --if-present
-      
-      - name: Prettify the code
-        run: npm run format --if-present
-    
   build:
     runs-on: ubuntu-latest
     defaults:
@@ -62,13 +33,37 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
         cache-dependency-path: frontend/package-lock.json
-    # always run clean dependency install
+    # restore dependencies only if package-lock.json changed
     - name: Install dependencies
+      if: steps.cache.outputs.cache-hit != 'true'
       run: npm ci
      
     - name: Build app
       run: npm run build
+    
+    - name: Upload build artifacts
+      uses: actions/upload-artifacts@4
+      with:
+        name: frontend-build
+        path: frontend/dist
+        retention-days: 1
   
+  lint:
+    runs-on: ubuntu-latest
+    needs: build
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend/dist
+      
+      - name: Lint code
+        run: npm run lint --if-present
+        
   test:
     runs-on: ubuntu-latest
     needs: build
@@ -76,19 +71,11 @@ jobs:
       run:
         working-directory: frontend
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-    
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-          cache-dependency-path: frontend/package-lock.json
-      # restore dependencies only if package-lock.json changed
-      - name: Install dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: npm ci
+          name: frontend-build
+          path: frontend/dist
       
       - name: Run tests
         run: npm test --if-present -- --coverage
@@ -96,6 +83,10 @@ jobs:
   smoke:
     runs-on: ubuntu-latest
     needs: build
+    defaults:
+      run:
+        working-directory: frontend
+        
     steps:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
