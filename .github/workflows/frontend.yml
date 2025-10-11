@@ -4,21 +4,36 @@
 name: Frontend CI
 
 on:
-  push:
-    branches: [ "main" ]
-    paths:
-      - 'frontend/**' 
   pull_request:
     branches: [ "main" ]
-    paths:
-      - 'frontend/**'
-  workflow_dispatch:
-  
 
 jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Detect frontend changes
+        id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            frontend:
+              - 'frontend/**'
+  skip-if-no-changes:
+    runs-on: ubuntu-latest
+    name: No changes detected
+    needs: detect-changes
+    if: needs.detect-changes.outputs.changed == 'false'
+    steps:
+      - run: echo "No changes detected, skipping frontend pipeline"
+      
   lint:
     runs-on: ubuntu-latest
     name: Lint
+    needs: detect-changes
+    if: needs.detect-changes.outputs.changed == 'true'
     defaults:
       run:
         working-directory: frontend
@@ -36,6 +51,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     name: Build
+    needs: detect-changes
+    if: needs.detect-changes.outputs.changed == 'true'
     defaults:
       run:
         working-directory: frontend
@@ -71,7 +88,8 @@ jobs:
   test:
     runs-on: ubuntu-latest
     name: Tests
-    needs: build
+    needs: [ build, detect-changes ]
+    if: needs.detect-changes.outputs.changed == 'true'
     defaults:
       run:
         working-directory: frontend
@@ -95,7 +113,8 @@ jobs:
   smoke:
     runs-on: ubuntu-latest
     name: Run smoke test
-    needs: build
+    needs: [ build, detect-changes ]
+    if: needs.detect-changes.outputs.changed == 'true'
     defaults:
       run:
         working-directory: frontend
