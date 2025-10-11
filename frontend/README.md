@@ -1,7 +1,13 @@
 ## Linting
 
-1. Fix lint issues in code `npm run lint:fix`
-2. Check pretiness of the code `npm run format:check`
-3. Prettify the code `npm run format`
+1. Check format of the code using linter `npm run lint` 
+2. Try to fix lint issues automatically in code `npm run lint:fix`
+3. Check pretiness of the code `npm run format:check`
+4. Prettify the code `npm run format`
 
+---
+
+## Testing
+
+1. Check for coverage `npm run test --coverage`
 ---
