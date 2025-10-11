@@ -6,4 +6,8 @@
 4. Prettify the code `npm run format`
 
 ---
+
+## Testing
+
+1. Check for coverage `npm run test --coverage`
 ---
