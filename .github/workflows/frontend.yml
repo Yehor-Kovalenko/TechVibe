@@ -14,6 +14,35 @@ on:
       - 'frontend/**'
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+    
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      # restore dependencies only if package-lock.json changed
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
+      
+      - name: Lint code
+        run: npm run lint --if-present
+      
+      - name: Fix lint issues in code
+        run: npm run lint:fix --if-present
+      
+      - name: Prettify the code
+        run: npm run format --if-present
+    
   build:
     runs-on: ubuntu-latest
     defaults:
@@ -23,8 +52,6 @@ jobs:
     strategy:
       matrix:
         node-version: [20.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
@@ -35,29 +62,49 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
         cache-dependency-path: frontend/package-lock.json
-    # restore dependencies only if package-lock.json changed
+    # always run clean dependency install
     - name: Install dependencies
-      if: steps.cache.outputs.cache-hit != 'true'
       run: npm ci
-      
-    - name: Lint code
-      run: npm run lint --if-present
-      
-    - name: Fix lint issues in code
-      run: npm run lint:fix --if-present
-      
-    - name: Prettify the code
-      run: npm run format --if-present
-      
+     
     - name: Build app
       run: npm run build
-
-    - name: Run tests
-      run: npm test --if-present -- --coverage
-
-    # Ensure that the app can actually start
-    - name: Smoke test 
-      run: |
+  
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+    
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      # restore dependencies only if package-lock.json changed
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: npm ci
+      
+      - name: Run tests
+        run: npm test --if-present -- --coverage
+  # Ensure that the app can actually start
+  smoke:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend/dist
+      - name: Run smoke test
+        run: |
           npm run preview &
           sleep 5
           curl -f http://localhost:5173 || exit 1
+    

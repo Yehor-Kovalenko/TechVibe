@@ -8,14 +8,17 @@ import prettier from 'eslint-config-prettier'
 
 export default [
   {
-    ignores: ['dist', 'node_modules'],
+    ignores: ['dist', 'node_modules', '.git'],
   },
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
   {
     files: ['**/*.{ts,tsx,js,jsx}'],
     languageOptions: {
       ecmaVersion: 2021,
       sourceType: 'module',
       globals: globals.browser,
+      parser: tseslint.parser,
       parserOptions: {
         ecmaFeatures: { jsx: true },
       },
@@ -25,23 +28,6 @@ export default [
         version: 'detect',
       },
     },
-  },
-  {
-    files: ['**/*.{ts,tsx}'],
-    languageOptions: {
-      parser: tseslint.parser,
-      parserOptions: {
-        project: true,
-      },
-    },
-    extends: [
-      js.configs.recommended,
-      tseslint.configs.recommended,
-      reactPlugin.configs.recommended,
-      reactHooks.configs['recommended-latest'],
-      reactRefresh.configs.vite,
-      prettier,
-    ],
     plugins: {
       react: reactPlugin,
       'react-hooks': reactHooks,
@@ -49,6 +35,9 @@ export default [
       '@typescript-eslint': tseslint.plugin,
     },
     rules: {
+      ...reactPlugin.configs.recommended.rules,
+      ...reactHooks.configs['recommended-latest'].rules,
+      ...reactRefresh.configs.vite.rules,
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
       '@typescript-eslint/no-unused-vars': [
@@ -57,4 +46,5 @@ export default [
       ],
     },
   },
+  prettier,
 ]
