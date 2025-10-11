@@ -1,0 +1,40 @@
+@startuml
+title TechVibe - Architecture Overview
+
+actor User
+
+rectangle "Frontend (React/TS)" as Frontend
+rectangle "Azure Functions" as Functions {
+    component "video_downloader" as F1
+    component "speech_to_text" as F2
+    component "nlp_analysis" as F3
+    component "results_writer" as F4
+    component "results_reader" as F5
+}
+
+cloud "Azure Blob Storage" as Blob
+database "Azure PostgreSQL (optional)" as DB
+queue "Azure Service Bus" as Queue
+
+User --> Frontend : Wkleja link / żądanie analizy
+Frontend --> F1 : HTTP POST /analyze
+F1 --> Blob : zapis audio (.mp3)
+F1 --> Queue : trigger "audio_ready"
+
+Queue --> F2 : start transkrypcji
+F2 --> Blob : zapis transkrypcji (.txt)
+F2 --> Queue : trigger "transcription_ready"
+
+Queue --> F3 : analiza NLP (sentyment, cechy)
+F3 --> Blob : zapis wyników (.json)
+F3 --> Queue : trigger "results_ready"
+
+Queue --> F4 : zapis wyników do DB
+F4 --> DB : INSERT wyniki analizy
+
+Frontend --> F5 : HTTP GET /results?id=...
+F5 --> DB : SELECT wyniki
+F5 --> Blob : pobranie danych JSON
+F5 --> Frontend : JSON z wynikami → wykresy
+
+@enduml

@@ -1,0 +1,9 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "python",
+    "RESULTS_CONTAINER": "results",
+    "QUEUE_NAME": "processing-queue"
+  }
+}
