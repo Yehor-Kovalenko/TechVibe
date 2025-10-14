@@ -1,7 +1,8 @@
 import azure.functions as func
 import json
-from shared.storage_utils import upload_result_blob
-from shared.config import RESULTS_CONTAINER
+import logging
+from ..shared.storage import upload_result_blob
+from ..shared.config import RESULTS_CONTAINER
 
 def main(msg: func.QueueMessage):
     body = msg.get_json()
@@ -16,6 +17,5 @@ def main(msg: func.QueueMessage):
             "steps": 3
         }
     }
-    upload_result_blob(f"{job_id}.json", result, container=RESULTS_CONTAINER)
-    logging = func.logging
+    upload_result_blob(f"{job_id}_final.json", result, container=RESULTS_CONTAINER)
     logging.info(f"writer stored result for job {job_id}")

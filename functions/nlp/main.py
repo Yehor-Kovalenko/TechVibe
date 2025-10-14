@@ -1,15 +1,17 @@
 import azure.functions as func
 import json
-from shared.storage_utils import enqueue_message
-from shared.config import QUEUE_NAME
+import logging
+from ..shared.storage import enqueue_message, upload_result_blob
+from ..shared.config import QUEUE_NAME, RESULTS_CONTAINER
 
 def main(msg: func.QueueMessage):
     body = msg.get_json()
-    # process only step 1
-    if body.get("step") != 1:
+    # process only step 2
+    if body.get("step") != 2:
         return
-    body["text"] = body.get("text", "") + "g"
-    body["step"] = 2
+    body["text"] = body.get("text", "") + "_nlp"
+    body["step"] = 3
+    # Store intermediate result in blob
+    upload_result_blob(f"{body['id']}_step2.json", body, container=RESULTS_CONTAINER)
     enqueue_message(body, queue_name=QUEUE_NAME)
-    logging = func.logging
-    logging.info(f"append_b processed job {body.get('id')}: {body['text']}")
+    logging.info(f"nlp processed job {body.get('id')}: {body['text']}")
