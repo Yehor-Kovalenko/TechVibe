@@ -50,7 +50,7 @@ jobs:
           git fetch origin main
           git checkout main
 
-          git add './*.png'
+          find . -type f -name "*.png" -exec git add {} +
           git commit -m "chore: update PlantUML diagrams [skip ci]" || echo "No changes to commit"
 
           git push -f origin HEAD:main
