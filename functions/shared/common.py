@@ -1,8 +1,8 @@
 import json
 import logging
-from azure.storage.queue import QueueClient
 from azure.storage.blob import BlobServiceClient
-from ..shared.config import STORAGE_CONN, RESULTS_CONTAINER
+from azure.storage.queue import QueueClient, BinaryBase64EncodePolicy
+from ..shared.config import STORAGE_CONN, RESULTS_CONTAINER, CONNECTION_STRING
 
 
 def get_queue_client(queue_name):
@@ -15,14 +15,16 @@ def get_queue_client(queue_name):
     return qc
 
 
-def enqueue_message(message: dict, queue_name):
-    qc = get_queue_client(queue_name)
-    try:
-        qc.send_message(json.dumps(message))
-        logging.info(f"Message enqueued to {queue_name}: {message}")
-    except Exception as e:
-        logging.error(f"Failed to send message to queue {queue_name}: {e}")
-        raise
+def enqueue_message_base64(message: dict, queue_name: str):
+    queue_client = QueueClient.from_connection_string(
+        CONNECTION_STRING,
+        queue_name
+    )
+    queue_client.message_encode_policy = BinaryBase64EncodePolicy()
+
+    message_string = json.dumps(message)
+    message_bytes = message_string.encode("utf-8")
+    queue_client.send_message(queue_client.message_encode_policy.encode(content=message_bytes))
 
 
 def upload_result_blob(blob_name: str, data: dict, container=RESULTS_CONTAINER):

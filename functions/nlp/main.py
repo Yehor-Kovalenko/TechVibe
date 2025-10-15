@@ -1,7 +1,7 @@
 import azure.functions as func
 import logging
-from ..shared.storage import enqueue_message, upload_result_blob
-from ..shared.config import TRANSCRIBED_QUEUE, RESULTS_CONTAINER
+from ..shared.common import upload_result_blob
+from ..shared.config import RESULTS_CONTAINER
 
 def main(msg: func.QueueMessage):
     try:
