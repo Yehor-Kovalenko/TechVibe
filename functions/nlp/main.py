@@ -1,7 +1,7 @@
 import azure.functions as func
-from ..shared.logs import logging
+import logging
 from ..shared.storage import enqueue_message, upload_result_blob
-from ..shared.config import QUEUE_NAME, RESULTS_CONTAINER
+from ..shared.config import TRANSCRIBED_QUEUE, RESULTS_CONTAINER
 
 def main(msg: func.QueueMessage):
     try:
@@ -19,7 +19,6 @@ def main(msg: func.QueueMessage):
         body["step"] = 3
         # Store intermediate result in blob
         upload_result_blob(f"{body['id']}_step2.json", body, container=RESULTS_CONTAINER)
-        enqueue_message(body, queue_name=QUEUE_NAME)
         logging.info(f"nlp processed job {body.get('id')}: {body['text']}")
     except Exception as e:
         logging.error(f"Error in nlp processing: {e}")

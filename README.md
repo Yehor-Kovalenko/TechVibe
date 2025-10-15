@@ -18,7 +18,7 @@ docker pull mcr.microsoft.com/azure-storage/azurite
 follow instructions to install:
 [Another sus stuff](https://azure.microsoft.com/en-us/products/storage/storage-explorer/#Download-4)
 
-Then connect locally: "Attach to a local emulator" on default values. 
+Then connect locally: "Attach to a local emulator" on default values.
 
 ---
 
@@ -32,8 +32,10 @@ docker run -p 10000:10000 -p 10001:10001 -p 10002:10002 mcr.microsoft.com/azure-
 
 ```bash
 cd functions
-python -m venv .venv
-source .venv/bin/activate
+python3 -m venv .venv
+chmod a+x ./.venv/bin/activate
+source ./.venv/bin/activate
+pip install --upgrade pip
 pip install -r requirements.txt
 func start
 ```

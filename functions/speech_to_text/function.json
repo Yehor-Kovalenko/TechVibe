@@ -5,9 +5,8 @@
       "name": "msg",
       "type": "queueTrigger",
       "direction": "in",
-      "queueName": "processing-queue",
+      "queueName": "downloaded-queue",
       "connection": "AzureWebJobsStorage"
     }
   ]
 }
-
