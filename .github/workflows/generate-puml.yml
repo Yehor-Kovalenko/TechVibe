@@ -53,7 +53,7 @@ jobs:
           git fetch origin $BRANCH_NAME
           git checkout $BRANCH_NAME
 
-          git add '**/*.png'
+          git add './*.png'
           git commit -m "chore: update PlantUML diagrams [skip ci]" || echo "No changes to commit"
 
           git push origin HEAD:$BRANCH_NAME
