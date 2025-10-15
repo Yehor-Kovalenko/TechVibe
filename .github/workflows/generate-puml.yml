@@ -1,7 +1,7 @@
 name: Generate PlantUML Diagrams
 
 on:
-  pull_request:
+  push:
     branches: [ "main" ]
   workflow_dispatch:
 permissions:
@@ -42,18 +42,15 @@ jobs:
           if-no-files-found: warn
 
       - name: Commit and push generated diagrams
-        if: github.event_name == 'pull_request'
         run: |
-          BRANCH_NAME="${{ github.head_ref }}"
-          echo "Committing diagrams back to branch: $BRANCH_NAME"
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git fetch origin $BRANCH_NAME
-          git checkout $BRANCH_NAME
+          git fetch origin main
+          git checkout main
 
           git add './*.png'
           git commit -m "chore: update PlantUML diagrams [skip ci]" || echo "No changes to commit"
 
-          git push origin HEAD:$BRANCH_NAME
+          git push origin HEAD:main
