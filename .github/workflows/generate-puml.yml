@@ -41,16 +41,16 @@ jobs:
             ./**/*.png
           if-no-files-found: warn
 
-      - name: Commit and push generated diagrams
-        run: |
+      # - name: Commit and push generated diagrams
+      #   run: |
 
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
+      #     git config user.name "github-actions[bot]"
+      #     git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git fetch origin main
-          git checkout main
+      #     git fetch origin main
+      #     git checkout main
 
-          find . -type f -name "*.png" -exec git add {} +
-          git commit -m "chore: update PlantUML diagrams [skip ci]" || echo "No changes to commit"
+      #     find . -type f -name "*.png" -exec git add {} +
+      #     git commit -m "chore: update PlantUML diagrams [skip ci]" || echo "No changes to commit"
 
-          git push -f origin HEAD:main
+      #     git push -f origin HEAD:main
