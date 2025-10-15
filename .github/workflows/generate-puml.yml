@@ -13,21 +13,31 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: List .puml files
+        run: |
+          echo "Checking for .puml files:"
+          find . -type f -name "*.puml" || echo "No .puml files found!"
+          
       - name: Generate diagrams in place using PlantUML Docker
         run: |
-          # find all .puml files and render them in place
+          echo "Running PlantUML inside Docker..."
           docker run --rm \
-            -v ${{ github.workspace }}:/workspace \
+            -v "$PWD:/data" \
+            -w /data \
             plantuml/plantuml \
-            -tpng \
-            -o . \
-            $(find /workspace -name '*.puml')
+            -tpng -o . $(find . -type f -name "*.puml")
 
-      - name: Upload generated diagrams as artifact
+          echo "Listing generated PNGs:"
+          find . -type f -name "*.png" || echo "No PNG files generated!"
+
+      - name: Upload diagrams
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: plantuml-diagrams
-          path: '**/*.png'
+          path: |
+            ./**/*.png
+          if-no-files-found: warn
 
       - name: Commit and push generated diagrams
         if: github.ref == 'refs/heads/main'
