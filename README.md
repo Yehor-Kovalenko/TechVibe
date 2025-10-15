@@ -42,6 +42,6 @@ func start
 
 ### Test storage and queue
 ```bash
-curl -X POST http://localhost:7071/api/downloader -d "{ "text": "dupa" }" -v
+curl -X POST http://localhost:7071/api/downloader -d @body.json -v
 ```
 After this you should see new file in Storage Explorer: local-1/BlobContainer/results
