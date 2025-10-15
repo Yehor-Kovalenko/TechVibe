@@ -1,7 +1,7 @@
 name: Generate PlantUML Diagrams
 
 on:
-  pull_request:
+  push:
     branches: [ "main" ]
   workflow_dispatch:
 permissions:
@@ -28,10 +28,8 @@ jobs:
             -w /data \
             plantuml/plantuml \
             -tpng -o . $(find . -type f -name "*.puml")
-
           echo "Listing generated PNGs:"
           find . -type f -name "*.png" || echo "No PNG files generated!"
-
       - name: Upload diagrams
         if: always()
         uses: actions/upload-artifact@v4
@@ -44,16 +42,12 @@ jobs:
       - name: Commit and push generated diagrams
         if: github.event_name == 'pull_request'
         run: |
-          BRANCH_NAME="${{ github.head_ref }}"
+          BRANCH_NAME="main"
           echo "Committing diagrams back to branch: $BRANCH_NAME"
-
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-
           git fetch origin $BRANCH_NAME
           git checkout $BRANCH_NAME
-
-          git add '**/*.png'
+          git add './*.png'
           git commit -m "chore: update PlantUML diagrams [skip ci]" || echo "No changes to commit"
-
-          git push origin HEAD:$BRANCH_NAME
+          git push -f origin HEAD:$BRANCH_NAME
