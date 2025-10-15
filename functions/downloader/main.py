@@ -1,9 +1,9 @@
 import azure.functions as func
 import json
 import uuid
-import logging
 from ..shared.storage import enqueue_message, upload_result_blob
 from ..shared.config import QUEUE_NAME, RESULTS_CONTAINER
+from ..shared.logs import logging
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     try:
