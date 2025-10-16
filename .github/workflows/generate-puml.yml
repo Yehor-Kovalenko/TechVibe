@@ -41,16 +41,30 @@ jobs:
             ./**/*.png
           if-no-files-found: warn
 
-      # - name: Commit and push generated diagrams
-      #   run: |
+      - name: Push generated diagrams to Wiki
+        if: always()
+        run: |
+          echo "Publishing diagrams to Wiki..."
 
-      #     git config user.name "github-actions[bot]"
-      #     git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Extract repo information
+          REPO_URL="https://github.com/${{ github.repository }}.wiki.git"
 
-      #     git fetch origin main
-      #     git checkout main
+          # Prepare temp dir for wiki
+          mkdir wiki
+          cd wiki
 
-      #     find . -type f -name "*.png" -exec git add {} +
-      #     git commit -m "chore: update PlantUML diagrams [skip ci]" || echo "No changes to commit"
+          # Clone the wiki repo
+          git clone "$REPO_URL" .
+          
+          # Configure bot identity
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      #     git push -f origin HEAD:main
+          # Copy diagrams (overwrite existing ones)
+          mkdir -p diagrams
+          cp ../**/*.png diagrams/ || echo "No diagrams to copy."
+
+          # Commit and push
+          git add diagrams/
+          git commit -m "Update PlantUML diagrams [skip ci]" || echo "No changes to commit"
+          git push origin main || echo "No wiki push needed"
