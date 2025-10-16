@@ -41,17 +41,17 @@ jobs:
             ./**/*.png
           if-no-files-found: warn
 
-      - name: Publish diagrams to Wiki
+            - name: Publish diagrams to Wiki
         if: always()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Publishing diagrams to Wiki..."
 
-          # Repo info (authenticated URL)
-          REPO_URL="https://${GH_TOKEN}@github.com/${{ github.repository }}.wiki.git"
+          # Authenticated URL
+          REPO_URL="https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.wiki.git"
 
-          # Create a temporary directory for the wiki
+          # Prepare wiki directory
           mkdir wiki
           cd wiki
 
@@ -61,11 +61,16 @@ jobs:
           # Configure git identity
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          git config credential.helper store
+
+          # Disable any interactive credential prompts
+          git config --global credential.helper 'store'
+          git config --global advice.detachedHead false
 
           # Ensure target folder exists
           mkdir -p diagrams
 
-          # Copy diagrams from repo root
+          # Copy generated PNG diagrams
           shopt -s globstar
           find ../ -type f -name "*.png" -exec cp {} diagrams/ \; || echo "No diagrams found to copy."
 
@@ -75,5 +80,9 @@ jobs:
           # Commit and push changes
           git add diagrams/ || true
           git commit -m "Update PlantUML diagrams [skip ci]" || echo "No changes to commit"
+
+          # Explicitly set remote URL with token to avoid credential issues
+          git remote set-url origin "$REPO_URL"
+
           git push origin master || echo "No wiki push needed"
 
