@@ -40,49 +40,45 @@ jobs:
           path: |
             ./**/*.png
           if-no-files-found: warn
-
       - name: Publish diagrams to Wiki
         if: always()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Publishing diagrams to Wiki..."
-
-          # Authenticated URL
           REPO_URL="https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.wiki.git"
-
-          # Prepare wiki directory
+    
           mkdir wiki
           cd wiki
-
-          # Clone the wiki repository
           git clone "$REPO_URL" .
-          
-          # Configure git identity
+    
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git config credential.helper store
-
-          # Disable any interactive credential prompts
-          git config --global credential.helper 'store'
-          git config --global advice.detachedHead false
-
+    
           # Ensure target folder exists
           mkdir -p diagrams
-
+    
           # Copy generated PNG diagrams
-          shopt -s globstar
-          find ../ -type f -name "*.png" -exec cp {} diagrams/ \; || echo "No diagrams found to copy."
-
-          echo "Copied diagrams:"
-          ls -l diagrams || echo "No diagrams directory content."
-
+          find ../ -type f -name "*.png" -exec cp {} diagrams/ \;
+    
+          # Create or update Diagrams.md page
+          echo "# PlantUML Diagrams" > Diagrams.md
+          echo "" >> Diagrams.md
+          echo "Auto-generated on $(date)" >> Diagrams.md
+          echo "" >> Diagrams.md
+    
+          # Add all diagrams to the page
+          for diagram in diagrams/*.png; do
+            if [ -f "$diagram" ]; then
+              basename=$(basename "$diagram")
+              echo "## ${basename%.png}" >> Diagrams.md
+              echo "![${basename%.png}]($diagram)" >> Diagrams.md
+              echo "" >> Diagrams.md
+            fi
+          done
+    
           # Commit and push changes
-          git add diagrams/ || true
+          git add diagrams/ Diagrams.md
           git commit -m "Update PlantUML diagrams [skip ci]" || echo "No changes to commit"
-
-          # Explicitly set remote URL with token to avoid credential issues
           git remote set-url origin "$REPO_URL"
-
           git push origin master || echo "No wiki push needed"
-
