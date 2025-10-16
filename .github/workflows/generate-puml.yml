@@ -41,7 +41,7 @@ jobs:
             ./**/*.png
           if-no-files-found: warn
 
-            - name: Publish diagrams to Wiki
+      - name: Publish diagrams to Wiki
         if: always()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
