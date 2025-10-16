@@ -60,11 +60,17 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          # Copy diagrams (overwrite existing ones)
+          # Ensure target folder exists
           mkdir -p diagrams
-          cp ../**/*.png diagrams/ || echo "No diagrams to copy."
 
-          # Commit and push
-          git add diagrams/
+          # Copy diagrams from repo root (two levels up) into wiki folder
+          shopt -s globstar
+          find ../ -type f -name "*.png" -exec cp {} diagrams/ \; || echo "No diagrams found to copy."
+
+          echo "Copied diagrams:"
+          ls -l diagrams || echo "No diagrams directory content."
+
+          # Commit and push changes
+          git add diagrams/ || true
           git commit -m "Update PlantUML diagrams [skip ci]" || echo "No changes to commit"
-          git push origin main || echo "No wiki push needed"
+          git push origin master || echo "No wiki push needed"
