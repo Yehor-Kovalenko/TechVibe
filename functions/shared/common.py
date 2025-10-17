@@ -16,10 +16,8 @@ def get_queue_client(queue_name):
 
 
 def enqueue_message_base64(message: dict, queue_name: str):
-    queue_client = QueueClient.from_connection_string(
-        CONNECTION_STRING,
-        queue_name
-    )
+    queue_client = get_queue_client(queue_name)
+
     queue_client.message_encode_policy = BinaryBase64EncodePolicy()
 
     message_string = json.dumps(message)
