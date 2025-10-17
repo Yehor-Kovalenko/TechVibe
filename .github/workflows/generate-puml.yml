@@ -1,0 +1,84 @@
+name: Generate PlantUML Diagrams
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+permissions:
+  contents: write
+  
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: List .puml files
+        run: |
+          echo "Checking for .puml files:"
+          find . -type f -name "*.puml" || echo "No .puml files found!"
+          
+      - name: Generate diagrams in place using PlantUML Docker
+        run: |
+          echo "Running PlantUML inside Docker..."
+          docker run --rm \
+            -v "$PWD:/data" \
+            -w /data \
+            plantuml/plantuml \
+            -tpng -o . $(find . -type f -name "*.puml")
+
+          echo "Listing generated PNGs:"
+          find . -type f -name "*.png" || echo "No PNG files generated!"
+
+      - name: Upload diagrams
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: plantuml-diagrams
+          path: |
+            ./**/*.png
+          if-no-files-found: warn
+      - name: Publish diagrams to Wiki
+        if: always()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Publishing diagrams to Wiki..."
+          REPO_URL="https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.wiki.git"
+    
+          mkdir wiki
+          cd wiki
+          git clone "$REPO_URL" .
+    
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+    
+          # Ensure target folder exists
+          mkdir -p diagrams
+    
+          # Copy generated PNG diagrams
+          find ../ -type f -name "*.png" -exec cp {} diagrams/ \;
+    
+          # Create or update Diagrams.md page
+          echo "# PlantUML Diagrams" > Diagrams.md
+          echo "" >> Diagrams.md
+          echo "Auto-generated on $(date)" >> Diagrams.md
+          echo "" >> Diagrams.md
+    
+          # Add all diagrams to the page
+          for diagram in diagrams/*.png; do
+            if [ -f "$diagram" ]; then
+              basename=$(basename "$diagram")
+              echo "## ${basename%.png}" >> Diagrams.md
+              echo "![${basename%.png}]($diagram)" >> Diagrams.md
+              echo "" >> Diagrams.md
+            fi
+          done
+    
+          # Commit and push changes
+          git add diagrams/ Diagrams.md
+          git commit -m "Update PlantUML diagrams [skip ci]" || echo "No changes to commit"
+          git remote set-url origin "$REPO_URL"
+          git push origin master || echo "No wiki push needed"
