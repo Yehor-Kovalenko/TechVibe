@@ -10,9 +10,12 @@ node_modules/
 build/
 dist/
 
-# Azure Functions
-local.settings.json
-
 # IDEs
 .vscode/
 .idea/
+
+# Azure related
+functions/.venv/
+functions/local.settings.json
+azurite_db/
+.azurite_debug.log
