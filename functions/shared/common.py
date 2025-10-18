@@ -15,6 +15,16 @@ def get_queue_client(queue_name):
     return qc
 
 
+def get_blob_client(blob_name, container=RESULTS_CONTAINER):
+    bsc = BlobServiceClient.from_connection_string(STORAGE_CONN)
+    container_client = bsc.get_container_client(container)
+    try:
+        container_client.create_container()
+    except Exception as e:
+        logging.debug(f"Container '{container}' may already exist: {e}")
+    return container_client.get_blob_client(blob_name)
+
+
 def enqueue_message_base64(message: dict, queue_name: str):
     queue_client = get_queue_client(queue_name)
 
@@ -25,14 +35,8 @@ def enqueue_message_base64(message: dict, queue_name: str):
     queue_client.send_message(queue_client.message_encode_policy.encode(content=message_bytes))
 
 
-def upload_result_blob(blob_name: str, data: dict, container=RESULTS_CONTAINER):
-    bsc = BlobServiceClient.from_connection_string(STORAGE_CONN)
-    container_client = bsc.get_container_client(container)
-    try:
-        container_client.create_container()
-    except Exception as e:
-        logging.debug(f"Container '{container}' may already exist: {e}")
-    blob_client = container_client.get_blob_client(blob_name)
+def upload_result_blob(blob_name: str, data: dict):
+    blob_client = get_blob_client(blob_name)
     try:
         blob_client.upload_blob(json.dumps(data), overwrite=True)
         logging.info(f"Blob uploaded: {blob_name}")

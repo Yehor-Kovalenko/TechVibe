@@ -2,16 +2,11 @@
   "scriptFile": "main.py",
   "bindings": [
     {
-      "authLevel": "anonymous",
-      "type": "httpTrigger",
+      "name": "msg",
+      "type": "queueTrigger",
       "direction": "in",
-      "name": "req",
-      "methods": ["post"]
-    },
-    {
-      "type": "http",
-      "direction": "out",
-      "name": "$return"
+      "queueName": "new-queue",
+      "connection": "AzureWebJobsStorage"
     }
   ]
 }
