@@ -29,6 +29,14 @@ def main(msg: QueueMessage):
         )
         logging.info(f"speech-to-text saved job {job_id} text to blob")
 
+        metadata = read_blob(f"results/{job_id}/metadata.json")
+        metadata["status"] = "TRANSCRIBED"
+        write_blob(
+            f"results/{job_id}/metadata.json",
+            metadata
+        )
+        logging.info(f"speech_to_text updated job ${job_id} metadata to blob")
+
         msg = {"id": job_id}
         enqueue_message(msg, queue_name=TRANSCRIBED_QUEUE)
         logging.info(f"speech_to_text queued job {job_id}")

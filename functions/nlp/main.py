@@ -22,6 +22,15 @@ def main(msg: QueueMessage):
             {"id": job_id, "summary": summary},
         )
         logging.info(f"nlp saved job {job_id} summary to blob")
+        
+        metadata = read_blob(f"results/{job_id}/metadata.json")
+        metadata["status"] = "DONE"
+        write_blob(
+            f"results/{job_id}/metadata.json",
+            metadata
+        )
+        logging.info(f"nlp updated job ${job_id} metadata to blob")
+
     except Exception as e:
         logging.error(f"Error in nlp processing: {e}")
 

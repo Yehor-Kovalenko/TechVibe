@@ -24,6 +24,13 @@ def main(msg: QueueMessage):
         )
         logging.info(f"downloader saved job ${job_id} audio to blob")
 
+        metadata["status"] = "DOWNLOADED"
+        write_blob(
+            f"results/{job_id}/metadata.json",
+            metadata
+        )
+        logging.info(f"downloader updated job ${job_id} metadata to blob")
+
         msg = {"id": job_id}
         enqueue_message(msg, queue_name=DOWNLOADED_QUEUE)
         logging.info(f"downloader queued job {job_id}")
