@@ -6,7 +6,7 @@
 - Azure Functions Core (start azure functions)
 
 follow instructions to install:
-[Link To Expose Your Child Porn](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=linux%2Cisolated-process%2Cnode-v4%2Cpython-v2%2Chttp-trigger%2Ccontainer-apps&pivots=programming-language-python)
+[Azurite-Margarite](https://learn.microsoft.com/en-us/azure/azure-functions/functions-run-local?tabs=linux%2Cisolated-process%2Cnode-v4%2Cpython-v2%2Chttp-trigger%2Ccontainer-apps&pivots=programming-language-python)
 - Azurite (local cloud - storage and queue) - mount on docker
 
 ```bash
@@ -16,11 +16,23 @@ docker pull mcr.microsoft.com/azure-storage/azurite
 - Azure Storage Explorer (peek view for storage and queue)
 
 follow instructions to install:
-[Another sus stuff](https://azure.microsoft.com/en-us/products/storage/storage-explorer/#Download-4)
+[Another Azury linky](https://azure.microsoft.com/en-us/products/storage/storage-explorer/#Download-4)
 
 Then connect locally: "Attach to a local emulator" on default values.
 
 ---
+## Run in Docker
+1. Navigate to the root folder
+2. Run with frontend service: `docker-compose --profile frontend up --build`
+3. run without the frontend service: `docker-compose up --build`
+
+Everything is expose nicely, ports:
+> - Frontend 8080
+> - Backend 7071
+
+---
+
+## Run locally
 
 ### Run azurite
 
