@@ -1,24 +1,28 @@
-import azure.functions as func
 import logging
-from ..shared.common import upload_result_blob
-from ..shared.config import RESULTS_CONTAINER
+from azure.functions import QueueMessage
+from ..shared.common import write_blob, read_blob
 
-def main(msg: func.QueueMessage):
+
+def main(msg: QueueMessage):
     try:
         body = msg.get_json()
+        logging.info(f"Received body: ${body}")
     except Exception as e:
         logging.error(f"Failed to parse message: {e}")
         return
-    logging.info('NLP function processed a message: %s', body)
-    # process only step 2
-    if body.get("step") != 2:
-        logging.info(f"Skipping message with step {body.get('step')}")
-        return
+
+    job_id = body["id"]
+    text = read_blob(f"results/{job_id}/text.json")
+
+    summary = "positive" if len(text["text"]) > 2 else "negative"
+
     try:
-        body["text"] = body.get("text", "") + "_nlp"
-        body["step"] = 3
-        # Store intermediate result in blob
-        upload_result_blob(f"{body['id']}_step2.json", body, container=RESULTS_CONTAINER)
-        logging.info(f"nlp processed job {body.get('id')}: {body['text']}")
+        write_blob(
+            f"results/{job_id}/summary.json",
+            {"id": job_id, "summary": summary},
+        )
+        logging.info(f"nlp saved job {job_id} summary to blob")
     except Exception as e:
         logging.error(f"Error in nlp processing: {e}")
+
+    logging.info(f"nlp processed job {job_id}: {summary}")

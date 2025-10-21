@@ -1,11 +1,11 @@
 import logging
-from azure.functions import func
+from azure.functions import QueueMessage
 
-from ..shared.common import upload_result_blob, enqueue_message_base64
+from ..shared.common import write_blob, enqueue_message, read_blob
 from ..shared.config import DOWNLOADED_QUEUE
 
 
-def main(msg: func.QueueMessage):
+def main(msg: QueueMessage):
     try:
         body = msg.get_json()
     except Exception as e:
@@ -13,17 +13,21 @@ def main(msg: func.QueueMessage):
         return
     logging.info('NLP function processed a message: %s', body)
 
-    job_id = body.get("id")
+    job_id = body["id"]
+    metadata = read_blob(f"results/{job_id}/metadata.json")
+    audio = "la " * len(metadata["url"].split(".")) + "la"
 
     try:
-        upload_result_blob(
+        write_blob(
             f"results/{job_id}/audio.json",
-            {"id": job_id, "audio": "lalalala"},
+            {"id": job_id, "audio": audio},
         )
-        logging.info(f"downloader processed job {job_id}")
+        logging.info(f"downloader saved job ${job_id} audio to blob")
 
         msg = {"id": job_id}
-        enqueue_message_base64(msg, queue_name=DOWNLOADED_QUEUE)
+        enqueue_message(msg, queue_name=DOWNLOADED_QUEUE)
         logging.info(f"downloader queued job {job_id}")
     except Exception as e:
-        logging.error(f"Error in nlp processing: {e}")
+        logging.error(f"Error in download processing: {e}")
+
+    logging.info(f"downloader processed job {job_id}")

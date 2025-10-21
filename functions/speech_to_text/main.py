@@ -1,30 +1,39 @@
-import azure.functions as func
 import logging
-import json
+from azure.functions import QueueMessage
 
-from ..shared.common import upload_result_blob, enqueue_message_base64
-from ..shared.config import TRANSCRIBED_QUEUE, RESULTS_CONTAINER
+from ..shared.common import write_blob, enqueue_message, read_blob
+from ..shared.config import TRANSCRIBED_QUEUE
 
-def main(msg: func.QueueMessage):
+def main(msg: QueueMessage):
     try:
-        logging.info("Function starting")
-        # msg.get_body() już jest zdekodowane do bytes, nie trzeba base64.b64decode
-        body = json.loads(msg.get_body().decode("utf-8"))
-        logging.info('Received body: %s', body)
+        body = msg.get_json()
+        logging.info(f"Received body: ${body}")
     except Exception as e:
         logging.error(f"Failed to parse message: {e}")
         return
 
-    if body.get("step") != 1:
-        logging.info(f"Skipping message with step {body.get('step')}")
+    job_id = body["id"]
+    try:
+        audio = read_blob(f"results/{job_id}/audio.json")
+        logging.info(f"Audio received: {audio}")
+    except Exception as e:
+        logging.error(f"Failed to read audio: {e}")
         return
 
+    text = audio["audio"].split(" ")
+
     try:
-        body["text"] = body.get("text", "") + "_speech"
-        body["step"] = 2
-        # Store intermediate result in blob
-        upload_result_blob(f"{body['id']}_step1.json", body, container=RESULTS_CONTAINER)
-        enqueue_message_base64(body, queue_name=TRANSCRIBED_QUEUE)
-        logging.info(f"speech_to_text processed job {body.get('id')}: {body['text']}")
+        write_blob(
+            f"results/{job_id}/text.json",
+            {"id": job_id, "text": text}
+        )
+        logging.info(f"speech-to-text saved job {job_id} text to blob")
+
+        msg = {"id": job_id}
+        enqueue_message(msg, queue_name=TRANSCRIBED_QUEUE)
+        logging.info(f"speech_to_text queued job {job_id}")
     except Exception as e:
         logging.error(f"Error in speech_to_text processing: {e}")
+
+    logging.info(f"speech_to_text processed job {job_id}: {text}")
+

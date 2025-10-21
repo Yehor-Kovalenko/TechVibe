@@ -7,13 +7,6 @@ actor User
 rectangle "Frontend (React/TS)" as Frontend
 
 frame "backend" {
-rectangle "Azure Functions" as Functions {
-    component "api" as F0
-    component "downloader" as F1
-    component "speech_to_text" as F2
-    component "nlp" as F3
-}
-
 database "Azure Blob Storage" as Blob {
     folder "results" {
         folder "<uuid>" {
@@ -23,6 +16,13 @@ database "Azure Blob Storage" as Blob {
             rectangle text.txt
         }
    }
+}
+
+rectangle "Azure Functions" as Functions {
+    component "api" as F0
+    component "downloader" as F1
+    component "speech_to_text" as F2
+    component "nlp" as F3
 }
 
 rectangle queues {
