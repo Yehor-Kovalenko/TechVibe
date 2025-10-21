@@ -21,6 +21,18 @@ follow instructions to install:
 Then connect locally: "Attach to a local emulator" on default values.
 
 ---
+## Run in Docker
+1. Navigate to the root folder
+2. Run with frontend service: `docker-compose --profile frontend up --build`
+3. run without the frontend service: `docker-compose up --build`
+
+Everything is expose nicely, ports:
+> - Frontend 8080
+> - Backend 7071
+
+---
+
+## Run locally
 
 ### Run azurite
 

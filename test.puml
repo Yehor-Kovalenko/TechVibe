@@ -1,5 +1,0 @@
-@startuml
-title TechVibe - Architecture Overview
-
-actor User
-@enduml
