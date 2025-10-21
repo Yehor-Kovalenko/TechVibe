@@ -1,0 +1,44 @@
+@startuml
+title TechVibe components
+left to right direction
+
+actor User
+
+rectangle "Frontend (React/TS)" as Frontend
+
+frame "backend" {
+database "Azure Blob Storage" as Blob {
+    folder "results" {
+        folder "<uuid>" {
+            rectangle summary.json
+            rectangle metadata.json
+            rectangle audio.mp3
+            rectangle text.txt
+        }
+   }
+}
+
+rectangle "Azure Functions" as Functions {
+    component "api" as F0
+    component "downloader" as F1
+    component "speech_to_text" as F2
+    component "nlp" as F3
+}
+
+rectangle queues {
+    queue "New" as SQ
+    queue "Downloaded" as DQ
+    queue "Transcribed" as TQ
+}
+}
+
+interface POST
+interface GET
+
+POST -down- [F0]
+GET -down- [F0]
+
+Frontend ..> POST: use
+Frontend ..> GET: use
+
+@enduml
