@@ -26,10 +26,20 @@ rectangle "Azure Functions" as Functions {
 }
 
 rectangle queues {
-    queue "New" as SQ
+    queue "New" as NQ
     queue "Downloaded" as DQ
     queue "Transcribed" as TQ
 }
+
+Functions .down.> Blob: write/read
+
+F0 ..> NQ: sends
+F1 <.. NQ: reads
+F1 ..> DQ: sends
+F2 <.. DQ: reads
+F2 ..> TQ: sends
+F3 <.. TQ: reads
+
 }
 
 interface POST
