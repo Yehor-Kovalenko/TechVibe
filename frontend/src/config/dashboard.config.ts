@@ -1,4 +1,4 @@
-import type { DashboardConfig } from '@/types/widget.types';
+import type { DashboardConfig } from '../types/widget.types';
 
 export const defaultDashboardConfig: DashboardConfig = {
   columns: 3,

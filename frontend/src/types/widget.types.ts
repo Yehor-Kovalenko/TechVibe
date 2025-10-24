@@ -1,4 +1,9 @@
-export type WidgetType = 'stats' | 'chart' | 'activity' | 'progress' | 'calendar';
+export type WidgetType =
+  | 'stats'
+  | 'chart'
+  | 'activity'
+  | 'progress'
+  | 'calendar';
 
 export interface BaseWidgetConfig {
   id: string;
@@ -20,7 +25,7 @@ export interface StatsWidgetConfig extends BaseWidgetConfig {
 export interface ChartWidgetConfig extends BaseWidgetConfig {
   type: 'chart';
   chartType?: 'line' | 'bar' | 'area';
-  data: any[];
+  data: number[];
 }
 
 export interface ActivityWidgetConfig extends BaseWidgetConfig {
@@ -53,10 +58,10 @@ export interface CalendarWidgetConfig extends BaseWidgetConfig {
   }>;
 }
 
-export type WidgetConfig = 
-  | StatsWidgetConfig 
-  | ChartWidgetConfig 
-  | ActivityWidgetConfig 
+export type WidgetConfig =
+  | StatsWidgetConfig
+  | ChartWidgetConfig
+  | ActivityWidgetConfig
   | ProgressWidgetConfig
   | CalendarWidgetConfig;
 
@@ -65,15 +70,3 @@ export interface DashboardConfig {
   layout?: 'grid' | 'masonry';
   columns?: number;
 }
-
-export type {
-    BaseWidgetConfig,
-    StatsWidgetConfig,
-    ChartWidgetConfig,
-    ActivityWidgetConfig,
-    ProgressWidgetConfig,
-    CalendarWidgetConfig,
-    WidgetConfig,
-    DashboardConfig,
-    WidgetType
-  };

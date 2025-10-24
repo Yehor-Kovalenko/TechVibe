@@ -1,5 +1,5 @@
 import React from 'react';
-import type { StatsWidgetConfig } from '@/types/widget.types';
+import type { StatsWidgetConfig } from '../../types/widget.types';
 
 interface StatsWidgetProps {
   config: StatsWidgetConfig;
@@ -23,7 +23,7 @@ export const StatsWidget: React.FC<StatsWidgetProps> = ({ config }) => {
           </div>
         )}
       </div>
-      
+
       {change !== undefined && (
         <div className="mt-4 flex items-center gap-2">
           <span
@@ -31,8 +31,8 @@ export const StatsWidget: React.FC<StatsWidgetProps> = ({ config }) => {
               isPositive
                 ? 'text-green-400'
                 : isNegative
-                ? 'text-red-400'
-                : 'text-gray-400'
+                  ? 'text-red-400'
+                  : 'text-gray-400'
             }`}
           >
             {isPositive && '↑'}
@@ -48,4 +48,4 @@ export const StatsWidget: React.FC<StatsWidgetProps> = ({ config }) => {
   );
 };
 
-export default StatsWidget
+export default StatsWidget;

@@ -1,5 +1,5 @@
 import React from 'react';
-import type { DashboardConfig, WidgetConfig } from '@/types/widget.types';
+import type { DashboardConfig, WidgetConfig } from '../types/widget.types';
 import { StatsWidget } from './widgets/StatsWidget';
 import { ActivityWidget } from './widgets/ActivityWidget';
 import { ProgressWidget } from './widgets/ProgressWidget';
@@ -24,10 +24,10 @@ const WidgetRenderer: React.FC<{ config: WidgetConfig }> = ({ config }) => {
 
 export const Dashboard: React.FC<DashboardProps> = ({ config }) => {
   const { widgets, columns = 3 } = config;
-  
+
   // Sort widgets by order if specified
-  const sortedWidgets = [...widgets].sort((a, b) => 
-    (a.order ?? 0) - (b.order ?? 0)
+  const sortedWidgets = [...widgets].sort(
+    (a, b) => (a.order ?? 0) - (b.order ?? 0)
   );
 
   return (
@@ -38,16 +38,16 @@ export const Dashboard: React.FC<DashboardProps> = ({ config }) => {
             Dashboard
           </h1>
           <p className="text-sm opacity-50 mt-2">
-            {new Date().toLocaleDateString('en-US', { 
-              weekday: 'long', 
-              year: 'numeric', 
-              month: 'long', 
-              day: 'numeric' 
+            {new Date().toLocaleDateString('en-US', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric',
             })}
           </p>
         </header>
 
-        <div 
+        <div
           className="grid gap-6 auto-rows-min"
           style={{
             gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
