@@ -1,9 +1,9 @@
 export type WidgetType =
-  | 'stats'
-  | 'chart'
-  | 'activity'
-  | 'progress'
-  | 'calendar';
+| 'stats' 
+| 'summary' 
+| 'proscons' 
+| 'specs'
+| 'verdict'
 
 export interface BaseWidgetConfig {
   id: string;
@@ -14,56 +14,58 @@ export interface BaseWidgetConfig {
   order?: number; // for ordering widgets
 }
 
+// Stats Widget - for individual technical aspects
 export interface StatsWidgetConfig extends BaseWidgetConfig {
   type: 'stats';
-  value: string | number;
-  change?: number;
-  changeLabel?: string;
+  description?: string;
+  value?: string | number;
+  rating?: number; // 0-10 scale
   icon?: string;
 }
 
-export interface ChartWidgetConfig extends BaseWidgetConfig {
-  type: 'chart';
-  chartType?: 'line' | 'bar' | 'area';
-  data: number[];
-}
-
-export interface ActivityWidgetConfig extends BaseWidgetConfig {
-  type: 'activity';
-  items: Array<{
-    id: string;
-    title: string;
-    timestamp: string;
-    type: 'info' | 'success' | 'warning' | 'error';
-  }>;
-}
-
-export interface ProgressWidgetConfig extends BaseWidgetConfig {
-  type: 'progress';
-  tasks: Array<{
+// Summary Widget - overall product evaluation (battery-style display)
+export interface SummaryWidgetConfig extends BaseWidgetConfig {
+  type: 'summary';
+  overallRating?: number; // 0-10 scale
+  categories: Array<{
     id: string;
     label: string;
-    progress: number;
-    status: 'active' | 'completed' | 'pending';
+    rating: number; // 0-10 scale
+    icon?: string;
   }>;
 }
 
-export interface CalendarWidgetConfig extends BaseWidgetConfig {
-  type: 'calendar';
-  events: Array<{
+// Pros & Cons Widget
+export interface ProsConsWidgetConfig extends BaseWidgetConfig {
+  type: 'proscons';
+  pros: string[];
+  cons: string[];
+}
+
+// Specifications Widget
+export interface SpecsWidgetConfig extends BaseWidgetConfig {
+  type: 'specs';
+  specs: Array<{
     id: string;
-    title: string;
-    date: string;
-    color?: string;
+    label: string;
+    value: string;
+    icon?: string;
+    description?: string;
   }>;
 }
 
-export type WidgetConfig =
-  | StatsWidgetConfig
-  | ChartWidgetConfig
-  | ActivityWidgetConfig
-  | ProgressWidgetConfig
-  | CalendarWidgetConfig;
+// Verdict Widget - final recommendation
+export interface VerdictWidgetConfig extends BaseWidgetConfig {
+  type: 'verdict';
+  verdict: 'yes' | 'no';
+}
+
+export type WidgetConfig = 
+  | StatsWidgetConfig 
+  | SummaryWidgetConfig
+  | ProsConsWidgetConfig
+  | SpecsWidgetConfig
+  | VerdictWidgetConfig
 
 export interface DashboardConfig {
   widgets: WidgetConfig[];

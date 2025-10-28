@@ -1,8 +1,9 @@
 import React from 'react';
 import type { DashboardConfig, WidgetConfig } from '../types/widget.types';
 import { StatsWidget } from './widgets/StatsWidget';
-import { ActivityWidget } from './widgets/ActivityWidget';
-import { ProgressWidget } from './widgets/ProgressWidget';
+import { ProsConsWidget } from './widgets/ProsConsWidget';
+import { SummaryWidget } from './widgets/SummaryWidget';
+import { VerdictWidget } from "./widgets/VerdictWidget";
 
 interface DashboardProps {
   config: DashboardConfig;
@@ -12,11 +13,18 @@ const WidgetRenderer: React.FC<{ config: WidgetConfig }> = ({ config }) => {
   switch (config.type) {
     case 'stats':
       return <StatsWidget config={config} />;
-    case 'activity':
-      return <ActivityWidget config={config} />;
-    case 'progress':
-      return <ProgressWidget config={config} />;
-    // Add other widget types here
+    case 'proscons':
+      return <ProsConsWidget config={config} />;
+    case 'summary': {
+      // calculating overall rating overallRating
+      let overallRatingNumber = 0.0;
+      config.categories.forEach(c => overallRatingNumber += c?.rating)
+      overallRatingNumber /= config.categories.length;
+      config.overallRating = overallRatingNumber;
+      return <SummaryWidget config={config} />;
+    }
+    case 'verdict':
+      return <VerdictWidget config={config} />;
     default:
       return null;
   }
@@ -35,7 +43,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ config }) => {
       <div className="max-w-7xl mx-auto">
         <header className="mb-8">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
-            Dashboard
+            Dashboard Summary
           </h1>
           <p className="text-sm opacity-50 mt-2">
             {new Date().toLocaleDateString('en-US', {
@@ -48,17 +56,20 @@ export const Dashboard: React.FC<DashboardProps> = ({ config }) => {
         </header>
 
         <div
-          className="grid gap-6 auto-rows-min"
+          className="masonry-container grid gap-6"
           style={{
             gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+            gridAutoRows: '100px', // base dimension unit
+            gridAutoFlow: 'dense',
           }}
         >
           {sortedWidgets.map((widget) => (
             <div
               key={widget.id}
+              className='widget-masonry-item mb-6'
               style={{
-                gridColumn: widget.width ? `span ${widget.width}` : 'span 1',
-                minHeight: `${widget.height * 100}px`,
+                gridColumn: widget.width ? `span ${Math.min(widget.width, columns)}` : 'span 1',
+                gridRow: widget.height ? `span ${widget.height}` : 'span 2',
               }}
             >
               <WidgetRenderer config={widget} />
