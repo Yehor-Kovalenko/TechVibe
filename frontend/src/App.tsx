@@ -9,10 +9,15 @@ type View = 'landing' | 'loading' | 'dashboard';
 
 function App() {
   const [view, setView] = useState<View>('landing');
-  const handleGenerate = (_query: string) => setView('loading');
+  const [jobId, setJobId] = useState<string>('');
+
+  const handleGenerate = (id: string) => {
+    setJobId(id);
+    setView('loading');
+  };
 
   if (view === 'loading') {
-    return <LoadingPage delayMs={10_000} onDone={() => setView('dashboard')} />;
+    return <LoadingPage jobId={jobId} delayMs={10_000} onDone={() => setView('dashboard')} />;
   }
   if (view === 'dashboard') {
     return <Dashboard config={defaultDashboardConfig} />;

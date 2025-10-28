@@ -1,27 +1,48 @@
 import React, { useEffect, useState } from 'react';
-import { fetchApiUrl } from './fetchApiUrl.js';
+import { checkJobStatus } from './fetchApiUrl';
 
-type LoadingPageProps = { onDone?: () => void; delayMs?: number };
+type LoadingPageProps = { jobId: string; onDone?: () => void; delayMs?: number };
 
-const LoadingPage: React.FC<LoadingPageProps> = ({ onDone, delayMs = 10_000 }) => {
-  const [url, setUrl] = useState<string>('');
+const LoadingPage: React.FC<LoadingPageProps> = ({ jobId, onDone, delayMs = 10_000 }) => {
+  const [status, setStatus] = useState<string>('Waiting for processing...');
 
   useEffect(() => {
-    // Start the timer
-    const t = setTimeout(() => onDone?.(), delayMs);
-    
-    // Start the fetch at the same time
-    fetchApiUrl({ "url": "http://test.url.hannower.edu" })
-      .then(url => {
-        console.log('Received URL:', url);
-        setUrl(url);
-      })
-      .catch(error => {
-        console.error('Error fetching URL:', error);
-      });
-    
-    return () => clearTimeout(t);
-  }, [onDone, delayMs]);
+    let pollInterval: number | null = null;
+    let timeoutId: number | null = null;
+
+    // Start the maximum timeout timer
+    timeoutId = window.setTimeout(() => {
+      if (pollInterval) clearInterval(pollInterval);
+      onDone?.();
+    }, delayMs);
+
+    // Start polling after 3 seconds (skip immediate first check)
+    window.setTimeout(() => {
+      pollInterval = window.setInterval(async () => {
+        try {
+          const statusResponse = await checkJobStatus(jobId);
+          console.log('Job status:', statusResponse);
+          setStatus(`Status: ${statusResponse.status}`);
+
+          // Check if job is complete (adjust status name based on your backend)
+          if (statusResponse.status === 'COMPLETED' || statusResponse.status === 'SUCCESS') {
+            if (pollInterval) clearInterval(pollInterval);
+            if (timeoutId) clearTimeout(timeoutId);
+            console.log('Job completed! Proceeding to dashboard...');
+            onDone?.();
+          }
+        } catch (error) {
+          console.error('Error polling job status:', error);
+        }
+      }, 3000); // Poll every 3 seconds
+    }, 3000); // Wait 3 seconds before first poll
+
+    // Cleanup function
+    return () => {
+      if (pollInterval) clearInterval(pollInterval);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [jobId, onDone, delayMs]);
 
   return (
     <main className="min-h-screen grid place-items-center px-6">
@@ -35,13 +56,16 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ onDone, delayMs = 10_000 }) =
         <p className="text-muted-foreground">
           Collecting video reviews across platforms and synthesizing a concise summary; this takes about 10 seconds.
         </p>
-        {url && (
-          <div className="mt-4 p-4 bg-green-100 dark:bg-green-900/20 rounded-lg">
-            <p className="text-sm font-medium text-green-800 dark:text-green-200">
-              URL received from backend: {url}
+        <div className="mt-4 p-4 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
+          <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
+            Job ID: {jobId}
+          </p>
+          {status && (
+            <p className="text-sm text-blue-600 dark:text-blue-300 mt-2">
+              {status}
             </p>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </main>
   );
