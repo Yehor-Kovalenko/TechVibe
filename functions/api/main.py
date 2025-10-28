@@ -9,6 +9,17 @@ from ..shared.config import NEW_QUEUE
 
 
 def main(req: HttpRequest) -> HttpResponse:
+    # Handle preflight OPTIONS request
+    if req.method == "OPTIONS":
+        return HttpResponse(
+            status_code=200,
+            headers={
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "POST, OPTIONS",
+                "Access-Control-Allow-Headers": "Content-Type",
+            }
+        )
+
     try:
         body = req.get_json()
     except (ValueError, TypeError):
@@ -32,11 +43,17 @@ def main(req: HttpRequest) -> HttpResponse:
         return HttpResponse(
             json.dumps({"status": "error", "message": str(e)}),
             status_code=500,
-            mimetype="application/json"
+            mimetype="application/json",
+            headers={
+                "Access-Control-Allow-Origin": "*",
+            }
         )
 
     logging.info(f"api processed job {job_id}: {body}")
 
     return HttpResponse(
         json.dumps(body),
+        headers={
+            "Access-Control-Allow-Origin": "*",
+        }
     )

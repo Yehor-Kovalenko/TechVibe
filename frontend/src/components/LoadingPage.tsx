@@ -1,10 +1,22 @@
 import React, { useEffect } from 'react';
+import { fetchApiUrl } from './fetchApiUrl.js';
 
 type LoadingPageProps = { onDone?: () => void; delayMs?: number };
 
 const LoadingPage: React.FC<LoadingPageProps> = ({ onDone, delayMs = 10_000 }) => {
   useEffect(() => {
+    // Start the timer
     const t = setTimeout(() => onDone?.(), delayMs);
+    
+    // Start the fetch at the same time
+    fetchApiUrl({ "url": "http://test.url.hannower.edu" })
+      .then(url => {
+        console.log('Received URL:', url);
+      })
+      .catch(error => {
+        console.error('Error fetching URL:', error);
+      });
+    
     return () => clearTimeout(t);
   }, [onDone, delayMs]);
 
