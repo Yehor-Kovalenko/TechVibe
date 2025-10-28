@@ -3,6 +3,7 @@ import type { DashboardConfig, WidgetConfig } from '../types/widget.types';
 import { StatsWidget } from './widgets/StatsWidget';
 import { ProsConsWidget } from './widgets/ProsConsWidget';
 import { SummaryWidget } from './widgets/SummaryWidget';
+import { VerdictWidget } from "./widgets/VerdictWidget";
 
 interface DashboardProps {
   config: DashboardConfig;
@@ -22,6 +23,8 @@ const WidgetRenderer: React.FC<{ config: WidgetConfig }> = ({ config }) => {
       config.overallRating = overallRatingNumber;
       return <SummaryWidget config={config} />;
     }
+    case 'verdict':
+      return <VerdictWidget config={config} />;
     default:
       return null;
   }
@@ -53,10 +56,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ config }) => {
         </header>
 
         <div
-          className="masonry-container grid gap-6 auto-rows-min"
+          className="masonry-container grid gap-6"
           style={{
-            columnCount: columns,
-            gridTemplateColumns: `repeat(1, minmax(0, 1fr))`,
+            gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
+            gridAutoRows: '100px', // base dimension unit
+            gridAutoFlow: 'dense',
           }}
         >
           {sortedWidgets.map((widget) => (
@@ -64,9 +68,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ config }) => {
               key={widget.id}
               className='widget-masonry-item mb-6'
               style={{
-                breakInside: 'avoid',
-                gridColumn: widget.width ? `span ${widget.width}` : 'span 1',
-                minHeight: `${widget.height * 100}px`
+                gridColumn: widget.width ? `span ${Math.min(widget.width, columns)}` : 'span 1',
+                gridRow: widget.height ? `span ${widget.height}` : 'span 2',
               }}
             >
               <WidgetRenderer config={widget} />

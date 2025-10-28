@@ -57,9 +57,7 @@ export interface SpecsWidgetConfig extends BaseWidgetConfig {
 // Verdict Widget - final recommendation
 export interface VerdictWidgetConfig extends BaseWidgetConfig {
   type: 'verdict';
-  verdict: string;
-  recommendation?: string;
-  targetAudience?: string;
+  verdict: 'yes' | 'no';
 }
 
 export type WidgetConfig = 

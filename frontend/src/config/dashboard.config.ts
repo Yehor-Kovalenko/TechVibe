@@ -8,7 +8,7 @@ export const defaultDashboardConfig: DashboardConfig = {
       id: 'overall-summary',
       type: 'summary',
       title: 'Overall Score',
-      height: 1,
+      height: 3,
       width: 1,
       order: 1,
       categories: [
@@ -53,7 +53,7 @@ export const defaultDashboardConfig: DashboardConfig = {
       value: '4K OLED',
       rating: 9.5,
       icon: '📺',
-      height: 2,
+      height: 1,
       width: 1,
       order: 4,
     },
@@ -77,30 +77,30 @@ export const defaultDashboardConfig: DashboardConfig = {
       value: '5G',
       rating: 6,
       icon: '📡',
-      height: 2,
+      height: 1,
       width: 1,
       order: 6,
     },
 
-    // Specifications
-    {
-      id: 'specs-technical',
-      type: 'specs',
-      title: 'Technical Specifications',
-      height: 5,
-      width: 1,
-      order: 7,
-      specs: [
-        { id: '1', label: 'Processor', value: 'Snapdragon 8 Gen 3', icon: '🔧' },
-        { id: '2', label: 'RAM', value: '12GB LPDDR5X', icon: '💾' },
-        { id: '3', label: 'Storage', value: '256GB UFS 4.0', icon: '💿' },
-        { id: '4', label: 'Display', value: '6.7" AMOLED 120Hz', icon: '📱' },
-        { id: '5', label: 'Battery', value: '5000mAh', icon: '🔋' },
-        { id: '6', label: 'Charging', value: '65W Fast Charge', icon: '⚡' },
-        { id: '7', label: 'OS', value: 'Android 14', icon: '🤖' },
-        { id: '8', label: 'Weight', value: '195g', icon: '⚖️' },
-      ],
-    },
+    // // Specifications
+    // {
+    //   id: 'specs-technical',
+    //   type: 'specs',
+    //   title: 'Technical Specifications',
+    //   height: 5,
+    //   width: 1,
+    //   order: 7,
+    //   specs: [
+    //     { id: '1', label: 'Processor', value: 'Snapdragon 8 Gen 3', icon: '🔧' },
+    //     { id: '2', label: 'RAM', value: '12GB LPDDR5X', icon: '💾' },
+    //     { id: '3', label: 'Storage', value: '256GB UFS 4.0', icon: '💿' },
+    //     { id: '4', label: 'Display', value: '6.7" AMOLED 120Hz', icon: '📱' },
+    //     { id: '5', label: 'Battery', value: '5000mAh', icon: '🔋' },
+    //     { id: '6', label: 'Charging', value: '65W Fast Charge', icon: '⚡' },
+    //     { id: '7', label: 'OS', value: 'Android 14', icon: '🤖' },
+    //     { id: '8', label: 'Weight', value: '195g', icon: '⚖️' },
+    //   ],
+    // },
 
     // Pros & Cons
     {
@@ -130,10 +130,10 @@ export const defaultDashboardConfig: DashboardConfig = {
       id: 'verdict',
       type: 'verdict',
       title: 'Final Verdict',
-      height: 4,
+      height: 1,
       width: 1,
       order: 9,
-      verdict: 'An impressive flagship device that delivers on performance'
+      verdict: 'yes'
     }
   ]
 }
