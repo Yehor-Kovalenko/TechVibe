@@ -1,23 +1,57 @@
 // fetchApiUrl.ts
-// Standalone function to fetch URL from your API
-export async function fetchApiUrl(bodyData: Record<string, unknown>): Promise<string> {
+
+interface ApiResponse {
+  id: string;
+  url: string;
+}
+
+interface JobStatusResponse {
+  id: string;
+  url: string;
+  status: string;
+}
+
+// POST request to create a new job
+export async function createJob(url: string): Promise<ApiResponse> {
   try {
     const response = await fetch('http://localhost:7071/api/api', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(bodyData),
+      body: JSON.stringify({ url }),
     });
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data = await response.json();
-    return data.url; // Returns just the URL string
+    const data: ApiResponse = await response.json();
+    return data;
   } catch (error) {
-    console.error('Error fetching URL:', error);
-    throw error; // Re-throw so caller can handle it
+    console.error('Error creating job:', error);
+    throw error;
+  }
+}
+
+// GET request to check job status
+export async function checkJobStatus(jobId: string): Promise<JobStatusResponse> {
+  try {
+    const response = await fetch(`http://localhost:7071/api/api?id=${jobId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data: JobStatusResponse = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error checking job status:', error);
+    throw error;
   }
 }

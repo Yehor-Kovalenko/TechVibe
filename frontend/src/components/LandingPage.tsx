@@ -1,17 +1,30 @@
 import React, { useState } from 'react';
+import { createJob } from './fetchApiUrl';
 
-type LandingPageProps = { onSubmit?: (query: string) => void };
+type LandingPageProps = { onSubmit?: (jobId: string) => void };
 
 const LandingPage: React.FC<LandingPageProps> = ({ onSubmit }) => {
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const value = query.trim();
     if (!value) return;
+    
     setLoading(true);
-    onSubmit?.(value);
+    setError('');
+
+    try {
+      const response = await createJob(value);
+      console.log('Job created:', response);
+      onSubmit?.(response.id);
+    } catch (err) {
+      console.error('Failed to create job:', err);
+      setError('Failed to create job. Please try again.');
+      setLoading(false);
+    }
   };
 
   return (
@@ -40,6 +53,13 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSubmit }) => {
             {loading ? 'Working…' : 'Generate'}
           </button>
         </form>
+        {error && (
+          <div className="p-4 bg-red-100 dark:bg-red-900/20 border border-red-400 dark:border-red-800 rounded-lg">
+            <p className="text-sm font-medium text-red-800 dark:text-red-200">
+              {error}
+            </p>
+          </div>
+        )}
         <div className="text-sm text-muted-foreground">
           The tool integrates reviews from multiple platforms and distills hours of content into key pros, cons, and takeaways.
         </div>
