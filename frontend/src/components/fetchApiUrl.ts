@@ -1,7 +1,6 @@
-
 // fetchApiUrl.ts
 // Standalone function to fetch URL from your API
-export async function fetchApiUrl(bodyData: any): Promise<string> {
+export async function fetchApiUrl(bodyData: Record<string, unknown>): Promise<string> {
   try {
     const response = await fetch('http://localhost:7071/api/api', {
       method: 'POST',
