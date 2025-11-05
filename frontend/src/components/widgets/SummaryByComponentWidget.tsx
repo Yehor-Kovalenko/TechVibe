@@ -1,8 +1,8 @@
 import React from 'react';
-import type { SummaryWidgetConfig } from '../../types/widget.types';
+import type { SummaryByComponentsWidgetConfig } from '../../types/widget.types';
 
 interface SummaryWidgetProps {
-  config: SummaryWidgetConfig;
+  config: SummaryByComponentsWidgetConfig;
 }
 
 const getRatingColor = (rating: number) => {
@@ -29,7 +29,7 @@ const getRatingGlow = (rating: number) => {
   return 'shadow-red-500/50';
 };
 
-export const SummaryWidget: React.FC<SummaryWidgetProps> = ({ config }) => {
+export const SummaryByComponentWidget: React.FC<SummaryWidgetProps> = ({ config }) => {
   const { title, categories, overallRating = 0 } = config;
 
   return (
@@ -103,4 +103,4 @@ export const SummaryWidget: React.FC<SummaryWidgetProps> = ({ config }) => {
   );
 };
 
-export default SummaryWidget;
+export default SummaryByComponentWidget;

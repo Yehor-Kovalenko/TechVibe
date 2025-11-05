@@ -5,8 +5,8 @@ export const defaultDashboardConfig: DashboardConfig = {
   widgets: [
     // Overall Summary - Battery style display
     {
-      id: 'overall-summary',
-      type: 'summary',
+      id: 'overall-summary-by-components',
+      type: 'summary-components',
       title: 'Overall Score',
       height: 3,
       width: 1,
@@ -82,49 +82,6 @@ export const defaultDashboardConfig: DashboardConfig = {
       order: 6,
     },
 
-    // // Specifications
-    // {
-    //   id: 'specs-technical',
-    //   type: 'specs',
-    //   title: 'Technical Specifications',
-    //   height: 5,
-    //   width: 1,
-    //   order: 7,
-    //   specs: [
-    //     { id: '1', label: 'Processor', value: 'Snapdragon 8 Gen 3', icon: '🔧' },
-    //     { id: '2', label: 'RAM', value: '12GB LPDDR5X', icon: '💾' },
-    //     { id: '3', label: 'Storage', value: '256GB UFS 4.0', icon: '💿' },
-    //     { id: '4', label: 'Display', value: '6.7" AMOLED 120Hz', icon: '📱' },
-    //     { id: '5', label: 'Battery', value: '5000mAh', icon: '🔋' },
-    //     { id: '6', label: 'Charging', value: '65W Fast Charge', icon: '⚡' },
-    //     { id: '7', label: 'OS', value: 'Android 14', icon: '🤖' },
-    //     { id: '8', label: 'Weight', value: '195g', icon: '⚖️' },
-    //   ],
-    // },
-
-    // Pros & Cons
-    {
-      id: 'pros-cons',
-      type: 'proscons',
-      title: 'Pros & Cons',
-      height: 4,
-      width: 2,
-      order: 8,
-      pros: [
-        'Outstanding display quality with vivid colors',
-        'Excellent battery life for all-day usage',
-        'Premium build quality with attention to detail',
-        'Fast and responsive performance',
-        'Comprehensive 5G connectivity',
-      ],
-      cons: [
-        'No expandable storage option',
-        'Camera struggles in extreme low light',
-        'Higher price point than competitors',
-        'No headphone jack included',
-      ],
-    },
-
     // Final Verdict
     {
       id: 'verdict',
@@ -133,7 +90,8 @@ export const defaultDashboardConfig: DashboardConfig = {
       height: 1,
       width: 1,
       order: 9,
-      verdict: 'yes'
+      verdict: 'yes',
+      score: 90
     }
   ]
 }

@@ -1,8 +1,7 @@
 import React from 'react';
 import type { DashboardConfig, WidgetConfig } from '../types/widget.types';
 import { StatsWidget } from './widgets/StatsWidget';
-import { ProsConsWidget } from './widgets/ProsConsWidget';
-import { SummaryWidget } from './widgets/SummaryWidget';
+import { SummaryByComponentWidget } from './widgets/SummaryByComponentWidget.tsx';
 import { VerdictWidget } from "./widgets/VerdictWidget";
 
 interface DashboardProps {
@@ -13,15 +12,14 @@ const WidgetRenderer: React.FC<{ config: WidgetConfig }> = ({ config }) => {
   switch (config.type) {
     case 'stats':
       return <StatsWidget config={config} />;
-    case 'proscons':
-      return <ProsConsWidget config={config} />;
-    case 'summary': {
+    case 'summary-components': {
       // calculating overall rating overallRating
       let overallRatingNumber = 0.0;
+      // @ts-ignore
       config.categories.forEach(c => overallRatingNumber += c?.rating)
       overallRatingNumber /= config.categories.length;
       config.overallRating = overallRatingNumber;
-      return <SummaryWidget config={config} />;
+      return <SummaryByComponentWidget config={config} />;
     }
     case 'verdict':
       return <VerdictWidget config={config} />;
