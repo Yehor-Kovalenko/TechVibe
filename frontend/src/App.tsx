@@ -20,7 +20,7 @@ function App() {
     return <LoadingPage jobId={jobId} delayMs={10_000} onDone={() => setView('dashboard')} />;
   }
   if (view === 'dashboard') {
-    return <Dashboard config={defaultDashboardConfig} />;
+    return <Dashboard config={defaultDashboardConfig} />; //TODO set config from the backend
   }
   return <LandingPage onSubmit={handleGenerate} />;
 }

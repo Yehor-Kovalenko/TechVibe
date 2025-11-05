@@ -1,9 +1,8 @@
 export type WidgetType =
 | 'stats' 
-| 'summary' 
-| 'proscons' 
-| 'specs'
+| 'summary-components'
 | 'verdict'
+| 'chart'
 
 export interface BaseWidgetConfig {
   id: string;
@@ -24,48 +23,39 @@ export interface StatsWidgetConfig extends BaseWidgetConfig {
 }
 
 // Summary Widget - overall product evaluation (battery-style display)
-export interface SummaryWidgetConfig extends BaseWidgetConfig {
-  type: 'summary';
+export interface SummaryByComponentsWidgetConfig extends BaseWidgetConfig {
+  type: 'summary-components';
   overallRating?: number; // 0-10 scale
   categories: Array<{
     id: string;
     label: string;
-    rating: number; // 0-10 scale
+    rating?: number; // 0-10 scale
     icon?: string;
-  }>;
-}
-
-// Pros & Cons Widget
-export interface ProsConsWidgetConfig extends BaseWidgetConfig {
-  type: 'proscons';
-  pros: string[];
-  cons: string[];
-}
-
-// Specifications Widget
-export interface SpecsWidgetConfig extends BaseWidgetConfig {
-  type: 'specs';
-  specs: Array<{
-    id: string;
-    label: string;
-    value: string;
-    icon?: string;
-    description?: string;
   }>;
 }
 
 // Verdict Widget - final recommendation
 export interface VerdictWidgetConfig extends BaseWidgetConfig {
   type: 'verdict';
-  verdict: 'yes' | 'no';
+  verdict: 'POSITIVE' | 'NEGATIVE' | 'NEUTRAL';
+  score?: number;
+}
+
+// Single line chart based on series of values
+export interface ChartWidgetConfig extends BaseWidgetConfig {
+  type: 'chart',
+  x?: Array<number>,
+  xAxisName?: string,
+  y: Array<number>,
+  yAxisName?: string,
+  labels?: Array<string>
 }
 
 export type WidgetConfig = 
   | StatsWidgetConfig 
-  | SummaryWidgetConfig
-  | ProsConsWidgetConfig
-  | SpecsWidgetConfig
+  | SummaryByComponentsWidgetConfig
   | VerdictWidgetConfig
+  | ChartWidgetConfig
 
 export interface DashboardConfig {
   widgets: WidgetConfig[];

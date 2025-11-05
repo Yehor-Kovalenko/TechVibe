@@ -1,9 +1,9 @@
 import React from 'react';
 import type { DashboardConfig, WidgetConfig } from '../types/widget.types';
 import { StatsWidget } from './widgets/StatsWidget';
-import { ProsConsWidget } from './widgets/ProsConsWidget';
-import { SummaryWidget } from './widgets/SummaryWidget';
+import { SummaryByComponentWidget } from './widgets/SummaryByComponentWidget.tsx';
 import { VerdictWidget } from "./widgets/VerdictWidget";
+import {ChartWidget} from "./widgets/ChartWidget.tsx";
 
 interface DashboardProps {
   config: DashboardConfig;
@@ -13,18 +13,18 @@ const WidgetRenderer: React.FC<{ config: WidgetConfig }> = ({ config }) => {
   switch (config.type) {
     case 'stats':
       return <StatsWidget config={config} />;
-    case 'proscons':
-      return <ProsConsWidget config={config} />;
-    case 'summary': {
+    case 'summary-components': {
       // calculating overall rating overallRating
-      let overallRatingNumber = 0.0;
-      config.categories.forEach(c => overallRatingNumber += c?.rating)
+      let overallRatingNumber: number = 0.0;
+      config.categories.forEach(c => overallRatingNumber += (c.rating ?? 0))
       overallRatingNumber /= config.categories.length;
       config.overallRating = overallRatingNumber;
-      return <SummaryWidget config={config} />;
+      return <SummaryByComponentWidget config={config} />;
     }
     case 'verdict':
       return <VerdictWidget config={config} />;
+    case 'chart':
+      return <ChartWidget config={config} />;
     default:
       return null;
   }
