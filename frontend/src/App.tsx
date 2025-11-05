@@ -11,18 +11,18 @@ function App() {
   const [view, setView] = useState<View>('landing');
   const [jobId, setJobId] = useState<string>('');
 
-  // const handleGenerate = (id: string) => {
-  //   setJobId(id);
-  //   setView('loading');
-  // };
+  const handleGenerate = (id: string) => {
+    setJobId(id);
+    setView('loading');
+  };
 
-  // if (view === 'loading') {
-    // return <LoadingPage jobId={jobId} delayMs={10_000} onDone={() => setView('dashboard')} />;
-  // }
-  // if (view === 'dashboard') {
-    return <Dashboard config={defaultDashboardConfig} />;
-  // }
-  // return <LandingPage onSubmit={handleGenerate} />;
+  if (view === 'loading') {
+    return <LoadingPage jobId={jobId} delayMs={10_000} onDone={() => setView('dashboard')} />;
+  }
+  if (view === 'dashboard') {
+    return <Dashboard config={defaultDashboardConfig} />; //TODO set config from the backend
+  }
+  return <LandingPage onSubmit={handleGenerate} />;
 }
 
 export default App;
