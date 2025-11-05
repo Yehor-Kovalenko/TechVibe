@@ -103,5 +103,10 @@ export const defaultDashboardConfig: DashboardConfig = {
       width: 2,
       height: 4
     }
-  ]
+  ],
+  summary: {
+    sentiment_series: [0.9, 0.0, 0.3, -0.4, 0.2, 0.0, 1.0],
+    overall_score: 0.5,
+    overall_label: "NEUTRAL"
+  }
 }
