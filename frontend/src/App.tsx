@@ -5,7 +5,6 @@ import LoadingPage from './components/LoadingPage';
 import Dashboard from './components/Dashboard';
 import { defaultDashboardConfig } from './config/dashboard.config';
 import {getJobSummary} from "./components/fetchApiUrl.ts";
-import type {DashboardConfig} from "./types/widget.types.ts";
 
 type View = 'landing' | 'loading' | 'dashboard';
 
@@ -23,7 +22,7 @@ function App() {
   }
   if (view === 'dashboard') {
     // load dashboard config (summary)
-    let backend_config = defaultDashboardConfig;
+    const backend_config = defaultDashboardConfig;
     getJobSummary(jobId).then((r) => {
       backend_config.summary = r;
     });
