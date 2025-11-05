@@ -39,8 +39,8 @@ export const VerdictWidget: React.FC<VerdictWidgetProps> = ({ config }) => {
           {/* Outer glow ring */}
           <div className={`absolute inset-0 rounded-full blur-xl ${getVerdictGlow(verdict)}`}
                style={{
-                   background: `conic-gradient(from 0deg, transparent ${100 - (score * 10)}%, rgba(74, 222, 128, 0.3) ${100 - (score * 10)}%)`
-               }}>
+                   background: `conic-gradient(from 0deg, transparent ${100 - (score * 100)}%, rgba(74, 222, 128, 0.3) ${100 - (score * 100)}%)`
+               }}
           ></div>
           
           {/* Main circle */}
@@ -48,8 +48,8 @@ export const VerdictWidget: React.FC<VerdictWidgetProps> = ({ config }) => {
                style={{
                  background: `conic-gradient(from -90deg, 
                    ${verdict === "POSITIVE" ? '#10b981' : verdict === "NEGATIVE" ? '#ef4444' : '#eab308'} 
-                   ${(score / 10) * 100}%, 
-                   rgba(255,255,255,0.05) ${(score / 10) * 100}%)`
+                   ${(score) * 100}%, 
+                   rgba(255,255,255,0.05) ${(score) * 100}%)`
                }}>
             <div className="w-[90%] h-[90%] rounded-full bg-[#0f0f14] flex flex-col items-center justify-center">
               <div className={`text-5xl font-bold ${getVerdictColor(verdict)} mb-1`}>

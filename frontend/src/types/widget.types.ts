@@ -42,7 +42,7 @@ export interface VerdictWidgetConfig extends BaseWidgetConfig {
 }
 
 // Single line chart based on series of values
-export interface CharWidgetConfig extends BaseWidgetConfig {
+export interface ChartWidgetConfig extends BaseWidgetConfig {
   type: 'chart',
   x?: Array<number>,
   xAxisName?: string,
@@ -55,7 +55,7 @@ export type WidgetConfig =
   | StatsWidgetConfig 
   | SummaryByComponentsWidgetConfig
   | VerdictWidgetConfig
-  | CharWidgetConfig
+  | ChartWidgetConfig
 
 export interface DashboardConfig {
   widgets: WidgetConfig[];

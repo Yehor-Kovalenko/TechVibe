@@ -81,7 +81,6 @@ export const defaultDashboardConfig: DashboardConfig = {
       width: 1,
       order: 6,
     },
-
     // Final Verdict
     {
       id: 'verdict',
@@ -90,8 +89,19 @@ export const defaultDashboardConfig: DashboardConfig = {
       height: 1,
       width: 1,
       order: 9,
-      verdict: 'yes',
-      score: 90
+      verdict: 'NEUTRAL',
+      score: 0.9
+    },
+      // overall sentiment series chart
+    {
+      id: 'chart-overall-sentiment-series',
+      type: 'chart',
+      title: 'Sentiment over time',
+      y: [2.5, 4.2, 3.8, 5.5, 6.2, 5.8, 7.5, 8.2],
+      yAxisName: 'Sentiment',
+      labels: ['Start', 'Good', 'Drop', 'Rise', 'Peak', 'Stable', 'High', 'Max'],
+      width: 2,
+      height: 4
     }
   ]
 }

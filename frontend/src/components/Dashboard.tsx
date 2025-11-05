@@ -3,6 +3,7 @@ import type { DashboardConfig, WidgetConfig } from '../types/widget.types';
 import { StatsWidget } from './widgets/StatsWidget';
 import { SummaryByComponentWidget } from './widgets/SummaryByComponentWidget.tsx';
 import { VerdictWidget } from "./widgets/VerdictWidget";
+import {ChartWidget} from "./widgets/ChartWidget.tsx";
 
 interface DashboardProps {
   config: DashboardConfig;
@@ -23,6 +24,8 @@ const WidgetRenderer: React.FC<{ config: WidgetConfig }> = ({ config }) => {
     }
     case 'verdict':
       return <VerdictWidget config={config} />;
+    case 'chart':
+      return <ChartWidget config={config} />;
     default:
       return null;
   }
