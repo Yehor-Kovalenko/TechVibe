@@ -11,6 +11,13 @@ interface JobStatusResponse {
   status: string;
 }
 
+interface JobSummaryResponse {
+  id: string,
+  sentiment_series: [],
+  overall_score: number,
+  overall_label: string
+}
+
 // POST request to create a new job
 export async function createJob(url: string): Promise<ApiResponse> {
   try {
@@ -48,10 +55,31 @@ export async function checkJobStatus(jobId: string): Promise<JobStatusResponse> 
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data: JobStatusResponse = await response.json();
-    return data;
+    return await response.json();
   } catch (error) {
     console.error('Error checking job status:', error);
     throw error;
+  }
+}
+
+// GET to retrieve summary.json
+export async function getJobSummary(jobId: string): Promise<JobSummaryResponse | undefined> {
+  try {const response = await fetch(`http://localhost:7071/api/api/summary?id=${jobId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+
+    if (!response.ok) {
+      console.error(`HTTP error! status: ${response.status}`);
+      return undefined;
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error checking job status:', error);
+    return undefined;
   }
 }

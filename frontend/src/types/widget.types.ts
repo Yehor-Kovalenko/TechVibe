@@ -61,4 +61,5 @@ export interface DashboardConfig {
   widgets: WidgetConfig[];
   layout?: 'grid' | 'masonry';
   columns?: number;
+  summary?: object
 }

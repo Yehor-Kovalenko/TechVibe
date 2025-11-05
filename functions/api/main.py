@@ -19,7 +19,10 @@ def main(req: HttpRequest) -> HttpResponse:
                 "Access-Control-Allow-Headers": "Content-Type",
             }
         )
-    
+
+    # check the additional route
+    action = req.route_params.get("action")
+
     # Handle GET request - check job status
     if req.method == "GET":
         job_id = req.params.get("id")
@@ -31,13 +34,18 @@ def main(req: HttpRequest) -> HttpResponse:
                 mimetype="application/json",
                 headers={"Access-Control-Allow-Origin": "*"}
             )
-        
+
         try:
-            # Read the job metadata from blob storage
-            metadata = read_blob(f"results/{job_id}/metadata.json")
-            
+            response = {}
+            if action == "summary":
+                # read summary
+                response = read_blob(f"results/{job_id}/summary.json")
+            else:
+                # Read the job metadata from blob storage
+                metadata = read_blob(f"results/{job_id}/metadata.json")
+
             return HttpResponse(
-                json.dumps(metadata),
+                json.dumps(response),
                 status_code=200,
                 mimetype="application/json",
                 headers={"Access-Control-Allow-Origin": "*"}
