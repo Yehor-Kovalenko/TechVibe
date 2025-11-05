@@ -15,9 +15,8 @@ const WidgetRenderer: React.FC<{ config: WidgetConfig }> = ({ config }) => {
       return <StatsWidget config={config} />;
     case 'summary-components': {
       // calculating overall rating overallRating
-      let overallRatingNumber = 0.0;
-      // @ts-ignore
-      config.categories.forEach(c => overallRatingNumber += c?.rating)
+      let overallRatingNumber: number = 0.0;
+      config.categories.forEach(c => overallRatingNumber += (c.rating ?? 0))
       overallRatingNumber /= config.categories.length;
       config.overallRating = overallRatingNumber;
       return <SummaryByComponentWidget config={config} />;

@@ -24,8 +24,8 @@ const getVerdictIcon = (verdict: string) => {
 }
 
 export const VerdictWidget: React.FC<VerdictWidgetProps> = ({ config }) => {
-  const { title, verdict, score } = config;
-
+  const { title, verdict} = config;
+  const score = config.score ?? 0;
   return (
     <div className="widget-card flex flex-col">
       {/* Header */}

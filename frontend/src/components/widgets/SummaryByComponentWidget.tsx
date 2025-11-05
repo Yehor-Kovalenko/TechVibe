@@ -75,14 +75,14 @@ export const SummaryByComponentWidget: React.FC<SummaryWidgetProps> = ({ config 
             className="group relative overflow-hidden rounded-lg bg-white/5 hover:bg-white/10 transition-all duration-300 cursor-pointer"
           >
             {/* Gradient background on hover */}
-            <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-br ${getRatingBg(category.rating)}`}
+            <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-br ${getRatingBg(category.rating ?? 0)}`}
                  style={{ opacity: 0.1 }}
             ></div>
             
             <div className="relative p-3 flex flex-col items-center gap-2">
               <span className="text-2xl">{category.icon}</span>
-              <div className={`text-lg font-bold ${getRatingColor(category.rating)}`}>
-                {category.rating.toFixed(1)}
+              <div className={`text-lg font-bold ${getRatingColor(category.rating ?? 0)}`}>
+                {category.rating?.toFixed(1)}
               </div>
               <div className="text-[10px] opacity-60 text-center leading-tight">
                 {category.label}
@@ -92,8 +92,8 @@ export const SummaryByComponentWidget: React.FC<SummaryWidgetProps> = ({ config 
             {/* Rating bar at bottom */}
             <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/5">
               <div
-                className={`h-full bg-gradient-to-r ${getRatingBg(category.rating)} transition-all duration-500`}
-                style={{ width: `${(category.rating / 10) * 100}%` }}
+                className={`h-full bg-gradient-to-r ${getRatingBg(category.rating ?? 0)} transition-all duration-500`}
+                style={{ width: `${((category.rating ?? 0) / 10) * 100}%` }}
               />
             </div>
           </div>
