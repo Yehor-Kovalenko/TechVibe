@@ -1,7 +1,7 @@
 import logging
 from azure.functions import QueueMessage
 from ..shared.common import write_blob, read_blob
-from ..shared.config import JOB_METADATA_FILENAME
+from ..shared.config import JOB_METADATA_FILENAME, TRANSCRIPT_FILENAME
 from transformers import pipeline
 
 def main(msg: QueueMessage):
@@ -13,12 +13,12 @@ def main(msg: QueueMessage):
         return
 
     job_id = body["id"]
-    text = read_blob(f"results/{job_id}/text.json")
+    transcript = read_blob(f"results/{job_id}/{TRANSCRIPT_FILENAME}")
 
     # sentiment analysis
     sentiment_model = pipeline("sentiment-analysis")
     # overall summary along with sentiment for each sentence
-    transcribed_text = text["text"]
+    transcribed_text = transcript["transcript"]
     sentences = [s.strip() for s in transcribed_text.split(".") if s.strip()]
     sentiment_series = []
     for i, s in enumerate(sentences):

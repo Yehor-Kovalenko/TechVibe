@@ -2,7 +2,7 @@ import logging
 from azure.functions import QueueMessage
 
 from ..shared.common import write_blob, enqueue_message, read_blob
-from ..shared.config import TRANSCRIBED_QUEUE, JOB_METADATA_FILENAME
+from ..shared.config import TRANSCRIBED_QUEUE, JOB_METADATA_FILENAME, TRANSCRIPT_FILENAME
 
 def main(msg: QueueMessage):
     try:
@@ -24,8 +24,8 @@ def main(msg: QueueMessage):
 
     try:
         write_blob(
-            f"results/{job_id}/text.json",
-            {"id": job_id, "text": text}
+            f"results/{job_id}/{TRANSCRIPT_FILENAME}",
+            {"id": job_id, "transcript": text}
         )
         logging.info(f"speech-to-text saved job {job_id} text to blob")
 
