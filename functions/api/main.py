@@ -95,7 +95,7 @@ def main(req: HttpRequest) -> HttpResponse:
             headers={"Access-Control-Allow-Origin": "*"}
         )
 
-    logging.info(f"api processed job {job_id}: {body}")
+    logging.info(f"api processed job {job_id} with url {url}")
 
     return HttpResponse(
         json.dumps({"id": job_id, "url": url}),

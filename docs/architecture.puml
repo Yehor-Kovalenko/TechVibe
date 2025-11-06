@@ -13,7 +13,8 @@ database "Azure Blob Storage" as Blob {
             rectangle summary.json
             rectangle job_metadata.json
             rectangle audio.mp3
-            rectangle text.txt
+            rectangle transcript.json
+            rectangle video_metadata.json
         }
    }
 }
