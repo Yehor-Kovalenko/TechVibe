@@ -10,3 +10,4 @@ CONNECTION_STRING = os.environ.get("CONNECTION_STRING", "AccountName=devstoreacc
 # FILENAME CONFIGURATION
 JOB_METADATA_FILENAME = os.environ.get("JOB_METADATA_FILENAME", "job_metadata.json")
 VIDEO_METADATA_FILENAME = os.environ.get("VIDEO_METADATA_FILENAME", "video_metadata.json")
+TRANSCRIPT_FILENAME = os.environ.get("TRANSCRIBED_FILENAME", "transcript.json")

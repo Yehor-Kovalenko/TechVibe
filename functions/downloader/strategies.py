@@ -10,7 +10,8 @@ from ..shared.config import (
     DOWNLOADED_QUEUE, 
     TRANSCRIBED_QUEUE, 
     JOB_METADATA_FILENAME,
-    VIDEO_METADATA_FILENAME
+    VIDEO_METADATA_FILENAME,
+    TRANSCRIPT_FILENAME
 )
 
 
@@ -177,7 +178,7 @@ class YTDownloader(BaseDownloader):
         """
         # Save transcript
         write_blob(
-            f"results/{self.job_id}/transcript.json",
+            f"results/{self.job_id}/{TRANSCRIPT_FILENAME}",
             {
                 "id": self.job_id,
                 "transcript": result['transcript'],
