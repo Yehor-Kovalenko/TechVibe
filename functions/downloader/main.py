@@ -1,8 +1,9 @@
+# downloader/__init__.py
 import logging
 from azure.functions import QueueMessage
-
-from ..shared.common import write_blob, enqueue_message, read_blob
-from ..shared.config import DOWNLOADED_QUEUE, JOB_METADATA_FILENAME
+from ..shared.common import read_blob
+from ..shared.config import JOB_METADATA_FILENAME
+from .strategies import YTDownloader, TTDownloader, ISDownloader
 
 
 def main(msg: QueueMessage):
@@ -11,30 +12,32 @@ def main(msg: QueueMessage):
     except Exception as e:
         logging.error(f"Failed to parse message: {e}")
         return
-    logging.info('NLP function processed a message: %s', body)
-
+    
+    logging.info('DOWNLOADER function received a message from NEW queue: %s', body)
+    
     job_id = body["id"]
-    metadata = read_blob(f"results/{job_id}/{JOB_METADATA_FILENAME}")
-    audio = "la " * len(metadata["url"].split(".")) + "la"
-
+    
     try:
-        write_blob(
-            f"results/{job_id}/audio.json",
-            {"id": job_id, "audio": audio},
-        )
-        logging.info(f"downloader saved job ${job_id} audio to blob")
-
-        metadata["status"] = "DOWNLOADED"
-        write_blob(
-            f"results/{job_id}/{JOB_METADATA_FILENAME}"
-            metadata
-        )
-        logging.info(f"downloader updated job ${job_id} metadata to blob")
-
-        msg = {"id": job_id}
-        enqueue_message(msg, queue_name=DOWNLOADED_QUEUE)
-        logging.info(f"downloader queued job {job_id}")
+        # Read job metadata to get URL and determine platform
+        job_metadata = read_blob(f"results/{job_id}/{JOB_METADATA_FILENAME}")
+        url = job_metadata.get("url")
+        
+        if not url:
+            raise ValueError("No URL found in job metadata")
+        
+        # Determine which downloader to use based on URL
+        if "youtube.com" in url or "youtu.be" in url:
+            downloader = YTDownloader(job_id, url)
+        elif "tiktok.com" in url:
+            downloader = TTDownloader(job_id, url)
+        elif "instagram.com" in url:
+            downloader = ISDownloader(job_id, url)
+        else:
+            raise ValueError(f"Unsupported platform for URL: {url}")
+        
+        # Execute the download strategy
+        downloader.process()
+        
     except Exception as e:
-        logging.error(f"Error in download processing: {e}")
-
-    logging.info(f"downloader processed job {job_id}")
+        logging.error(f"Error processing job {job_id}: {e}")
+        raise
