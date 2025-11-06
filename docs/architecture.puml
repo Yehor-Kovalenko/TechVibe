@@ -11,7 +11,7 @@ database "Azure Blob Storage" as Blob {
     folder "results" {
         folder "<uuid>" {
             rectangle summary.json
-            rectangle metadata.json
+            rectangle job_metadata.json
             rectangle audio.mp3
             rectangle text.txt
         }

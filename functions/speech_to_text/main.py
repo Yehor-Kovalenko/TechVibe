@@ -2,7 +2,7 @@ import logging
 from azure.functions import QueueMessage
 
 from ..shared.common import write_blob, enqueue_message, read_blob
-from ..shared.config import TRANSCRIBED_QUEUE
+from ..shared.config import TRANSCRIBED_QUEUE, JOB_METADATA_FILENAME
 
 def main(msg: QueueMessage):
     try:
@@ -29,10 +29,10 @@ def main(msg: QueueMessage):
         )
         logging.info(f"speech-to-text saved job {job_id} text to blob")
 
-        metadata = read_blob(f"results/{job_id}/metadata.json")
+        metadata = read_blob(f"results/{job_id}/{JOB_METADATA_FILENAME}")
         metadata["status"] = "TRANSCRIBED"
         write_blob(
-            f"results/{job_id}/metadata.json",
+            f"results/{job_id}/{JOB_METADATA_FILENAME}",
             metadata
         )
         logging.info(f"speech_to_text updated job ${job_id} metadata to blob")
