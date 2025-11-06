@@ -2,7 +2,7 @@ import logging
 from azure.functions import QueueMessage
 
 from ..shared.common import write_blob, enqueue_message, read_blob
-from ..shared.config import DOWNLOADED_QUEUE
+from ..shared.config import DOWNLOADED_QUEUE, JOB_METADATA_FILENAME
 
 
 def main(msg: QueueMessage):
@@ -14,7 +14,7 @@ def main(msg: QueueMessage):
     logging.info('NLP function processed a message: %s', body)
 
     job_id = body["id"]
-    metadata = read_blob(f"results/{job_id}/metadata.json")
+    metadata = read_blob(f"results/{job_id}/{JOB_METADATA_FILENAME}")
     audio = "la " * len(metadata["url"].split(".")) + "la"
 
     try:
@@ -26,7 +26,7 @@ def main(msg: QueueMessage):
 
         metadata["status"] = "DOWNLOADED"
         write_blob(
-            f"results/{job_id}/metadata.json",
+            f"results/{job_id}/{JOB_METADATA_FILENAME}"
             metadata
         )
         logging.info(f"downloader updated job ${job_id} metadata to blob")
