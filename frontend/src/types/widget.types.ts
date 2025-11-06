@@ -3,6 +3,7 @@ export type WidgetType =
 | 'summary-components'
 | 'verdict'
 | 'chart'
+| "metadata";
 
 export interface BaseWidgetConfig {
   id: string;
@@ -51,11 +52,17 @@ export interface ChartWidgetConfig extends BaseWidgetConfig {
   labels?: Array<string>
 }
 
-export type WidgetConfig = 
-  | StatsWidgetConfig 
+export interface MetadataWidgetConfig extends BaseWidgetConfig {
+  type: "metadata";
+  fields: Array<{ label: string; value: string }>;
+}
+
+export type WidgetConfig =
+  | StatsWidgetConfig
   | SummaryByComponentsWidgetConfig
   | VerdictWidgetConfig
   | ChartWidgetConfig
+  | MetadataWidgetConfig
 
 export interface DashboardConfig {
   widgets: WidgetConfig[];

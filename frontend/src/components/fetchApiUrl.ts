@@ -83,3 +83,13 @@ export async function getJobSummary(jobId: string): Promise<JobSummaryResponse |
     return undefined;
   }
 }
+
+export async function fetchMetadata(): Promise<Array<{label:string,value:string}>> {
+  const response = await fetch('/api/metadata');
+  const data = await response.json();
+  // Transform keys to fields array suitable for MetadataWidget
+  return Object.entries(data).map(([key, value]) => ({
+    label: key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+    value: String(value)
+  }));
+}

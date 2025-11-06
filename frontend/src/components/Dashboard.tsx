@@ -1,9 +1,10 @@
 import React from 'react';
-import type { DashboardConfig, WidgetConfig } from '../types/widget.types';
+import type {DashboardConfig, MetadataWidgetConfig, WidgetConfig} from '../types/widget.types';
 import { StatsWidget } from './widgets/StatsWidget';
 import { SummaryByComponentWidget } from './widgets/SummaryByComponentWidget.tsx';
 import { VerdictWidget } from "./widgets/VerdictWidget";
 import {ChartWidget} from "./widgets/ChartWidget.tsx";
+import { MetadataWidget } from './widgets/MetadataWidget';
 
 interface DashboardProps {
   config: DashboardConfig;
@@ -25,6 +26,8 @@ const WidgetRenderer: React.FC<{ config: WidgetConfig }> = ({ config }) => {
       return <VerdictWidget config={config} />;
     case 'chart':
       return <ChartWidget config={config} />;
+      case "metadata":
+        return <MetadataWidget config={config as MetadataWidgetConfig} />;
     default:
       return null;
   }

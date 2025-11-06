@@ -102,7 +102,16 @@ export const defaultDashboardConfig: DashboardConfig = {
       labels: ['Start', 'Good', 'Drop', 'Rise', 'Peak', 'Stable', 'High', 'Max'],
       width: 2,
       height: 4
-    }
+    },
+    {
+      id: "widget-metadata",
+      type: "metadata",
+      title: "Metadata",
+      height: 2,
+      width: 1,
+      order: 10,
+      fields: [ { label: "Uploader", value: "John Doe" }, { label: "Duration", value: "58 min" } ]
+}
   ],
   summary: {
     sentiment_series: [0.9, 0.0, 0.3, -0.4, 0.2, 0.0, 1.0],
