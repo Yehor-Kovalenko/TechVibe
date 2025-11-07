@@ -1,8 +1,7 @@
 # downloader/__init__.py
 import logging
 from azure.functions import QueueMessage
-from ..shared.common import read_blob
-from ..shared.config import JOB_METADATA_FILENAME
+from ..shared.common import read_blob, read_job_metadata, write_job_metadata
 from .strategies import YTDownloader, TTDownloader, ISDownloader
 
 
@@ -19,7 +18,7 @@ def main(msg: QueueMessage):
     
     try:
         # Read job metadata to get URL and determine platform
-        job_metadata = read_blob(f"results/{job_id}/{JOB_METADATA_FILENAME}")
+        job_metadata = read_job_metadata(job_id)
         url = job_metadata.get("url")
         
         if not url:

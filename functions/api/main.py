@@ -4,8 +4,8 @@ import uuid
 
 from azure.functions import HttpRequest, HttpResponse
 
-from ..shared.common import write_blob, enqueue_message, read_blob
-from ..shared.config import NEW_QUEUE, JOB_METADATA_FILENAME, SUMMARY_FILENAME
+from ..shared.common import write_blob, enqueue_message, read_blob, read_job_metadata, write_job_metadata
+from ..shared.config import NEW_QUEUE, SUMMARY_FILENAME
 from ..shared.job_status import JobStatus
 
 
@@ -52,7 +52,7 @@ def handle_get(req: HttpRequest, action: str) -> HttpResponse:
             response = read_blob(f"results/{job_id}/{SUMMARY_FILENAME}")
         else:
             # Read the job metadata from blob storage
-            metadata = read_blob(f"results/{job_id}/{JOB_METADATA_FILENAME}")
+            metadata = read_job_metadata(job_id)
             response = metadata
 
         return HttpResponse(
@@ -90,10 +90,7 @@ def handle_post(req: HttpRequest) -> HttpResponse:
         )
 
     try:
-        write_blob(
-            f"results/{job_id}/{JOB_METADATA_FILENAME}",
-            {"id": job_id, "url": url, "status": JobStatus.CREATED.value},
-        )
+        write_job_metadata(job_id, url, JobStatus.CREATED.value)
         logging.info(f"api saved job {job_id} metadata to blob")
 
         msg = {"id": job_id}

@@ -2,7 +2,7 @@ import json
 import logging
 from azure.storage.blob import BlobServiceClient
 from azure.storage.queue import QueueClient, BinaryBase64EncodePolicy
-from ..shared.config import STORAGE_CONN, RESULTS_CONTAINER, CONNECTION_STRING
+from ..shared.config import JOB_METADATA_FILENAME, STORAGE_CONN, RESULTS_CONTAINER, CONNECTION_STRING
 
 
 def get_queue_client(queue_name):
@@ -53,3 +53,17 @@ def read_blob(blob_name: str) -> dict:
     except Exception as e:
         logging.error(f"Failed to read blob {blob_name}: {e}")
         raise  # Re-raise the exception so the calling function can handle it
+
+
+# JOB METADATA CRUD
+def read_job_metadata(job_id: str) -> dict:
+    """Read job metadata from blob storage"""
+    return read_blob(f"results/{job_id}/{JOB_METADATA_FILENAME}")
+
+
+def write_job_metadata(job_id: str, url: str, status: str) -> None:
+    """Write job metadata to blob storage"""
+    write_blob(
+        f"results/{job_id}/{JOB_METADATA_FILENAME}",
+        {"id": job_id, "url": url, "status": status},
+    )
