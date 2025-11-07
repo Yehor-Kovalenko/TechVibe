@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { checkJobStatus } from './fetchApiUrl';
+import { JobStatus } from '../config/JobStatus';
 
 type LoadingPageProps = { jobId: string; onDone?: () => void; delayMs?: number };
 
@@ -25,7 +26,7 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ jobId, onDone, delayMs = 10_0
           setStatus(`Status: ${statusResponse.status}`);
 
           // Check if job is complete (adjust status name based on your backend)
-          if (statusResponse.status === 'COMPLETED' || statusResponse.status === 'SUCCESS') {
+          if (statusResponse.status === JobStatus.DONE) {
             if (pollInterval) clearInterval(pollInterval);
             if (timeoutId) clearTimeout(timeoutId);
             console.log('Job completed! Proceeding to dashboard...');

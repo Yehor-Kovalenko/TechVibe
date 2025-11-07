@@ -2,7 +2,7 @@
 
 ## Job Metadata and Job Status
 
-Backend and Frontend need to use metadata about the "job" we are doing. Jobs have "status" in the metadata, like "CREATED", or "DONE". They need to be synchornized between the Backend and Frontend, as well as inside all our Azure functions (API, DOWNLOADER, NLP, etc...). So, we need to use Enums, in order not to kill ourselves.
+Backend and Frontend need to use metadata about the "job" we are doing. Jobs have "status" in the metadata, like "CREATED", or "DONE". They need to be synchornized between the Backend and Frontend, as well as inside all our Azure functions (API, DOWNLOADER, NLP, etc...). So, we need to use **Enums**, in order to **not** kill ourselves.
 
 Values are located in `/TechVibe/functions/shared/job_status.py`:
 ```python
@@ -24,6 +24,7 @@ def _finalize(self):
         self.job_metadata["status"] = JobStatus.DOWNLOADED.value
 ```
 
+**They need to stay the same between our Python backend and TS Frontend - if you are making changes.**
 
 ## Global requirements:
 - Python 3.10+
