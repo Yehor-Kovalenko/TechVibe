@@ -1,3 +1,10 @@
+## Navigation
+
+- [Job Metadata and Job Status](#Job-Metadata-and-Job-Status)
+- [Global requirements](#Global-requirements)
+- [Run in Docker](Run-in-Docker)
+- [Run locally](Run-locally)
+
 # DEVELOPMENT
 
 ## Job Metadata and Job Status
@@ -26,7 +33,7 @@ def _finalize(self):
 
 **They need to stay the same between our Python backend and TS Frontend - if you are making changes.**
 
-## Global requirements:
+## Global requirements
 - Python 3.10+
 - Docker
 - Azure Functions Core (start azure functions)
