@@ -6,6 +6,7 @@ from azure.functions import HttpRequest, HttpResponse
 
 from ..shared.common import write_blob, enqueue_message, read_blob
 from ..shared.config import NEW_QUEUE, JOB_METADATA_FILENAME
+from ..shared.job_status import JobStatus
 
 
 def main(req: HttpRequest) -> HttpResponse:
@@ -29,7 +30,7 @@ def main(req: HttpRequest) -> HttpResponse:
         
         if not job_id:
             return HttpResponse(
-                json.dumps({"status": "error", "message": "Missing job id parameter"}),
+                json.dumps({"status": JobStatus.ERROR.value, "message": "Missing job id parameter"}),
                 status_code=400,
                 mimetype="application/json",
                 headers={"Access-Control-Allow-Origin": "*"}
@@ -53,7 +54,7 @@ def main(req: HttpRequest) -> HttpResponse:
         except Exception as e:
             logging.error(f"Failed to read job status for {job_id}: {e}")
             return HttpResponse(
-                json.dumps({"status": "error", "message": "Job not found"}),
+                json.dumps({"status": JobStatus.ERROR.value, "message": "Job not found"}),
                 status_code=404,
                 mimetype="application/json",
                 headers={"Access-Control-Allow-Origin": "*"}
@@ -70,7 +71,7 @@ def main(req: HttpRequest) -> HttpResponse:
     
     if not url:
         return HttpResponse(
-            json.dumps({"status": "error", "message": "Missing url parameter"}),
+            json.dumps({"status": JobStatus.ERROR.value, "message": "Missing url parameter"}),
             status_code=400,
             mimetype="application/json",
             headers={"Access-Control-Allow-Origin": "*"}
@@ -79,7 +80,7 @@ def main(req: HttpRequest) -> HttpResponse:
     try:
         write_blob(
             f"results/{job_id}/{JOB_METADATA_FILENAME}",
-            {"id": job_id, "url": url, "status": "CREATED"},
+            {"id": job_id, "url": url, "status": JobStatus.CREATED.value},
         )
         logging.info(f"api saved job {job_id} metadata to blob")
 
@@ -89,7 +90,7 @@ def main(req: HttpRequest) -> HttpResponse:
     except Exception as e:
         logging.error(f"Failed to enqueue or upload blob: {e}")
         return HttpResponse(
-            json.dumps({"status": "error", "message": str(e)}),
+            json.dumps({"status": JobStatus.ERROR.value, "message": str(e)}),
             status_code=500,
             mimetype="application/json",
             headers={"Access-Control-Allow-Origin": "*"}

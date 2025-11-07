@@ -2,6 +2,7 @@ import logging
 from azure.functions import QueueMessage
 from ..shared.common import write_blob, read_blob
 from ..shared.config import JOB_METADATA_FILENAME, TRANSCRIPT_FILENAME
+from ..shared.job_status import JobStatus
 from transformers import pipeline
 
 def main(msg: QueueMessage):
@@ -58,11 +59,11 @@ def main(msg: QueueMessage):
         )
         logging.info(f"nlp saved job {job_id} summary to blob")
 
-        metadata = read_blob(f"results/{job_id}/{JOB_METADATA_FILENAME}")
-        metadata["status"] = "DONE"
+        job_metadata = read_blob(f"results/{job_id}/{JOB_METADATA_FILENAME}")
+        job_metadata["status"] = JobStatus.DONE.value
         write_blob(
             f"results/{job_id}/{JOB_METADATA_FILENAME}",
-            metadata
+            job_metadata
         )
         logging.info(f"nlp updated job ${job_id} metadata to blob")
 

@@ -13,6 +13,7 @@ from ..shared.config import (
     VIDEO_METADATA_FILENAME,
     TRANSCRIPT_FILENAME
 )
+from ..shared.job_status import JobStatus
 
 
 class BaseDownloader(ABC):
@@ -197,7 +198,7 @@ class YTDownloader(BaseDownloader):
         """
         Update status to TRANSCRIBED and enqueue to TRANSCRIBED_QUEUE.
         """
-        self.job_metadata["status"] = "TRANSCRIBED"
+        self.job_metadata["status"] = JobStatus.TRANSCRIBED.value
         write_blob(
             f"results/{self.job_id}/{JOB_METADATA_FILENAME}",
             self.job_metadata,
@@ -257,7 +258,7 @@ class TTDownloader(BaseDownloader):
         """
         Update status to DOWNLOADED and enqueue to DOWNLOADED_QUEUE.
         """
-        self.job_metadata["status"] = "DOWNLOADED"
+        self.job_metadata["status"] = JobStatus.DOWNLOADED.value
         write_blob(
             f"results/{self.job_id}/{JOB_METADATA_FILENAME}",
             self.job_metadata,
@@ -317,7 +318,7 @@ class ISDownloader(BaseDownloader):
         """
         Update status to DOWNLOADED and enqueue to DOWNLOADED_QUEUE.
         """
-        self.job_metadata["status"] = "DOWNLOADED"
+        self.job_metadata["status"] = JobStatus.DOWNLOADED.value
         write_blob(
             f"results/{self.job_id}/{JOB_METADATA_FILENAME}",
             self.job_metadata,
