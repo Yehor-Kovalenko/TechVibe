@@ -30,7 +30,7 @@ function App() {
   };
 
   if (view === 'loading') {
-    return <LoadingPage jobId={jobId} delayMs={10_000} onDone={() => setIsLoaded(true)} />;
+    return <LoadingPage jobId={jobId} delayMs={600_000} onDone={() => setIsLoaded(true)} />;
   }
   if (view === 'dashboard') {
     // load dashboard config (summary)

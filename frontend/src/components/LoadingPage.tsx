@@ -1,44 +1,58 @@
 import React, { useEffect, useState } from 'react';
 import { checkJobStatus } from './fetchApiUrl';
+import { JobStatus } from '../config/JobStatus';
 
 type LoadingPageProps = { jobId: string; onDone?: () => void; delayMs?: number };
 
-const LoadingPage: React.FC<LoadingPageProps> = ({ jobId, onDone, delayMs = 10_000 }) => {
+const LoadingPage: React.FC<LoadingPageProps> = ({ jobId, onDone, delayMs = 60_000 }) => {
   const [status, setStatus] = useState<string>('Waiting for processing...');
 
   useEffect(() => {
     let pollInterval: number | null = null;
     let timeoutId: number | null = null;
+    let isMounted = true;
 
-    // Start the maximum timeout timer
     timeoutId = window.setTimeout(() => {
+      isMounted = false;  // ← Set flag first
       if (pollInterval) clearInterval(pollInterval);
       onDone?.();
     }, delayMs);
 
-    // Start polling after 3 seconds (skip immediate first check)
     window.setTimeout(() => {
       pollInterval = window.setInterval(async () => {
+        if (!isMounted) {
+          if (pollInterval) clearInterval(pollInterval);  // ← Stop itself
+          return;
+        }
+        
         try {
           const statusResponse = await checkJobStatus(jobId);
+          
+          if (!isMounted) {
+            if (pollInterval) clearInterval(pollInterval);  // ← Stop after async
+            return;
+          }
+          
           console.log('Job status:', statusResponse);
           setStatus(`Status: ${statusResponse.status}`);
 
-          // Check if job is complete (adjust status name based on your backend)
-          if (statusResponse.status === 'COMPLETED' || statusResponse.status === 'SUCCESS') {
+          if (statusResponse.status === JobStatus.DONE) {
+            isMounted = false;  // ← Prevent further polls
             if (pollInterval) clearInterval(pollInterval);
             if (timeoutId) clearTimeout(timeoutId);
             console.log('Job completed! Proceeding to dashboard...');
             onDone?.();
           }
         } catch (error) {
+          if (!isMounted) return;
           console.error('Error polling job status:', error);
         }
-      }, 3000); // Poll every 3 seconds
-    }, 3000); // Wait 3 seconds before first poll
+      }, 3000);
+    }, 3000);
 
-    // Cleanup function
     return () => {
+      console.log('🧹 LoadingPage cleanup running - component unmounting');
+      isMounted = false;
       if (pollInterval) clearInterval(pollInterval);
       if (timeoutId) clearTimeout(timeoutId);
     };

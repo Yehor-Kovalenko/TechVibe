@@ -5,8 +5,9 @@ import logging
 
 from azure.functions import QueueMessage
 
-from ..shared.common import write_blob, enqueue_message, read_blob, get_blob_client
+from ..shared.common import write_blob, enqueue_message, read_blob, get_blob_client, read_job_metadata, write_job_metadata
 from ..shared.config import TRANSCRIBED_QUEUE, JOB_METADATA_FILENAME, TRANSCRIPT_FILENAME
+from ..shared.job_status import JobStatus
 
 logging.info("Loading Whisper model...")
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -49,11 +50,13 @@ def main(msg: QueueMessage):
         )
         logging.info(f"Transcript saved for job {job_id}")
 
-        # Update job metadata
-        metadata = read_blob(f"results/{job_id}/{JOB_METADATA_FILENAME}")
-        metadata["status"] = "TRANSCRIBED"
-        write_blob(f"results/{job_id}/{JOB_METADATA_FILENAME}", metadata)
-        logging.info(f"Job metadata updated for job {job_id}")
+        url = read_job_metadata(job_id).get("url")
+        write_job_metadata(
+            job_id, 
+            url,
+            JobStatus.TRANSCRIBED.value
+        )
+        logging.info(f"speech_to_text updated job ${job_id} metadata to blob")
 
         # Enqueue next processing step
         enqueue_message({"id": job_id}, queue_name=TRANSCRIBED_QUEUE)

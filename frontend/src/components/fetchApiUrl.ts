@@ -77,7 +77,7 @@ export async function getBackendData(jobId: string): Promise<JobAllDataResponse 
 
 // GET to retrieve summary.json
 async function getJobSummary(jobId: string): Promise<JobSummaryResponse | undefined> {
-  try {const response = await fetch(`http://localhost:7071/apiapi?action=summary&id=${jobId}`, {
+  try {const response = await fetch(`http://localhost:7071/api/api?action=summary&id=${jobId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
