@@ -4,7 +4,7 @@ import { JobStatus } from '../config/JobStatus';
 
 type LoadingPageProps = { jobId: string; onDone?: () => void; delayMs?: number };
 
-const LoadingPage: React.FC<LoadingPageProps> = ({ jobId, onDone, delayMs = 10_000 }) => {
+const LoadingPage: React.FC<LoadingPageProps> = ({ jobId, onDone, delayMs = 60_000 }) => {
   const [status, setStatus] = useState<string>('Waiting for processing...');
 
   useEffect(() => {
@@ -40,6 +40,7 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ jobId, onDone, delayMs = 10_0
 
     // Cleanup function
     return () => {
+      console.log('🧹 LoadingPage cleanup running - component unmounting');
       if (pollInterval) clearInterval(pollInterval);
       if (timeoutId) clearTimeout(timeoutId);
     };
