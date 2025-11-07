@@ -17,7 +17,7 @@ cors_headers = {
 
 def main(req: HttpRequest) -> HttpResponse:
     if req.method == "OPTIONS":
-        handle_preflight_options()
+        return handle_preflight_options()
 
     action = req.params.get("action")
     logging.warning(f"${action} QWERTY")
@@ -50,7 +50,11 @@ def handle_get(req: HttpRequest, action: str) -> HttpResponse:
     try:
         response = {}
         if action == "summary":
-            response = read_blob(f"results/{job_id}/{SUMMARY_FILENAME}")
+            logging.info("ACTION == SUMMARY, accessed")
+            try:
+                response = read_blob(f"results/{job_id}/{SUMMARY_FILENAME}") 
+            except:
+                response = {"status": "Didn't get the summary file bro, sorry"}
         elif action == "metadata":
             response = read_video_metadata(job_id)
         else:
