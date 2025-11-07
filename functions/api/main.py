@@ -5,7 +5,7 @@ import uuid
 from azure.functions import HttpRequest, HttpResponse
 
 from ..shared.common import write_blob, enqueue_message, read_blob
-from ..shared.config import NEW_QUEUE, JOB_METADATA_FILENAME
+from ..shared.config import NEW_QUEUE, JOB_METADATA_FILENAME, SUMMARY_FILENAME
 from ..shared.job_status import JobStatus
 
 
@@ -49,7 +49,7 @@ def handle_get(req: HttpRequest, action: str) -> HttpResponse:
         response = {}
         if action == "summary":
             # read summary
-            response = read_blob(f"results/{job_id}/summary.json")
+            response = read_blob(f"results/{job_id}/{SUMMARY_FILENAME}")
         else:
             # Read the job metadata from blob storage
             metadata = read_blob(f"results/{job_id}/{JOB_METADATA_FILENAME}")

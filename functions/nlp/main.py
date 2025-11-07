@@ -1,7 +1,7 @@
 import logging
 from azure.functions import QueueMessage
 from ..shared.common import write_blob, read_blob
-from ..shared.config import JOB_METADATA_FILENAME, TRANSCRIPT_FILENAME
+from ..shared.config import JOB_METADATA_FILENAME, TRANSCRIPT_FILENAME, SUMMARY_FILENAME
 from ..shared.job_status import JobStatus
 from transformers import pipeline
 
@@ -49,7 +49,7 @@ def main(msg: QueueMessage):
     # save result to the blob and other related stuff
     try:
         write_blob(
-            f"results/{job_id}/summary.json",
+            f"results/{job_id}/{SUMMARY_FILENAME}",
             {
                 "id": job_id,
                 "overall_score": overall_score,
