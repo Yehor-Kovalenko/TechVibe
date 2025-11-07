@@ -8,13 +8,19 @@ from ..shared.common import write_blob, enqueue_message, read_blob, read_job_met
 from ..shared.config import NEW_QUEUE, SUMMARY_FILENAME
 from ..shared.job_status import JobStatus
 
+cors_headers = {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+    }
+
 
 def main(req: HttpRequest) -> HttpResponse:
     if req.method == "OPTIONS":
         handle_preflight_options()
 
-    # check the additional route
-    action = req.route_params.get("action")
+    action = req.params.get("action")
+    logging.warning(f"${action} QWERTY")
 
     if req.method == "GET":
         return handle_get(req, action)
@@ -25,11 +31,7 @@ def main(req: HttpRequest) -> HttpResponse:
 def handle_preflight_options() -> HttpResponse | None:
     return HttpResponse(
         status_code=200,
-        headers={
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
-            "Access-Control-Allow-Headers": "Content-Type",
-        }
+        headers=cors_headers
     )
 
 
@@ -42,7 +44,7 @@ def handle_get(req: HttpRequest, action: str) -> HttpResponse:
             json.dumps({"status": JobStatus.ERROR.value, "message": "Missing job id parameter"}),
             status_code=400,
             mimetype="application/json",
-            headers={"Access-Control-Allow-Origin": "*"}
+            headers=cors_headers
         )
 
     try:
@@ -58,7 +60,7 @@ def handle_get(req: HttpRequest, action: str) -> HttpResponse:
             json.dumps(response),
             status_code=200,
             mimetype="application/json",
-            headers={"Access-Control-Allow-Origin": "*"}
+            headers=cors_headers
         )
     except Exception as e:
         logging.error(f"Failed to read job data for {job_id} (action={action}): {e}")
@@ -66,7 +68,7 @@ def handle_get(req: HttpRequest, action: str) -> HttpResponse:
             json.dumps({"status": JobStatus.ERROR.value, "message": "Data not found"}),
             status_code=404,
             mimetype="application/json",
-            headers={"Access-Control-Allow-Origin": "*"}
+            headers=cors_headers
         )
 
 
@@ -85,7 +87,7 @@ def handle_post(req: HttpRequest) -> HttpResponse:
             json.dumps({"status": JobStatus.ERROR.value, "message": "Missing url parameter"}),
             status_code=400,
             mimetype="application/json",
-            headers={"Access-Control-Allow-Origin": "*"}
+            headers=cors_headers
         )
 
     try:
@@ -101,7 +103,7 @@ def handle_post(req: HttpRequest) -> HttpResponse:
             json.dumps({"status": JobStatus.ERROR.value, "message": str(e)}),
             status_code=500,
             mimetype="application/json",
-            headers={"Access-Control-Allow-Origin": "*"}
+            headers=cors_headers
         )
 
     logging.info(f"api processed job {job_id} with url {url}")
@@ -109,5 +111,5 @@ def handle_post(req: HttpRequest) -> HttpResponse:
     return HttpResponse(
         json.dumps({"id": job_id, "url": url}),
         mimetype="application/json",
-        headers={"Access-Control-Allow-Origin": "*"}
+        headers=cors_headers
     )
