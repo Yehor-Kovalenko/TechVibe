@@ -4,65 +4,76 @@ import uuid
 
 from azure.functions import HttpRequest, HttpResponse
 
-from ..shared.common import write_blob, enqueue_message, read_blob
-from ..shared.config import NEW_QUEUE, JOB_METADATA_FILENAME
+from ..shared.common import write_blob, enqueue_message, read_blob, read_job_metadata, write_job_metadata, read_video_metadata
+from ..shared.config import NEW_QUEUE, SUMMARY_FILENAME
 from ..shared.job_status import JobStatus
 
-
-def main(req: HttpRequest) -> HttpResponse:
-    cors_headers = {
+cors_headers = {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type",
     }
-    # Handle preflight OPTIONS request
-    if req.method == "OPTIONS":
-        return HttpResponse(
-            status_code=200,
-            headers=cors_headers
-        )
 
-    # check the additional route
+
+def main(req: HttpRequest) -> HttpResponse:
+    if req.method == "OPTIONS":
+        handle_preflight_options()
+
     action = req.params.get("action")
     logging.warning(f"${action} QWERTY")
 
-    # Handle GET request - check job status
     if req.method == "GET":
-        job_id = req.params.get("id")
-        
-        if not job_id:
-            return HttpResponse(
-                json.dumps({"status": JobStatus.ERROR.value, "message": "Missing job id parameter"}),
-                status_code=400,
-                mimetype="application/json",
-                headers=cors_headers
-            )
-
-        try:
-            response = {}
-            if action == "summary":
-                # read summary
-                response = read_blob(f"results/{job_id}/summary.json")
-            else:
-                # Read the job metadata from blob storage
-                response = read_blob(f"results/{job_id}/{JOB_METADATA_FILENAME}")
-
-            return HttpResponse(
-                json.dumps(response),
-                status_code=200,
-                mimetype="application/json",
-                headers=cors_headers
-            )
-        except Exception as e:
-            logging.error(f"Failed to read job status for {job_id}: {e}")
-            return HttpResponse(
-                json.dumps({"status": JobStatus.ERROR.value, "message": "Job not found"}),
-                status_code=404,
-                mimetype="application/json",
-                headers=cors_headers
-            )
+        return handle_get(req, action)
     
-    # Handle POST request - create new job
+    return handle_post(req)
+
+
+def handle_preflight_options() -> HttpResponse | None:
+    return HttpResponse(
+        status_code=200,
+        headers=cors_headers
+    )
+
+
+def handle_get(req: HttpRequest, action: str) -> HttpResponse:
+    """Handle GET request - check job status, summary, or metadata"""
+    job_id = req.params.get("id")
+    
+    if not job_id:
+        return HttpResponse(
+            json.dumps({"status": JobStatus.ERROR.value, "message": "Missing job id parameter"}),
+            status_code=400,
+            mimetype="application/json",
+            headers=cors_headers
+        )
+
+    try:
+        response = {}
+        if action == "summary":
+            response = read_blob(f"results/{job_id}/{SUMMARY_FILENAME}")
+        elif action == "metadata":
+            response = read_video_metadata(job_id)
+        else:
+            response = read_job_metadata(job_id)
+
+        return HttpResponse(
+            json.dumps(response),
+            status_code=200,
+            mimetype="application/json",
+            headers=cors_headers
+        )
+    except Exception as e:
+        logging.error(f"Failed to read job data for {job_id} (action={action}): {e}")
+        return HttpResponse(
+            json.dumps({"status": JobStatus.ERROR.value, "message": "Data not found"}),
+            status_code=404,
+            mimetype="application/json",
+            headers=cors_headers
+        )
+
+
+def handle_post(req: HttpRequest) -> HttpResponse:
+    """Handle POST request - create new job"""
     try:
         body = req.get_json()
     except (ValueError, TypeError):
@@ -80,10 +91,7 @@ def main(req: HttpRequest) -> HttpResponse:
         )
 
     try:
-        write_blob(
-            f"results/{job_id}/{JOB_METADATA_FILENAME}",
-            {"id": job_id, "url": url, "status": JobStatus.CREATED.value},
-        )
+        write_job_metadata(job_id, url, JobStatus.CREATED.value)
         logging.info(f"api saved job {job_id} metadata to blob")
 
         msg = {"id": job_id}

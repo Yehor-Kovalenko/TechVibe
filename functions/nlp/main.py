@@ -1,7 +1,7 @@
 import logging
 from azure.functions import QueueMessage
-from ..shared.common import write_blob, read_blob
-from ..shared.config import JOB_METADATA_FILENAME, TRANSCRIPT_FILENAME
+from ..shared.common import write_blob, read_blob, read_job_metadata, write_job_metadata
+from ..shared.config import TRANSCRIPT_FILENAME, SUMMARY_FILENAME
 from ..shared.job_status import JobStatus
 from transformers import pipeline
 
@@ -49,7 +49,7 @@ def main(msg: QueueMessage):
     # save result to the blob and other related stuff
     try:
         write_blob(
-            f"results/{job_id}/summary.json",
+            f"results/{job_id}/{SUMMARY_FILENAME}",
             {
                 "id": job_id,
                 "overall_score": overall_score,
@@ -59,12 +59,8 @@ def main(msg: QueueMessage):
         )
         logging.info(f"nlp saved job {job_id} summary to blob")
 
-        job_metadata = read_blob(f"results/{job_id}/{JOB_METADATA_FILENAME}")
-        job_metadata["status"] = JobStatus.DONE.value
-        write_blob(
-            f"results/{job_id}/{JOB_METADATA_FILENAME}",
-            job_metadata
-        )
+        url = read_job_metadata(job_id).get("url")
+        write_job_metadata(job_id, url, JobStatus.DONE.value)
         logging.info(f"nlp updated job ${job_id} metadata to blob")
 
     except Exception as e:

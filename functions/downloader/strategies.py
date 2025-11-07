@@ -5,11 +5,10 @@ import yt_dlp
 import os
 import tempfile
 
-from ..shared.common import write_blob, enqueue_message, read_blob
+from ..shared.common import write_blob, enqueue_message, read_blob, read_job_metadata, write_job_metadata
 from ..shared.config import (
     DOWNLOADED_QUEUE, 
     TRANSCRIBED_QUEUE, 
-    JOB_METADATA_FILENAME,
     VIDEO_METADATA_FILENAME,
     TRANSCRIPT_FILENAME
 )
@@ -36,9 +35,7 @@ class BaseDownloader(ABC):
         """
         try:
             # Load existing job metadata
-            self.job_metadata = read_blob(
-                f"results/{self.job_id}/{JOB_METADATA_FILENAME}"
-            )
+            self.job_metadata = read_job_metadata(self.job_id)
             
             # Platform-specific download logic
             result = self._download()
@@ -199,9 +196,10 @@ class YTDownloader(BaseDownloader):
         Update status to TRANSCRIBED and enqueue to TRANSCRIBED_QUEUE.
         """
         self.job_metadata["status"] = JobStatus.TRANSCRIBED.value
-        write_blob(
-            f"results/{self.job_id}/{JOB_METADATA_FILENAME}",
-            self.job_metadata,
+        write_job_metadata(
+            self.job_id,
+            self.job_metadata.get("url"),
+            self.job_metadata.get("status")
         )
         logging.info(f"YTDownloader updated job {self.job_id} metadata to TRANSCRIBED")
         
@@ -259,9 +257,10 @@ class TTDownloader(BaseDownloader):
         Update status to DOWNLOADED and enqueue to DOWNLOADED_QUEUE.
         """
         self.job_metadata["status"] = JobStatus.DOWNLOADED.value
-        write_blob(
-            f"results/{self.job_id}/{JOB_METADATA_FILENAME}",
-            self.job_metadata,
+        write_job_metadata(
+            self.job_id,
+            self.job_metadata.get("url"),
+            self.job_metadata.get("status")
         )
         logging.info(f"TTDownloader updated job {self.job_id} metadata to DOWNLOADED")
         
@@ -319,9 +318,10 @@ class ISDownloader(BaseDownloader):
         Update status to DOWNLOADED and enqueue to DOWNLOADED_QUEUE.
         """
         self.job_metadata["status"] = JobStatus.DOWNLOADED.value
-        write_blob(
-            f"results/{self.job_id}/{JOB_METADATA_FILENAME}",
-            self.job_metadata,
+        write_job_metadata(
+            self.job_id,
+            self.job_metadata.get("url"),
+            self.job_metadata.get("status")
         )
         logging.info(f"ISDownloader updated job {self.job_id} metadata to DOWNLOADED")
         
