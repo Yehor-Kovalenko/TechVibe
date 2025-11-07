@@ -33,30 +33,30 @@ def main(msg: QueueMessage):
             "label": result["label"],
             "score": score
         })
+
     overall_score = round(sum([x["score"] for x in sentiment_series]) / len(sentiment_series), 2)
+
     overall_label = "NEUTRAL"
     if overall_score > 0.5:
         overall_label = "POSITIVE"
     elif overall_score < -0.5:
         overall_label = "NEGATIVE"
 
-    print({
-        "id": job_id,
-        "overall_score": overall_score,
-        "overall_label": overall_label,
-        "sentiment_series": sentiment_series
-    })
     # save result to the blob and other related stuff
-    try:
-        write_blob(
-            f"results/{job_id}/summary.json",
-            {
-                "id": job_id,
+    write_blob(
+        f"results/{job_id}/summary.json",
+        {
+            "id": job_id,
+            "verdict": {
                 "overall_score": overall_score,
                 "overall_label": overall_label,
-                "sentiment_series": sentiment_series
             },
-        )
+            "sentiment_series_chart": {
+                "sentiment_series": sentiment_series
+            }
+        },
+    )
+    try:
         logging.info(f"nlp saved job {job_id} summary to blob")
 
         job_metadata = read_blob(f"results/{job_id}/{JOB_METADATA_FILENAME}")
