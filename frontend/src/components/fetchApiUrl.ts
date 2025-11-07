@@ -13,9 +13,13 @@ interface JobStatusResponse {
 
 interface JobSummaryResponse {
   id: string,
-  sentiment_series: [],
+  sentiment_series: number[],
   overall_score: number,
   overall_label: string
+}
+
+interface JobAllDataResponse {
+  summary?: JobSummaryResponse
 }
 
 // POST request to create a new job
@@ -62,9 +66,18 @@ export async function checkJobStatus(jobId: string): Promise<JobStatusResponse> 
   }
 }
 
+//  External method to retrieve all data from the backend
+export async function getBackendData(jobId: string): Promise<JobAllDataResponse | undefined> {
+  const [summary] = await Promise.all([
+      getJobSummary(jobId),
+      //add metadata call there
+  ]);
+  return {summary};
+}
+
 // GET to retrieve summary.json
-export async function getJobSummary(jobId: string): Promise<JobSummaryResponse | undefined> {
-  try {const response = await fetch(`http://localhost:7071/api/api/summary?id=${jobId}`, {
+async function getJobSummary(jobId: string): Promise<JobSummaryResponse | undefined> {
+  try {const response = await fetch(`http://localhost:7071/apiapi?action=summary&id=${jobId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
