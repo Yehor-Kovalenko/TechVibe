@@ -10,57 +10,69 @@ from ..shared.job_status import JobStatus
 
 
 def main(req: HttpRequest) -> HttpResponse:
-    # Handle preflight OPTIONS request
     if req.method == "OPTIONS":
-        return HttpResponse(
-            status_code=200,
-            headers={
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type",
-            }
-        )
+        handle_preflight_options()
 
     # check the additional route
     action = req.route_params.get("action")
 
-    # Handle GET request - check job status
     if req.method == "GET":
-        job_id = req.params.get("id")
-        
-        if not job_id:
-            return HttpResponse(
-                json.dumps({"status": JobStatus.ERROR.value, "message": "Missing job id parameter"}),
-                status_code=400,
-                mimetype="application/json",
-                headers={"Access-Control-Allow-Origin": "*"}
-            )
-
-        try:
-            response = {}
-            if action == "summary":
-                # read summary
-                response = read_blob(f"results/{job_id}/summary.json")
-            else:
-                # Read the job metadata from blob storage
-                metadata = read_blob(f"results/{job_id}/{JOB_METADATA_FILENAME}")
-
-            return HttpResponse(
-                json.dumps(response),
-                status_code=200,
-                mimetype="application/json",
-                headers={"Access-Control-Allow-Origin": "*"}
-            )
-        except Exception as e:
-            logging.error(f"Failed to read job status for {job_id}: {e}")
-            return HttpResponse(
-                json.dumps({"status": JobStatus.ERROR.value, "message": "Job not found"}),
-                status_code=404,
-                mimetype="application/json",
-                headers={"Access-Control-Allow-Origin": "*"}
-            )
+        return handle_get(req, action)
     
-    # Handle POST request - create new job
+    return handle_post(req)
+
+
+def handle_preflight_options() -> HttpResponse | None:
+    return HttpResponse(
+        status_code=200,
+        headers={
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+        }
+    )
+
+
+def handle_get(req: HttpRequest, action: str) -> HttpResponse:
+    """Handle GET request - check job status or summary"""
+    job_id = req.params.get("id")
+    
+    if not job_id:
+        return HttpResponse(
+            json.dumps({"status": JobStatus.ERROR.value, "message": "Missing job id parameter"}),
+            status_code=400,
+            mimetype="application/json",
+            headers={"Access-Control-Allow-Origin": "*"}
+        )
+
+    try:
+        response = {}
+        if action == "summary":
+            # read summary
+            response = read_blob(f"results/{job_id}/summary.json")
+        else:
+            # Read the job metadata from blob storage
+            metadata = read_blob(f"results/{job_id}/{JOB_METADATA_FILENAME}")
+            response = metadata
+
+        return HttpResponse(
+            json.dumps(response),
+            status_code=200,
+            mimetype="application/json",
+            headers={"Access-Control-Allow-Origin": "*"}
+        )
+    except Exception as e:
+        logging.error(f"Failed to read job status for {job_id}: {e}")
+        return HttpResponse(
+            json.dumps({"status": JobStatus.ERROR.value, "message": "Job not found"}),
+            status_code=404,
+            mimetype="application/json",
+            headers={"Access-Control-Allow-Origin": "*"}
+        )
+
+
+def handle_post(req: HttpRequest) -> HttpResponse:
+    """Handle POST request - create new job"""
     try:
         body = req.get_json()
     except (ValueError, TypeError):
