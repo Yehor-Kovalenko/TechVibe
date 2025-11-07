@@ -10,19 +10,21 @@ from ..shared.job_status import JobStatus
 
 
 def main(req: HttpRequest) -> HttpResponse:
+    cors_headers = {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
+    }
     # Handle preflight OPTIONS request
     if req.method == "OPTIONS":
         return HttpResponse(
             status_code=200,
-            headers={
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "POST, GET, OPTIONS",
-                "Access-Control-Allow-Headers": "Content-Type",
-            }
+            headers=cors_headers
         )
 
     # check the additional route
-    action = req.route_params.get("action")
+    action = req.params.get("action")
+    logging.warning(f"${action} QWERTY")
 
     # Handle GET request - check job status
     if req.method == "GET":
@@ -33,7 +35,7 @@ def main(req: HttpRequest) -> HttpResponse:
                 json.dumps({"status": JobStatus.ERROR.value, "message": "Missing job id parameter"}),
                 status_code=400,
                 mimetype="application/json",
-                headers={"Access-Control-Allow-Origin": "*"}
+                headers=cors_headers
             )
 
         try:
@@ -43,13 +45,13 @@ def main(req: HttpRequest) -> HttpResponse:
                 response = read_blob(f"results/{job_id}/summary.json")
             else:
                 # Read the job metadata from blob storage
-                metadata = read_blob(f"results/{job_id}/{JOB_METADATA_FILENAME}")
+                response = read_blob(f"results/{job_id}/{JOB_METADATA_FILENAME}")
 
             return HttpResponse(
                 json.dumps(response),
                 status_code=200,
                 mimetype="application/json",
-                headers={"Access-Control-Allow-Origin": "*"}
+                headers=cors_headers
             )
         except Exception as e:
             logging.error(f"Failed to read job status for {job_id}: {e}")
@@ -57,7 +59,7 @@ def main(req: HttpRequest) -> HttpResponse:
                 json.dumps({"status": JobStatus.ERROR.value, "message": "Job not found"}),
                 status_code=404,
                 mimetype="application/json",
-                headers={"Access-Control-Allow-Origin": "*"}
+                headers=cors_headers
             )
     
     # Handle POST request - create new job
@@ -74,7 +76,7 @@ def main(req: HttpRequest) -> HttpResponse:
             json.dumps({"status": JobStatus.ERROR.value, "message": "Missing url parameter"}),
             status_code=400,
             mimetype="application/json",
-            headers={"Access-Control-Allow-Origin": "*"}
+            headers=cors_headers
         )
 
     try:
@@ -93,7 +95,7 @@ def main(req: HttpRequest) -> HttpResponse:
             json.dumps({"status": JobStatus.ERROR.value, "message": str(e)}),
             status_code=500,
             mimetype="application/json",
-            headers={"Access-Control-Allow-Origin": "*"}
+            headers=cors_headers
         )
 
     logging.info(f"api processed job {job_id} with url {url}")
@@ -101,5 +103,5 @@ def main(req: HttpRequest) -> HttpResponse:
     return HttpResponse(
         json.dumps({"id": job_id, "url": url}),
         mimetype="application/json",
-        headers={"Access-Control-Allow-Origin": "*"}
+        headers=cors_headers
     )
