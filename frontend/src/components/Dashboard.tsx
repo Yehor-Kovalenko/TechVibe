@@ -16,6 +16,7 @@ const WidgetRenderer: React.FC<{ config: WidgetConfig, backendData: object }> = 
   if (widgetData) {
     config = {...config, ...widgetData};
   }
+
   switch (config.type) {
     case 'stats':
       return <StatsWidget config={config} />;
@@ -30,12 +31,6 @@ const WidgetRenderer: React.FC<{ config: WidgetConfig, backendData: object }> = 
     case 'verdict':
       return <VerdictWidget config={config} />;
     case 'chart':
-      // add backend data
-        config = {
-          ...config,
-          y: backendData?.sentiment_series,
-
-        }
       return <ChartWidget config={config} />;
     case "metadata":
       return <MetadataWidget config={config as MetadataWidgetConfig} />;
