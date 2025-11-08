@@ -88,7 +88,7 @@ export const defaultDashboardConfig: DashboardConfig = {
       title: 'Final Verdict',
       height: 1,
       width: 1,
-      order: 9,
+      // order: 2,
       verdict: 'NEUTRAL',
       score: 0.9,
       dataKey: "verdict"
@@ -98,6 +98,7 @@ export const defaultDashboardConfig: DashboardConfig = {
       id: 'chart-overall-sentiment-series',
       type: 'chart',
       title: 'Sentiment over time',
+      // order: 1,
       y: [2.5, 4.2, 3.8, 5.5, 6.2, 5.8, 7.5, 8.2],
       yAxisName: 'Sentiment',
       labels: [
@@ -119,8 +120,8 @@ export const defaultDashboardConfig: DashboardConfig = {
       type: 'metadata',
       title: 'Metadata',
       height: 2,
-      width: 1,
-      order: 10,
+      width: 2,
+      // order: 10,
       fields: [
         { label: 'Uploader', value: 'John Doe' },
         { label: 'Duration', value: '58 min' },
@@ -134,8 +135,9 @@ export const defaultDashboardConfig: DashboardConfig = {
       title: 'Review Full Text',
       height: 2,
       width: 2,
-      order: 8,
+      // order: 8,
       text: 'This product has an outstanding performance that exceeds expectations. The design is sleek and modern, making it a pleasure to use daily. However, the features are somewhat lacking compared to competitors, which is a downside. Overall, it offers great value for its price point and is user-friendly for all experience levels. Highly recommended for those seeking reliability and efficiency in their tech devices.',
+      dataKey: 'full-text'
     },
   ],
   summary: {
