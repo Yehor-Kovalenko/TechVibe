@@ -1,0 +1,13 @@
+{
+  "device": "smartphone",
+  "features": [
+    "design",
+    "display",
+    "camera",
+    "audio",
+    "performance",
+    "battery",
+    "connectivity",
+    "software"
+  ]
+}
