@@ -18,8 +18,14 @@ interface JobSummaryResponse {
   overall_label: string;
 }
 
+interface VideoMetadataResponse {
+  label: string;
+  value: string;
+}
+
 interface JobAllDataResponse {
-  summary?: JobSummaryResponse;
+  summary?: JobSummaryResponse
+  metadata?: VideoMetadataResponse
 }
 
 const URL = 'http://localhost:7071/api/api';
@@ -74,8 +80,9 @@ export async function getBackendData(
   jobId: string
 ): Promise<JobAllDataResponse | undefined> {
   const [summary] = await Promise.all([
-    getJobSummary(jobId),
-    //add metadata call there
+      getJobSummary(jobId),
+      fetchVideoMetadata(jobId),
+      //add metadata call there
   ]);
   return { summary };
 }
@@ -107,14 +114,23 @@ async function getJobSummary(
   }
 }
 
-export async function fetchMetadata(): Promise<
-  Array<{ label: string; value: string }>
-> {
-  const response = await fetch('/api/metadata');
-  const data = await response.json();
-  // Transform keys to fields array suitable for MetadataWidget
-  return Object.entries(data).map(([key, value]) => ({
-    label: key.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
-    value: String(value),
-  }));
+export async function fetchVideoMetadata(jobId: string): Promise<VideoMetadataResponse | undefined> {
+  try {const response = await fetch(`http://localhost:7071/api/api?action=metadata&id=${jobId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+
+
+    if (!response.ok) {
+      console.error(`HTTP error! status: ${response.status}`);
+      return undefined;
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error checking job status:', error);
+    return undefined;
+  }
 }
