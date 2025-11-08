@@ -29,7 +29,9 @@ const getRatingGlow = (rating: number) => {
   return 'shadow-red-500/50';
 };
 
-export const SummaryByComponentWidget: React.FC<SummaryWidgetProps> = ({ config }) => {
+export const SummaryByComponentWidget: React.FC<SummaryWidgetProps> = ({
+  config,
+}) => {
   const { title, categories, overallRating = 0 } = config;
 
   return (
@@ -43,22 +45,27 @@ export const SummaryByComponentWidget: React.FC<SummaryWidgetProps> = ({ config 
       <div className="flex items-center justify-center mb-8">
         <div className="relative">
           {/* Outer glow ring */}
-          <div className={`absolute inset-0 rounded-full blur-xl ${getRatingGlow(overallRating)}`}
-               style={{
-                 background: `conic-gradient(from 0deg, transparent ${100 - (overallRating * 10)}%, rgba(74, 222, 128, 0.3) ${100 - (overallRating * 10)}%)`
-               }}
+          <div
+            className={`absolute inset-0 rounded-full blur-xl ${getRatingGlow(overallRating)}`}
+            style={{
+              background: `conic-gradient(from 0deg, transparent ${100 - overallRating * 10}%, rgba(74, 222, 128, 0.3) ${100 - overallRating * 10}%)`,
+            }}
           ></div>
-          
+
           {/* Main circle */}
-          <div className="relative w-40 h-40 rounded-full flex items-center justify-center"
-               style={{
-                 background: `conic-gradient(from -90deg, 
+          <div
+            className="relative w-40 h-40 rounded-full flex items-center justify-center"
+            style={{
+              background: `conic-gradient(from -90deg, 
                    ${overallRating >= 8.5 ? '#10b981' : overallRating >= 7 ? '#22c55e' : overallRating >= 5.5 ? '#eab308' : overallRating >= 4 ? '#f97316' : '#ef4444'} 
                    ${(overallRating / 10) * 100}%, 
-                   rgba(255,255,255,0.05) ${(overallRating / 10) * 100}%)`
-               }}>
+                   rgba(255,255,255,0.05) ${(overallRating / 10) * 100}%)`,
+            }}
+          >
             <div className="w-[90%] h-[90%] rounded-full bg-[#0f0f14] flex flex-col items-center justify-center">
-              <div className={`text-5xl font-bold ${getRatingColor(overallRating)} mb-1`}>
+              <div
+                className={`text-5xl font-bold ${getRatingColor(overallRating)} mb-1`}
+              >
                 {overallRating.toFixed(1)}
               </div>
               <div className="text-xs opacity-50 tracking-wider">OUT OF 10</div>
@@ -75,13 +82,16 @@ export const SummaryByComponentWidget: React.FC<SummaryWidgetProps> = ({ config 
             className="group relative overflow-hidden rounded-lg bg-white/5 hover:bg-white/10 transition-all duration-300 cursor-pointer"
           >
             {/* Gradient background on hover */}
-            <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-br ${getRatingBg(category.rating ?? 0)}`}
-                 style={{ opacity: 0.1 }}
+            <div
+              className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-br ${getRatingBg(category.rating ?? 0)}`}
+              style={{ opacity: 0.1 }}
             ></div>
-            
+
             <div className="relative p-3 flex flex-col items-center gap-2">
               <span className="text-2xl">{category.icon}</span>
-              <div className={`text-lg font-bold ${getRatingColor(category.rating ?? 0)}`}>
+              <div
+                className={`text-lg font-bold ${getRatingColor(category.rating ?? 0)}`}
+              >
                 {category.rating?.toFixed(1)}
               </div>
               <div className="text-[10px] opacity-60 text-center leading-tight">

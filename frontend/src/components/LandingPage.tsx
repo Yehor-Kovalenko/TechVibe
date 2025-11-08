@@ -12,7 +12,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSubmit }) => {
     e.preventDefault();
     const value = query.trim();
     if (!value) return;
-    
+
     setLoading(true);
     setError('');
 
@@ -34,7 +34,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSubmit }) => {
           TechVibe Review Summaries
         </h1>
         <p className="text-muted-foreground">
-          Paste a product name or link to aggregate multiple video reviews and receive a concise summary that speeds up product selection.
+          Paste a product name or link to aggregate multiple video reviews and
+          receive a concise summary that speeds up product selection.
         </p>
         <form onSubmit={handleSubmit} className="flex gap-3 max-w-2xl mx-auto">
           <input
@@ -61,7 +62,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSubmit }) => {
           </div>
         )}
         <div className="text-sm text-muted-foreground">
-          The tool integrates reviews from multiple platforms and distills hours of content into key pros, cons, and takeaways.
+          The tool integrates reviews from multiple platforms and distills hours
+          of content into key pros, cons, and takeaways.
         </div>
       </div>
     </main>

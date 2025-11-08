@@ -25,7 +25,8 @@ export const defaultDashboardConfig: DashboardConfig = {
       id: 'stats-performance',
       type: 'stats',
       title: 'Performance',
-      description: 'Excellent processing power with minimal lag during intensive tasks',
+      description:
+        'Excellent processing power with minimal lag during intensive tasks',
       value: '9.2 GHz',
       rating: 8.5,
       icon: '⚡',
@@ -49,7 +50,8 @@ export const defaultDashboardConfig: DashboardConfig = {
       id: 'stats-display',
       type: 'stats',
       title: 'Display Quality',
-      description: 'Vibrant OLED panel with excellent color accuracy and brightness',
+      description:
+        'Vibrant OLED panel with excellent color accuracy and brightness',
       value: '4K OLED',
       rating: 9.5,
       icon: '📺',
@@ -90,32 +92,54 @@ export const defaultDashboardConfig: DashboardConfig = {
       width: 1,
       order: 9,
       verdict: 'NEUTRAL',
-      score: 0.9
+      score: 0.9,
     },
-      // overall sentiment series chart
+    // overall sentiment series chart
     {
       id: 'chart-overall-sentiment-series',
       type: 'chart',
       title: 'Sentiment over time',
       y: [2.5, 4.2, 3.8, 5.5, 6.2, 5.8, 7.5, 8.2],
       yAxisName: 'Sentiment',
-      labels: ['Start', 'Good', 'Drop', 'Rise', 'Peak', 'Stable', 'High', 'Max'],
+      labels: [
+        'Start',
+        'Good',
+        'Drop',
+        'Rise',
+        'Peak',
+        'Stable',
+        'High',
+        'Max',
+      ],
       width: 2,
-      height: 4
+      height: 4,
     },
     {
-      id: "widget-metadata",
-      type: "metadata",
-      title: "Metadata",
+      id: 'widget-metadata',
+      type: 'metadata',
+      title: 'Metadata',
       height: 2,
       width: 1,
       order: 10,
-      fields: [ { label: "Uploader", value: "John Doe" }, { label: "Duration", value: "58 min" } ]
-}
+      fields: [
+        { label: 'Uploader', value: 'John Doe' },
+        { label: 'Duration', value: '58 min' },
+      ],
+    },
+    // Review Text Widget
+    {
+      id: 'review-text-1',
+      type: 'review-text',
+      title: 'Review Full Text',
+      height: 2,
+      width: 2,
+      order: 8,
+      text: 'This product has an outstanding performance that exceeds expectations. The design is sleek and modern, making it a pleasure to use daily. However, the features are somewhat lacking compared to competitors, which is a downside. Overall, it offers great value for its price point and is user-friendly for all experience levels. Highly recommended for those seeking reliability and efficiency in their tech devices.',
+    },
   ],
   summary: {
     sentiment_series: [0.9, 0.0, 0.3, -0.4, 0.2, 0.0, 1.0],
     overall_score: 0.5,
-    overall_label: "NEUTRAL"
-  }
-}
+    overall_label: 'NEUTRAL',
+  },
+};

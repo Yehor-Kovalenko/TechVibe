@@ -1,9 +1,10 @@
 export type WidgetType =
-| 'stats' 
-| 'summary-components'
-| 'verdict'
-| 'chart'
-| "metadata";
+  | 'stats'
+  | 'summary-components'
+  | 'verdict'
+  | 'chart'
+  | 'metadata'
+  | 'review-text';
 
 export interface BaseWidgetConfig {
   id: string;
@@ -44,16 +45,21 @@ export interface VerdictWidgetConfig extends BaseWidgetConfig {
 
 // Single line chart based on series of values
 export interface ChartWidgetConfig extends BaseWidgetConfig {
-  type: 'chart',
-  x?: Array<number>,
-  xAxisName?: string,
-  y: Array<number>,
-  yAxisName?: string,
-  labels?: Array<string>
+  type: 'chart';
+  x?: Array<number>;
+  xAxisName?: string;
+  y: Array<number>;
+  yAxisName?: string;
+  labels?: Array<string>;
+}
+
+export interface ReviewTextWidgetConfig extends BaseWidgetConfig {
+  type: 'review-text';
+  text: string;
 }
 
 export interface MetadataWidgetConfig extends BaseWidgetConfig {
-  type: "metadata";
+  type: 'metadata';
   fields: Array<{ label: string; value: string }>;
 }
 
@@ -63,10 +69,11 @@ export type WidgetConfig =
   | VerdictWidgetConfig
   | ChartWidgetConfig
   | MetadataWidgetConfig
+  | ReviewTextWidgetConfig;
 
 export interface DashboardConfig {
   widgets: WidgetConfig[];
   layout?: 'grid' | 'masonry';
   columns?: number;
-  summary?: object
+  summary?: object;
 }

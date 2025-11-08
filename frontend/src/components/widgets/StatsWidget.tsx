@@ -29,7 +29,9 @@ export const StatsWidget: React.FC<StatsWidgetProps> = ({ config }) => {
     <div className="widget-card flex flex-col h-auto">
       <div className="flex items-start gap-4 mb-3">
         {icon && (
-          <div className={`w-12 h-12 rounded-xl ${getRatingBg(rating)} flex items-center justify-center text-2xl flex-shrink-0`}>
+          <div
+            className={`w-12 h-12 rounded-xl ${getRatingBg(rating)} flex items-center justify-center text-2xl flex-shrink-0`}
+          >
             {icon}
           </div>
         )}
@@ -51,5 +53,3 @@ export const StatsWidget: React.FC<StatsWidgetProps> = ({ config }) => {
     </div>
   );
 };
-
-export default StatsWidget;

@@ -8,7 +8,7 @@ import {getBackendData} from "./components/fetchApiUrl.ts";
 
 type View = 'landing' | 'loading' | 'dashboard';
 
-function App() {
+export const App = () => {
   const [view, setView] = useState<View>('landing');
   const [jobId, setJobId] = useState<string>('');
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
@@ -30,13 +30,17 @@ function App() {
   };
 
   if (view === 'loading') {
-    return <LoadingPage jobId={jobId} delayMs={600_000} onDone={() => setIsLoaded(true)} />;
+    return (
+      <LoadingPage
+        jobId={jobId}
+        delayMs={600_000}
+        onDone={() => setIsLoaded(true)}
+      />
+    );
   }
   if (view === 'dashboard') {
     // load dashboard config (summary)
     return <Dashboard config={backendData} />;
   }
   return <LandingPage onSubmit={handleGenerate} />;
-}
-
-export default App;
+};
