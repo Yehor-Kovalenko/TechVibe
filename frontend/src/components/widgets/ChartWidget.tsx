@@ -6,7 +6,7 @@ interface ChartWidgetProps {
 }
 
 export const ChartWidget: React.FC<ChartWidgetProps> = ({ config }) => {
-  const { title, x, y, xAxisName, yAxisName, labels } = config;
+  const { title, x, y, xAxisName, yAxisName } = config;
 
   // Generate x values if not provided
   const xValues = x || Array.from({ length: y.length }, (_, i) => i);
@@ -29,7 +29,7 @@ export const ChartWidget: React.FC<ChartWidgetProps> = ({ config }) => {
   const chartMaxY = maxY + yPadding;
 
   // SVG dimensions
-  const width = 600;
+  const width = 800;
   const height = 400;
   const padding = { top: 40, right: 40, bottom: 60, left: 60 };
   const chartWidth = width - padding.left - padding.right;
@@ -48,9 +48,9 @@ export const ChartWidget: React.FC<ChartWidgetProps> = ({ config }) => {
     .map((xVal, i) => {
       const x1 = scaleX(xVal);
       const y1 = scaleY(y[i]);
-      return `${i === 0 ? 'M' : 'L'} ${x1} ${y1}`;
+      return `${i === 0 ? "M" : "L"} ${x1} ${y1}`;
     })
-    .join(' ');
+    .join(" ");
 
   // Generate grid lines
   const gridLinesY = Array.from({ length: 5 }, (_, i) => {
@@ -65,6 +65,12 @@ export const ChartWidget: React.FC<ChartWidgetProps> = ({ config }) => {
     return { xPos, value };
   });
 
+  // Compute Y positions for background sections
+  const sectionHeight = chartHeight / 3;
+  const sectionTopY = padding.top;
+  const sectionMidY = padding.top + sectionHeight;
+  const sectionBotY = padding.top + sectionHeight * 2;
+
   return (
     <div className="h-full w-full bg-gradient-to-br from-gray-900 to-gray-950 rounded-2xl p-6 border border-white/10 shadow-xl">
       {title && (
@@ -75,8 +81,31 @@ export const ChartWidget: React.FC<ChartWidgetProps> = ({ config }) => {
         <svg
           viewBox={`0 0 ${width} ${height}`}
           className="w-full h-full"
-          style={{ maxHeight: '100%' }}
+          style={{ maxHeight: "100%" }}
         >
+          {/* Background sections */}
+          <rect
+            x={padding.left}
+            y={sectionTopY}
+            width={chartWidth}
+            height={sectionHeight}
+            fill="rgba(34,197,94,0.08)" // green
+          />
+          <rect
+            x={padding.left}
+            y={sectionMidY}
+            width={chartWidth}
+            height={sectionHeight}
+            fill="rgba(234,179,8,0.08)" // yellow
+          />
+          <rect
+            x={padding.left}
+            y={sectionBotY}
+            width={chartWidth}
+            height={sectionHeight}
+            fill="rgba(239,68,68,0.08)" // red
+          />
+
           {/* Grid lines */}
           {gridLinesY.map((line, i) => (
             <line
@@ -89,7 +118,7 @@ export const ChartWidget: React.FC<ChartWidgetProps> = ({ config }) => {
               strokeWidth="1"
             />
           ))}
-          {gridLinesX.map((line, i) => (
+          {x && gridLinesX.map((line, i) => (
             <line
               key={`grid-x-${i}`}
               x1={line.xPos}
@@ -100,6 +129,7 @@ export const ChartWidget: React.FC<ChartWidgetProps> = ({ config }) => {
               strokeWidth="1"
             />
           ))}
+
 
           {/* Axes */}
           <line
@@ -135,7 +165,7 @@ export const ChartWidget: React.FC<ChartWidgetProps> = ({ config }) => {
           ))}
 
           {/* X-axis labels */}
-          {gridLinesX.map((line, i) => (
+          {x && gridLinesX.map((line, i) => (
             <text
               key={`label-x-${i}`}
               x={line.xPos}
@@ -175,7 +205,7 @@ export const ChartWidget: React.FC<ChartWidgetProps> = ({ config }) => {
             </text>
           )}
 
-          {/* Line with gradient */}
+          {/* Line gradient */}
           <defs>
             <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
               <stop offset="0%" stopColor="#10b981" />
@@ -183,6 +213,7 @@ export const ChartWidget: React.FC<ChartWidgetProps> = ({ config }) => {
             </linearGradient>
           </defs>
 
+          {/* Line path */}
           <path
             d={linePath}
             fill="none"
@@ -192,16 +223,13 @@ export const ChartWidget: React.FC<ChartWidgetProps> = ({ config }) => {
             strokeLinejoin="round"
           />
 
-          {/* Points and labels */}
+          {/* Points (no labels above) */}
           {xValues.map((xVal, i) => {
             const cx = scaleX(xVal);
             const cy = scaleY(y[i]);
-
             return (
               <g key={`point-${i}`}>
-                {/* Outer glow */}
                 <circle cx={cx} cy={cy} r="8" fill="rgba(16, 185, 129, 0.2)" />
-                {/* Point */}
                 <circle
                   cx={cx}
                   cy={cy}
@@ -210,31 +238,6 @@ export const ChartWidget: React.FC<ChartWidgetProps> = ({ config }) => {
                   stroke="#fff"
                   strokeWidth="2"
                 />
-                {/* Label above point */}
-                {labels && labels[i] && (
-                  <>
-                    <rect
-                      x={cx - 25}
-                      y={cy - 30}
-                      width="50"
-                      height="20"
-                      rx="4"
-                      fill="rgba(0,0,0,0.8)"
-                      stroke="rgba(16, 185, 129, 0.5)"
-                      strokeWidth="1"
-                    />
-                    <text
-                      x={cx}
-                      y={cy - 17}
-                      textAnchor="middle"
-                      fill="#10b981"
-                      fontSize="12"
-                      fontWeight="600"
-                    >
-                      {labels[i]}
-                    </text>
-                  </>
-                )}
               </g>
             );
           })}
