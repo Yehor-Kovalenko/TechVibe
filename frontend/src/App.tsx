@@ -1,10 +1,10 @@
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 import './globals.css';
 import LandingPage from './components/LandingPage';
-import LoadingPage from './components/LoadingPage';
-import Dashboard from './components/Dashboard';
+import { LoadingPage } from './components/LoadingPage';
+import { Dashboard } from './components/Dashboard';
 import { defaultDashboardConfig } from './config/dashboard.config';
-import {getBackendData} from "./components/fetchApiUrl.ts";
+import { getBackendData } from './components/fetchApiUrl.ts';
 
 type View = 'landing' | 'loading' | 'dashboard';
 
@@ -18,12 +18,12 @@ export const App = () => {
     if (!isLoaded || !jobId) return;
 
     getBackendData(jobId).then((data) => {
-      setBackendData({...defaultDashboardConfig, ...data});
+      setBackendData({ ...defaultDashboardConfig, ...data });
       console.log(data);
       console.log(backendData);
-      setView("dashboard");
+      setView('dashboard');
     });
-  }, [isLoaded, jobId]);
+  }, [backendData, isLoaded, jobId]);
   const handleGenerate = (id: string) => {
     setJobId(id);
     setView('loading');

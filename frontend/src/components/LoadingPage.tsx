@@ -21,7 +21,7 @@ export const LoadingPage: React.FC<LoadingPageProps> = ({
     let isMounted = true;
 
     timeoutId = window.setTimeout(() => {
-      isMounted = false;  // ← Set flag first
+      isMounted = false; // ← Set flag first
       if (pollInterval) clearInterval(pollInterval);
       onDone?.();
     }, delayMs);
@@ -29,7 +29,7 @@ export const LoadingPage: React.FC<LoadingPageProps> = ({
     window.setTimeout(() => {
       pollInterval = window.setInterval(async () => {
         if (!isMounted) {
-          if (pollInterval) clearInterval(pollInterval);  // ← Stop itself
+          if (pollInterval) clearInterval(pollInterval); // ← Stop itself
           return;
         }
 
@@ -37,7 +37,7 @@ export const LoadingPage: React.FC<LoadingPageProps> = ({
           const statusResponse = await checkJobStatus(jobId);
 
           if (!isMounted) {
-            if (pollInterval) clearInterval(pollInterval);  // ← Stop after async
+            if (pollInterval) clearInterval(pollInterval); // ← Stop after async
             return;
           }
 
@@ -45,7 +45,7 @@ export const LoadingPage: React.FC<LoadingPageProps> = ({
           setStatus(`Status: ${statusResponse.status}`);
 
           if (statusResponse.status === JobStatus.DONE) {
-            isMounted = false;  // ← Prevent further polls
+            isMounted = false; // ← Prevent further polls
             if (pollInterval) clearInterval(pollInterval);
             if (timeoutId) clearTimeout(timeoutId);
             console.log('Job completed! Proceeding to dashboard...');
