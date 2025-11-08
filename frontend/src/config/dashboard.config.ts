@@ -88,32 +88,61 @@ export const defaultDashboardConfig: DashboardConfig = {
       title: 'Final Verdict',
       height: 1,
       width: 1,
-      order: 9,
+      // order: 2,
       verdict: 'NEUTRAL',
       score: 0.9,
       dataKey: "verdict"
     },
-      // overall sentiment series chart
+    // overall sentiment series chart
     {
       id: 'chart-overall-sentiment-series',
       type: 'chart',
       title: 'Sentiment over time',
+      // order: 1,
       y: [2.5, 4.2, 3.8, 5.5, 6.2, 5.8, 7.5, 8.2],
       yAxisName: 'Sentiment',
-      labels: ['Start', 'Good', 'Drop', 'Rise', 'Peak', 'Stable', 'High', 'Max'],
+      labels: [
+        'Start',
+        'Good',
+        'Drop',
+        'Rise',
+        'Peak',
+        'Stable',
+        'High',
+        'Max',
+      ],
       width: 2,
       height: 4,
       dataKey: "sentiment_series_chart"
     },
     {
-      id: "widget-metadata",
-      type: "metadata",
-      title: "Metadata",
+      id: 'widget-metadata',
+      type: 'metadata',
+      title: 'Metadata',
       height: 2,
-      width: 1,
-      order: 10,
-      fields: [ { label: "Uploader", value: "John Doe" }, { label: "Duration", value: "58 min" } ],
+      width: 2,
+      // order: 10,
+      fields: [
+        { label: 'Uploader', value: 'John Doe' },
+        { label: 'Duration', value: '58 min' },
+      ],
       dataKey: "video-metadata"
-    }
+    },
+    // Review Text Widget
+    {
+      id: 'review-text-1',
+      type: 'review-text',
+      title: 'Review Full Text',
+      height: 2,
+      width: 2,
+      // order: 8,
+      text: 'This product has an outstanding performance that exceeds expectations. The design is sleek and modern, making it a pleasure to use daily. However, the features are somewhat lacking compared to competitors, which is a downside. Overall, it offers great value for its price point and is user-friendly for all experience levels. Highly recommended for those seeking reliability and efficiency in their tech devices.',
+      dataKey: 'full-text'
+    },
   ],
-}
+  summary: {
+    sentiment_series: [0.9, 0.0, 0.3, -0.4, 0.2, 0.0, 1.0],
+    overall_score: 0.5,
+    overall_label: 'NEUTRAL',
+  },
+};

@@ -1,10 +1,15 @@
 import React from 'react';
-import type {DashboardConfig, MetadataWidgetConfig, WidgetConfig} from '../types/widget.types';
+import type {
+  DashboardConfig,
+  MetadataWidgetConfig,
+  WidgetConfig,
+} from '../types/widget.types';
 import { StatsWidget } from './widgets/StatsWidget';
 import { SummaryByComponentWidget } from './widgets/SummaryByComponentWidget.tsx';
-import { VerdictWidget } from "./widgets/VerdictWidget";
-import {ChartWidget} from "./widgets/ChartWidget.tsx";
+import { VerdictWidget } from './widgets/VerdictWidget';
+import { ChartWidget } from './widgets/ChartWidget.tsx';
 import { MetadataWidget } from './widgets/MetadataWidget';
+import { ReviewTextWidget } from './widgets/ReviewTextWidget.tsx';
 
 interface DashboardProps {
   config: DashboardConfig;
@@ -25,7 +30,7 @@ const WidgetRenderer: React.FC<{ config: WidgetConfig, backendData: Record<strin
     case 'summary-components': {
       // calculating overall rating overallRating
       let overallRatingNumber: number = 0.0;
-      config.categories.forEach(c => overallRatingNumber += (c.rating ?? 0))
+      config.categories.forEach((c) => (overallRatingNumber += c.rating ?? 0));
       overallRatingNumber /= config.categories.length;
       config.overallRating = overallRatingNumber;
       return <SummaryByComponentWidget config={config} />;
@@ -34,8 +39,10 @@ const WidgetRenderer: React.FC<{ config: WidgetConfig, backendData: Record<strin
       return <VerdictWidget config={config} />;
     case 'chart':
       return <ChartWidget config={config} />;
-    case "metadata":
+    case 'metadata':
       return <MetadataWidget config={config as MetadataWidgetConfig} />;
+    case 'review-text':
+      return <ReviewTextWidget config={config} />;
     default:
       return null;
   }
@@ -77,9 +84,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ config }) => {
           {sortedWidgets.map((widget) => (
             <div
               key={widget.id}
-              className='widget-masonry-item mb-6'
+              className="widget-masonry-item mb-6"
               style={{
-                gridColumn: widget.width ? `span ${Math.min(widget.width, columns)}` : 'span 1',
+                gridColumn: widget.width
+                  ? `span ${Math.min(widget.width, columns)}`
+                  : 'span 1',
                 gridRow: widget.height ? `span ${widget.height}` : 'span 2',
               }}
             >
@@ -91,5 +100,3 @@ export const Dashboard: React.FC<DashboardProps> = ({ config }) => {
     </div>
   );
 };
-
-export default Dashboard;

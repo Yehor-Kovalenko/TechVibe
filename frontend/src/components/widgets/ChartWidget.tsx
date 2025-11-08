@@ -1,5 +1,5 @@
 import React from 'react';
-import type { ChartWidgetConfig } from "../../types/widget.types.ts";
+import type { ChartWidgetConfig } from '../../types/widget.types.ts';
 
 interface ChartWidgetProps {
   config: ChartWidgetConfig;
@@ -39,7 +39,9 @@ export const ChartWidget: React.FC<ChartWidgetProps> = ({ config }) => {
   const scaleX = (val: number) =>
     padding.left + ((val - chartMinX) / (chartMaxX - chartMinX)) * chartWidth;
   const scaleY = (val: number) =>
-    padding.top + chartHeight - ((val - chartMinY) / (chartMaxY - chartMinY)) * chartHeight;
+    padding.top +
+    chartHeight -
+    ((val - chartMinY) / (chartMaxY - chartMinY)) * chartHeight;
 
   // Generate path for line
   const linePath = xValues
@@ -198,12 +200,7 @@ export const ChartWidget: React.FC<ChartWidgetProps> = ({ config }) => {
             return (
               <g key={`point-${i}`}>
                 {/* Outer glow */}
-                <circle
-                  cx={cx}
-                  cy={cy}
-                  r="8"
-                  fill="rgba(16, 185, 129, 0.2)"
-                />
+                <circle cx={cx} cy={cy} r="8" fill="rgba(16, 185, 129, 0.2)" />
                 {/* Point */}
                 <circle
                   cx={cx}

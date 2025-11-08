@@ -2,9 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { checkJobStatus } from './fetchApiUrl';
 import { JobStatus } from '../config/JobStatus';
 
-type LoadingPageProps = { jobId: string; onDone?: () => void; delayMs?: number };
+type LoadingPageProps = {
+  jobId: string;
+  onDone?: () => void;
+  delayMs?: number;
+};
 
-const LoadingPage: React.FC<LoadingPageProps> = ({ jobId, onDone, delayMs = 60_000 }) => {
+export const LoadingPage: React.FC<LoadingPageProps> = ({
+  jobId,
+  onDone,
+  delayMs = 60_000,
+}) => {
   const [status, setStatus] = useState<string>('Waiting for processing...');
 
   useEffect(() => {
@@ -13,7 +21,7 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ jobId, onDone, delayMs = 60_0
     let isMounted = true;
 
     timeoutId = window.setTimeout(() => {
-      isMounted = false;  // ← Set flag first
+      isMounted = false; // ← Set flag first
       if (pollInterval) clearInterval(pollInterval);
       onDone?.();
     }, delayMs);
@@ -21,23 +29,23 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ jobId, onDone, delayMs = 60_0
     window.setTimeout(() => {
       pollInterval = window.setInterval(async () => {
         if (!isMounted) {
-          if (pollInterval) clearInterval(pollInterval);  // ← Stop itself
+          if (pollInterval) clearInterval(pollInterval); // ← Stop itself
           return;
         }
-        
+
         try {
           const statusResponse = await checkJobStatus(jobId);
-          
+
           if (!isMounted) {
-            if (pollInterval) clearInterval(pollInterval);  // ← Stop after async
+            if (pollInterval) clearInterval(pollInterval); // ← Stop after async
             return;
           }
-          
+
           console.log('Job status:', statusResponse);
           setStatus(`Status: ${statusResponse.status}`);
 
           if (statusResponse.status === JobStatus.DONE) {
-            isMounted = false;  // ← Prevent further polls
+            isMounted = false; // ← Prevent further polls
             if (pollInterval) clearInterval(pollInterval);
             if (timeoutId) clearTimeout(timeoutId);
             console.log('Job completed! Proceeding to dashboard...');
@@ -68,7 +76,8 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ jobId, onDone, delayMs = 60_0
         />
         <h2 className="text-2xl font-medium">Aggregating reviews</h2>
         <p className="text-muted-foreground">
-          Collecting video reviews across platforms and synthesizing a concise summary; this takes about 10 seconds.
+          Collecting video reviews across platforms and synthesizing a concise
+          summary; this takes about 10 seconds.
         </p>
         <div className="mt-4 p-4 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
           <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
@@ -84,5 +93,3 @@ const LoadingPage: React.FC<LoadingPageProps> = ({ jobId, onDone, delayMs = 60_0
     </main>
   );
 };
-
-export default LoadingPage;
