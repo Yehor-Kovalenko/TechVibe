@@ -51,7 +51,6 @@ export interface ChartWidgetConfig extends BaseWidgetConfig {
   xAxisName?: string;
   y: Array<number>;
   yAxisName?: string;
-  labels?: Array<string>;
 }
 
 export interface ReviewTextWidgetConfig extends BaseWidgetConfig {
