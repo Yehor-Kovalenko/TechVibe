@@ -12,6 +12,7 @@ export interface BaseWidgetConfig {
   height: number; // in grid units (1 unit = ~100px)
   width?: number; // optional, defaults to full width or auto
   order?: number; // for ordering widgets
+  dataKey: string; // for the key to look into the backend file, essential for the backend communication
 }
 
 // Stats Widget - for individual technical aspects
@@ -68,5 +69,7 @@ export interface DashboardConfig {
   widgets: WidgetConfig[];
   layout?: 'grid' | 'masonry';
   columns?: number;
-  summary?: object
+  // to disbale errors related to using 'any' keyword
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+  summary?: Record<string, any>
 }

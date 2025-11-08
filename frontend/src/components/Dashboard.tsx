@@ -10,7 +10,15 @@ interface DashboardProps {
   config: DashboardConfig;
 }
 
-const WidgetRenderer: React.FC<{ config: WidgetConfig }> = ({ config }) => {
+// any should be preserved
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+const WidgetRenderer: React.FC<{ config: WidgetConfig, backendData: Record<string, any> | undefined }> = ({ config, backendData }) => {
+  const widgetData = config.dataKey ? backendData?.[config.dataKey] : null;
+  // exchange with data from the backend
+  if (widgetData) {
+    config = {...config, ...widgetData};
+  }
+
   switch (config.type) {
     case 'stats':
       return <StatsWidget config={config} />;
@@ -26,15 +34,15 @@ const WidgetRenderer: React.FC<{ config: WidgetConfig }> = ({ config }) => {
       return <VerdictWidget config={config} />;
     case 'chart':
       return <ChartWidget config={config} />;
-      case "metadata":
-        return <MetadataWidget config={config as MetadataWidgetConfig} />;
+    case "metadata":
+      return <MetadataWidget config={config as MetadataWidgetConfig} />;
     default:
       return null;
   }
 };
 
 export const Dashboard: React.FC<DashboardProps> = ({ config }) => {
-  const { widgets, columns = 3 } = config;
+  const { widgets, columns = 3, summary } = config;
 
   // Sort widgets by order if specified
   const sortedWidgets = [...widgets].sort(
@@ -75,7 +83,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ config }) => {
                 gridRow: widget.height ? `span ${widget.height}` : 'span 2',
               }}
             >
-              <WidgetRenderer config={widget} />
+              <WidgetRenderer config={widget} backendData={summary} />
             </div>
           ))}
         </div>
