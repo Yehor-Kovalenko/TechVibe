@@ -47,7 +47,6 @@ def main(msg: QueueMessage):
     write_blob(
         f"results/{job_id}/{SUMMARY_FILENAME}",
         {
-            "id": job_id,
             "verdict": {
                 "score": overall_score,
                 "verdict": overall_label,

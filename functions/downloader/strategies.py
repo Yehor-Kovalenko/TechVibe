@@ -187,7 +187,9 @@ class YTDownloader(BaseDownloader):
         # Save video metadata
         write_blob(
             f"results/{self.job_id}/{VIDEO_METADATA_FILENAME}",
-            result['video_metadata'],
+            {
+                "video-metadata": result['video_metadata']
+            },
         )
         logging.info(f"YTDownloader saved job {self.job_id} video metadata to blob")
     

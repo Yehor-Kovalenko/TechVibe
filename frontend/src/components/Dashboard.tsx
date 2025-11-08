@@ -10,7 +10,9 @@ interface DashboardProps {
   config: DashboardConfig;
 }
 
-const WidgetRenderer: React.FC<{ config: WidgetConfig, backendData: object }> = ({ config, backendData }) => {
+// any should be preserved
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+const WidgetRenderer: React.FC<{ config: WidgetConfig, backendData: Record<string, any> | undefined }> = ({ config, backendData }) => {
   const widgetData = config.dataKey ? backendData?.[config.dataKey] : null;
   // exchange with data from the backend
   if (widgetData) {
@@ -40,7 +42,7 @@ const WidgetRenderer: React.FC<{ config: WidgetConfig, backendData: object }> = 
 };
 
 export const Dashboard: React.FC<DashboardProps> = ({ config }) => {
-  const { widgets, columns = 3, backendData } = config;
+  const { widgets, columns = 3, summary } = config;
 
   // Sort widgets by order if specified
   const sortedWidgets = [...widgets].sort(
@@ -81,7 +83,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ config }) => {
                 gridRow: widget.height ? `span ${widget.height}` : 'span 2',
               }}
             >
-              <WidgetRenderer config={widget} backendData={backendData} />
+              <WidgetRenderer config={widget} backendData={summary} />
             </div>
           ))}
         </div>

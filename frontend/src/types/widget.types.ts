@@ -69,5 +69,7 @@ export interface DashboardConfig {
   widgets: WidgetConfig[];
   layout?: 'grid' | 'masonry';
   columns?: number;
-  summary?: object
+  // to disbale errors related to using 'any' keyword
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+  summary?: Record<string, any>
 }
