@@ -14,33 +14,33 @@ export const App = () => {
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [backendData, setBackendData] = useState(defaultDashboardConfig);
 
-  // useEffect(() => {
-  //   if (!isLoaded || !jobId) return;
-  //
-  //   getBackendData(jobId).then((data) => {
-  //     setBackendData({ ...defaultDashboardConfig, ...data });
-  //     console.log(data);
-  //     console.log(backendData);
-  //     setView('dashboard');
-  //   });
-  // }, [backendData, isLoaded, jobId]);
-  // const handleGenerate = (id: string) => {
-  //   setJobId(id);
-  //   setView('loading');
-  // };
-  //
-  // if (view === 'loading') {
-  //   return (
-  //     <LoadingPage
-  //       jobId={jobId}
-  //       delayMs={600_000}
-  //       onDone={() => setIsLoaded(true)}
-  //     />
-  //   );
-  // }
-  // if (view === 'dashboard') {
+  useEffect(() => {
+    if (!isLoaded || !jobId) return;
+
+    getBackendData(jobId).then((data) => {
+      setBackendData({ ...defaultDashboardConfig, ...data });
+      console.log(data);
+      console.log(backendData);
+      setView('dashboard');
+    });
+  }, [backendData, isLoaded, jobId]);
+  const handleGenerate = (id: string) => {
+    setJobId(id);
+    setView('loading');
+  };
+
+  if (view === 'loading') {
+    return (
+      <LoadingPage
+        jobId={jobId}
+        delayMs={600_000}
+        onDone={() => setIsLoaded(true)}
+      />
+    );
+  }
+  if (view === 'dashboard') {
     // load dashboard config (summary)
     return <Dashboard config={backendData} />;
-  // }
-  // return <LandingPage onSubmit={handleGenerate} />;
+  }
+  return <LandingPage onSubmit={handleGenerate} />;
 };
