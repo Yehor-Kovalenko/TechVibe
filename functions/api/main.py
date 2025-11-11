@@ -4,7 +4,7 @@ import uuid
 
 from azure.functions import HttpRequest, HttpResponse
 
-from ..shared.common import write_blob, enqueue_message, read_blob, read_job_metadata, write_job_metadata, read_video_metadata
+from ..shared.common import enqueue_message, read_blob, read_job_metadata, write_job_metadata, read_video_metadata
 from ..shared.config import NEW_QUEUE, SUMMARY_FILENAME
 from ..shared.job_status import JobStatus
 

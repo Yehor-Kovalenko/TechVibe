@@ -1,13 +1,15 @@
-{
-  "device": "smartphone",
-  "features": [
-    "design",
-    "display",
-    "camera",
-    "audio",
-    "performance",
-    "battery",
-    "connectivity",
-    "software"
-  ]
-}
+[
+  {
+    "device": "smartphone",
+    "features": [
+      "design",
+      "display",
+      "camera",
+      "audio",
+      "performance",
+      "battery",
+      "connectivity",
+      "software"
+    ]
+  }
+]
