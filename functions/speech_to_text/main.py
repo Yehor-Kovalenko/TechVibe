@@ -1,7 +1,7 @@
 import tempfile
 import torch
 import whisper
-import logging
+from ..shared.logs import logging
 
 from azure.functions import QueueMessage
 
