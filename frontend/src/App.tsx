@@ -23,7 +23,7 @@ export const App = () => {
       console.log(backendData);
       setView('dashboard');
     });
-  }, [backendData, isLoaded, jobId]);
+  }, [isLoaded, jobId]);
   const handleGenerate = (id: string) => {
     setJobId(id);
     setView('loading');

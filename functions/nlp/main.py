@@ -1,5 +1,8 @@
 import logging
 import json
+from pathlib import Path
+
+
 from azure.functions import QueueMessage
 from transformers import pipeline
 from ..shared.common import write_blob, read_blob, read_job_metadata, write_job_metadata
@@ -17,15 +20,20 @@ def main(msg: QueueMessage):
 
     job_id = body["id"]
     transcript = read_blob(f"results/{job_id}/{TRANSCRIPT_FILENAME}")
-
+    keywords_path = Path(__file__).parent / "key-words.json"
     sentiment_model = pipeline("sentiment-analysis")
 
-    # new: try to load keywords.json if exists
+    # try to load key-words.json if exists
     try:
-        keywords_data = read_blob("config/keywords.json")
-        features = keywords_data.get("features", [])
+        with open(keywords_path, "r", encoding="utf-8") as f:
+            device_data = json.load(f)
+        logging.info(f"device data: {device_data}")
+        smartphone = device_data[0]
+        features = smartphone.get("features", [])
+        device = smartphone.get("device")
     except Exception:
         features = []
+        device = "smartphone"
 
     """
     This part processes a transcript job: perform sentence-level sentiment analysis and optionally classify sentences by features
@@ -33,7 +41,7 @@ def main(msg: QueueMessage):
     IMPORTANT ! - zero-shot classification runs one sentence at a time and can be slow for long transcripts.
     """
 
-    # new: lightweight zero-shot classifier for feature assignment
+    # lightweight zero-shot classifier for feature assignment
     feature_classifier = None
     if features:
         try:
@@ -57,7 +65,7 @@ def main(msg: QueueMessage):
             score = -score
         sentiment_series.append({"label": result["label"], "score": score})
 
-        # new: classify each sentence to feature if classifier available
+        # classify each sentence to feature if classifier available
         if feature_classifier and features:
             try:
                 classification = feature_classifier(s, candidate_labels=features)
@@ -75,7 +83,7 @@ def main(msg: QueueMessage):
     elif overall_score < -0.5:
         overall_label = "NEGATIVE"
 
-    # new: compute sentiment-by-part (feature-level)
+    # compute sentiment-by-part (feature-level)
     sentiment_by_part = {}
     for f, scores in feature_sentiments.items():
         if not scores:
@@ -97,10 +105,13 @@ def main(msg: QueueMessage):
                 "y": [s["score"] for s in sentiment_series],
                 "labels": [s["label"] for s in sentiment_series],
             },
-            # new: organized feature breakdown
-            "sentiment-by-part": sentiment_by_part,
+            "sentiment_by_part": {
+                "device": device,
+                "features_verdict": sentiment_by_part
+            },
         },
     )
+    logging.info(f"Summary sentiment by part content before writing the content {sentiment_by_part}")
 
     try:
         logging.info(f"nlp saved job {job_id} summary to blob")

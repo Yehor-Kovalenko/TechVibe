@@ -49,7 +49,7 @@ const WidgetRenderer: React.FC<{ config: WidgetConfig, backendData: Record<strin
 };
 
 export const Dashboard: React.FC<DashboardProps> = ({ config }) => {
-  const { widgets, columns = 3, summary } = config;
+  const { widgets, columns = 3, summary, metadata } = config;
 
   // Sort widgets by order if specified
   const sortedWidgets = [...widgets].sort(
@@ -92,7 +92,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ config }) => {
                 gridRow: widget.height ? `span ${widget.height}` : 'span 2',
               }}
             >
-              <WidgetRenderer config={widget} backendData={summary} />
+              <WidgetRenderer config={widget} backendData={{...summary, ...metadata}} />
             </div>
           ))}
         </div>

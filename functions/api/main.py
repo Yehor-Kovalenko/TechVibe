@@ -4,7 +4,7 @@ import uuid
 
 from azure.functions import HttpRequest, HttpResponse
 
-from ..shared.common import write_blob, enqueue_message, read_blob, read_job_metadata, write_job_metadata, read_video_metadata
+from ..shared.common import enqueue_message, read_blob, read_job_metadata, write_job_metadata, read_video_metadata
 from ..shared.config import NEW_QUEUE, SUMMARY_FILENAME
 from ..shared.job_status import JobStatus
 
@@ -53,7 +53,8 @@ def handle_get(req: HttpRequest, action: str) -> HttpResponse:
             logging.info("ACTION == SUMMARY, accessed")
             try:
                 response = read_blob(f"results/{job_id}/{SUMMARY_FILENAME}") 
-            except:
+            except Exception:
+                logging.warning(f"Exception occurred: {Exception}")
                 response = {"status": "Didn't get the summary file bro, sorry"}
         elif action == "metadata":
             response = read_video_metadata(job_id)

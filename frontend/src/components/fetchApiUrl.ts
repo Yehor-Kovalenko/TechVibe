@@ -12,15 +12,24 @@ interface JobStatusResponse {
 }
 
 interface JobSummaryResponse {
-  id: string;
-  sentiment_series: number[];
-  overall_score: number;
-  overall_label: string;
+  verdict: {
+    score: number;
+    label: string;
+  };
+  sentiment_series_chart: {
+    y: number[];
+    labels: string[];
+  }
+  sentiment_by_part: {
+    device: string;
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+    features_verdict: any
+  }
 }
 
 interface VideoMetadataResponse {
-  label: string;
-  value: string;
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+  "video-metadata": any
 }
 
 interface JobAllDataResponse {
@@ -79,12 +88,12 @@ export async function checkJobStatus(
 export async function getBackendData(
   jobId: string
 ): Promise<JobAllDataResponse | undefined> {
-  const [summary] = await Promise.all([
+  const [summary, metadata] = await Promise.all([
       getJobSummary(jobId),
       fetchVideoMetadata(jobId),
-      //add metadata call there
-  ]);
-  return { summary };
+      //add other calls there
+  ]) as [JobSummaryResponse | undefined, VideoMetadataResponse | undefined];
+  return { summary, metadata };
 }
 
 // GET to retrieve summary.json
@@ -93,7 +102,7 @@ async function getJobSummary(
 ): Promise<JobSummaryResponse | undefined> {
   try {
     const response = await fetch(
-      `${URL}?action=summary?action=summary&id=${jobId}`,
+      `${URL}?action=summary&id=${jobId}`,
       {
         method: 'GET',
         headers: {
@@ -115,7 +124,7 @@ async function getJobSummary(
 }
 
 export async function fetchVideoMetadata(jobId: string): Promise<VideoMetadataResponse | undefined> {
-  try {const response = await fetch(`http://localhost:7071/api/api?action=metadata&id=${jobId}`, {
+  try {const response = await fetch(`${URL}?action=metadata&id=${jobId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
