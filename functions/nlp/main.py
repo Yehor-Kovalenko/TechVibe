@@ -35,66 +35,67 @@ def main(msg: QueueMessage):
         features = []
         device = "smartphone"
 
-    """
-    This part processes a transcript job: perform sentence-level sentiment analysis and optionally classify sentences by features
-    using a BART-based zero-shot model (facebook/bart-large-mnli). 
-    IMPORTANT ! - zero-shot classification runs one sentence at a time and can be slow for long transcripts.
-    """
+    # Feature analysis
 
-    # lightweight zero-shot classifier for feature assignment
-    feature_classifier = None
-    if features:
-        try:
-            feature_classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
-        except Exception as e:
-            logging.warning(f"Zero-shot classifier not available: {e}")
+    # 0. Model
 
-    transcribed_text = transcript.get("transcript", "")
-    if not transcribed_text:
-        logging.error("Transcript missing or empty.")
-        return
+    feature_classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
 
-    sentences = [s.strip() for s in transcribed_text.split(".") if s.strip()]
-    sentiment_series = []
+    # 1. Split transcript into sentences
+    sentences = [s.strip() for s in transcript.split(".") if s.strip()]
+
+    # 2. Process sentences
     feature_sentiments = {f: [] for f in features}
+    sentiment_series = []
 
     for s in sentences:
-        result = sentiment_model(s)[0]
-        score = round(result["score"], 2)
-        if result["label"].upper() == "NEGATIVE":
-            score = -score
-        sentiment_series.append({"label": result["label"], "score": score})
+        # Sentiment
+        try:
+            result = sentiment_model(s)[0]
+            score = result["score"]
+            if result["label"].upper() == "NEGATIVE":
+                score = -score
+            sentiment_series.append({"label": result["label"], "score": score})
+        except Exception:
+            continue
 
-        # classify each sentence to feature if classifier available
+        # Feature classification
         if feature_classifier and features:
             try:
-                classification = feature_classifier(s, candidate_labels=features)
-                top_feature, conf = classification["labels"][0], classification["scores"][0]
-                if conf > 0.5:
+                cls = feature_classifier(s, candidate_labels=features)
+                top_feature, confidence = cls["labels"][0], cls["scores"][0]
+                if confidence > 0.3:
                     feature_sentiments[top_feature].append(score)
-            except Exception as e:
-                logging.warning(f"Classification failed: {e}")
+            except Exception:
+                continue
 
-    # overall sentiment
-    overall_score = round(sum([x["score"] for x in sentiment_series]) / len(sentiment_series), 2)
+    # 3. Aggregate & format
+    sentiment_by_part = {}
+    for f, scores in feature_sentiments.items():
+        if scores:
+            avg = sum(scores) / len(scores)
+            score_10 = round((avg + 1) * 5, 1)
+            if avg <= -0.5:
+                label = "NEGATIVE"
+            elif -0.5 < avg < 0.5:
+                label = "NEUTRAL"
+            else:
+                label = "POSITIVE"
+            sentiment_by_part[f] = {"score": score_10, "label": label}
+        else:
+            sentiment_by_part[f] = {"score": 5.0, "label": "NEUTRAL"}
+
+    # Overall sentiment
+    if sentiment_series:
+        overall_score = round(sum([x["score"] for x in sentiment_series]) / len(sentiment_series), 2)
+    else:
+        overall_score = 0.0
+
     overall_label = "NEUTRAL"
     if overall_score > 0.5:
         overall_label = "POSITIVE"
     elif overall_score < -0.5:
         overall_label = "NEGATIVE"
-
-    # compute sentiment-by-part (feature-level)
-    sentiment_by_part = {}
-    for f, scores in feature_sentiments.items():
-        if not scores:
-            continue
-        avg = round(sum(scores) / len(scores), 2)
-        label = "NEUTRAL"
-        if avg > 0.5:
-            label = "POSITIVE"
-        elif avg < -0.5:
-            label = "NEGATIVE"
-        sentiment_by_part[f] = {"score": avg, "label": label}
 
     # save results
     write_blob(
