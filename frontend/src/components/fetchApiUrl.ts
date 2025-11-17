@@ -33,8 +33,7 @@ interface VideoMetadataResponse {
 }
 
 interface JobAllDataResponse {
-  summary?: JobSummaryResponse
-  metadata?: VideoMetadataResponse
+  summary: object;
 }
 
 const URL = 'http://localhost:7071/api/api';
@@ -93,7 +92,13 @@ export async function getBackendData(
       fetchVideoMetadata(jobId),
       //add other calls there
   ]) as [JobSummaryResponse | undefined, VideoMetadataResponse | undefined];
-  return { summary, metadata };
+
+  return {
+    summary: {
+      ...(summary || {}),
+      ...(metadata || {})
+    }
+  };
 }
 
 // GET to retrieve summary.json

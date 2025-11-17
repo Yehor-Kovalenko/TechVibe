@@ -17,41 +17,45 @@ export const ReviewTextWidget: React.FC<ReviewTextWidgetProps> = ({
   const previewText = text.length > 50 ? text.slice(0, 50).trim() + '…' : text;
 
   return (
-    <div className="widget-card flex flex-col h-auto">
+    <div className="widget-card flex flex-col h-auto gap-4">
       <h3 className="text-lg font-semibold mb-3">{title}</h3>
-      <p className="text-sm opacity-70 leading-relaxed whitespace-pre-wrap mb-4">
-        {previewText}
-      </p>
+      <div className="flex justify-between items-center gap-4">
+        <p className="text-sm opacity-70 leading-relaxed whitespace-pre-wrap flex-1">
+          {previewText}
+        </p>
 
-      {text.length > 200 && (
-        <button
-          onClick={() => setShowFullText(true)}
-          className="self-end px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
-        >
-          Read full text
-        </button>
-      )}
+        {text.length > 200 && (
+          <button
+            onClick={() => setShowFullText(true)}
+            className="px-3 py-1 text-sm font-medium rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
+          >
+            Read full text
+          </button>
+        )}
+      </div>
 
       <Modal
         isOpen={showFullText}
         onRequestClose={() => setShowFullText(false)}
         ariaHideApp={false}
-        contentLabel="Full Review Text"
-        className="bg-white rounded-xl shadow-xl p-6 max-w-2xl mx-auto mt-24 outline-none"
-        overlayClassName="fixed inset-0 bg-black/50 flex items-start justify-center z-50"
+        contentLabel="Full Text Review"
+        className="bg-gradient-to-br from-gray-900 to-gray-950 rounded-2xl p-6 border border-white/10 shadow-xl max-w-lg w-full mx-4"
+        overlayClassName="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
       >
         <h2 className="text-2xl font-bold mb-4">Full Review Text</h2>
         <div className="max-h-[70vh] overflow-y-auto">
-          <p className="whitespace-pre-wrap text-gray-800 leading-relaxed">
+          <p className="whitespace-pre-wrap text-accent-foreground leading-relaxed">
             {text}
           </p>
         </div>
-        <button
-          onClick={() => setShowFullText(false)}
-          className="mt-6 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
-        >
-          Close
-        </button>
+        <div className="mt-6 flex justify-end">
+          <button
+            onClick={() => setShowFullText(false)}
+            className="px-4 py-2 text-sm font-medium rounded-lg bg-white/10 hover:bg-white/20 text-white transition-colors"
+          >
+            Close
+          </button>
+        </div>
       </Modal>
     </div>
   );

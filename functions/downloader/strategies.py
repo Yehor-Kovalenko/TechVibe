@@ -1,5 +1,4 @@
 # downloader/strategies.py
-import logging
 from abc import ABC, abstractmethod
 import yt_dlp
 import os
@@ -13,6 +12,7 @@ from ..shared.config import (
     TRANSCRIPT_FILENAME
 )
 from ..shared.job_status import JobStatus
+from ..shared.logs import logging
 
 
 class BaseDownloader(ABC):

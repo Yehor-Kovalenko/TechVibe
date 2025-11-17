@@ -1,7 +1,7 @@
 # downloader/__init__.py
-import logging
 from azure.functions import QueueMessage
 from ..shared.common import read_blob, read_job_metadata, write_job_metadata
+from ..shared.logs import logging
 from .strategies import YTDownloader, TTDownloader, ISDownloader
 
 

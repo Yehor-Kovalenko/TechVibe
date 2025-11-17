@@ -1,4 +1,3 @@
-import logging
 import json
 from pathlib import Path
 
@@ -8,6 +7,7 @@ from transformers import pipeline
 from ..shared.common import write_blob, read_blob, read_job_metadata, write_job_metadata
 from ..shared.config import TRANSCRIPT_FILENAME, SUMMARY_FILENAME
 from ..shared.job_status import JobStatus
+from ..shared.logs import logging
 
 
 def main(msg: QueueMessage):
