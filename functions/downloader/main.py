@@ -7,17 +7,18 @@ from ..shared.config import MAX_DEQUEUE_COUNT
 from ..shared.logs import logging
 
 
-def main(msg: QueueMessage):
+def parse_id(msg: QueueMessage):
     try:
         body = msg.get_json()
+        logging.info(f"Received body: ${body}")
+        return body["id"]
     except Exception as e:
         logging.error(f"Failed to parse message: {e}")
-        return
+        return e
 
-    logging.info('DOWNLOADER function received a message from NEW queue: %s', body)
 
-    job_id = body["id"]
-
+def main(msg: QueueMessage):
+    job_id = parse_id(msg)
     try:
         # Read job metadata to get URL and determine platform
         job_metadata = read_job_metadata(job_id)
@@ -36,7 +37,7 @@ def main(msg: QueueMessage):
         downloader.process()
 
     except Exception as e:
-        logging.error(f"Error processing job {job_id}: {e}")
+        logging.error(f"Error in downloading job {job_id}: {e}")
 
         if msg.dequeue_count >= MAX_DEQUEUE_COUNT:
             logging.error(f"Failed to download {job_id}: {e}")
