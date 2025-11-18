@@ -138,14 +138,14 @@ def main(msg: QueueMessage):
         device, features = read_keywords()
 
         sentiment_model = pipeline("sentiment-analysis")
-        feature_classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
+        feature_classifier = None #pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
 
 
         sentences = extract_sentences(transcript)
 
         sentiment_series, sentiment_by_part = analyze_sentiment(sentences, sentiment_model, feature_classifier, features)
         overall_score, overall_label = calculate_overall_sentiment(sentiment_series)
-
+        logging.info(f"Sentiment was estimated. Sentiment overall label: {overall_label}. Sentiment by part: {sentiment_by_part}")
         save_results(job_id, overall_score, overall_label, sentiment_series, sentiment_by_part, device)
         update_job_metadata(job_id)
 
