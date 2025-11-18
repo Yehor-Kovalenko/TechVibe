@@ -2,17 +2,30 @@ import logging
 import json
 from pathlib import Path
 from transformers import pipeline
+import torch
 
 
 # -----------------------------
-# 0. LOAD KEYWORDS JSON (DEBUG)
+# 0. GPU / CPU AUTO-DETECT
+# -----------------------------
+if torch.cuda.is_available():
+    DEVICE = 0
+    device_name = torch.cuda.get_device_name(0)
+    logging.info(f"CUDA available – using GPU: {device_name}")
+else:
+    DEVICE = -1
+    logging.info("CUDA not available – using CPU")
+
+
+# -----------------------------
+# 1. LOAD KEYWORDS JSON
 # -----------------------------
 keywords_path = Path(__file__).parent / "key-words.json"
 
 try:
     with open(keywords_path, "r", encoding="utf-8") as f:
         device_data = json.load(f)
-    logging.info(f"[DEBUG] Loaded device_data from key-words.json: {device_data}")
+    logging.info(f"[DEBUG] Loaded device_data: {device_data}")
 except Exception as e:
     logging.error(f"[DEBUG] Could not read key-words.json: {e}")
     device_data = []
@@ -29,18 +42,46 @@ except Exception as e:
 logging.info(f"[DEBUG] Device parsed: {device}")
 logging.info(f"[DEBUG] Features parsed: {features}")
 
+
 # -----------------------------
-# 0. MODELS
+# 2. INITIALIZE MODELS (with checks)
 # -----------------------------
-sentiment_model = pipeline("sentiment-analysis", model="distilbert/distilbert-base-uncased-finetuned-sst-2-english")
-feature_classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
+sentiment_model = None
+feature_classifier = None
+
+try:
+    sentiment_model = pipeline(
+        "sentiment-analysis",
+        model="distilbert/distilbert-base-uncased-finetuned-sst-2-english",
+        device=DEVICE
+    )
+    logging.info("[OK] Sentiment model initialized successfully.")
+    logging.info(f"Sentiment model device: {'GPU' if DEVICE == 0 else 'CPU'}")
+except Exception as e:
+    logging.error(f"[ERROR] Failed to initialize sentiment model: {e}")
+
+try:
+    feature_classifier = pipeline(
+        "zero-shot-classification",
+        model="facebook/bart-large-mnli",
+        device=DEVICE
+    )
+    logging.info("[OK] Zero-shot classifier initialized successfully.")
+    logging.info(f"Zero-shot classifier device: {'GPU' if DEVICE == 0 else 'CPU'}")
+except Exception as e:
+    logging.error(f"[ERROR] Failed to initialize zero-shot classifier: {e}")
+
+
+# Optional: hard fail if models aren't loaded
+if sentiment_model is None or feature_classifier is None:
+    raise RuntimeError("One or more NLP models failed to initialize – stopping execution.")
+
 
 # -----------------------------
 # 3. ASSURE TRANSCRIPT EXISTS
 # -----------------------------
-transcript = {}
 
-transcript["transcript"] = """
+transcript = """
 I’ve been testing this smartphone for almost two weeks now, and overall the experience has been pretty solid. 
 Starting with the battery life, I’m genuinely impressed. On most days I end with around 25–30% battery left, 
 even with heavy use that includes streaming, GPS navigation, and social media. Charging is fast too — 
@@ -74,47 +115,51 @@ and everyday performance.
 
 """
 
-transcribed_text = transcript.get("transcript", "")
-logging.info(f"[DEBUG] Final transcript text: {transcribed_text}")
 
 # -----------------------------
-# 2. SPLIT SENTENCES
+# 4. PROCESS SENTENCES
 # -----------------------------
-sentences = [s.strip() for s in transcribed_text.split(".") if s.strip()]
 
-# -----------------------------
-# 3. PROCESS SENTENCES
-# -----------------------------
+sentences = [s.strip() for s in transcript.split(".") if s.strip()]
+
+
 feature_sentiments = {f: [] for f in features}
 
-print("SENTENCE ANALYSIS")
+print("SENTENCE ANALYSIS\n")
+
 for s in sentences:
+    # --- sentiment ---
     try:
         result = sentiment_model(s)[0]
         score = result["score"]
         if result["label"].upper() == "NEGATIVE":
             score = -score
+
         print("------------------------")
         print(f"Sentence: '{s}'")
         print(f"Sentiment: {result['label']}, Score: {score}")
+
     except Exception as e:
-        print(f"Sentiment analysis failed for sentence: '{s}' -> {e}")
+        print(f"Sentiment analysis failed for: '{s}' -> {e}")
         continue
 
-    # --- feature classification ---
-    if feature_classifier:
-        try:
-            cls = feature_classifier(s, candidate_labels=features)
-            top_feature, confidence = cls["labels"][0], cls["scores"][0]
-            print(f"  Classified as feature: '{top_feature}' with confidence {confidence:.2f}")
-            if confidence > 0.3:
-                feature_sentiments[top_feature].append(score)
-        except Exception as e:
-            print(f"Feature classification failed for sentence: '{s}' -> {e}")
-            continue
+    # --- zero-shot feature classification ---
+    try:
+        cls = feature_classifier(s, candidate_labels=features)
+        top_feature, confidence = cls["labels"][0], cls["scores"][0]
+
+        print(f"  Classified as feature: '{top_feature}', conf={confidence:.2f}")
+
+        if confidence > 0.3:
+            feature_sentiments[top_feature].append(score)
+
+    except Exception as e:
+        print(f"Feature classification failed for: '{s}' -> {e}")
+        continue
+
 
 # -----------------------------
-# 4. AGGREGATE & FORMAT
+# 5. AGGREGATE RESULTS
 # -----------------------------
 formatted = {}
 
@@ -130,18 +175,15 @@ for f, scores in feature_sentiments.items():
         else:
             label = "POSITIVE"
         formatted[f] = {"score": score_10, "label": label}
-        print(f"Feature '{f}': Scores = {scores}, Avg = {avg:.2f}, Score_10 = {score_10}, Label = {label}")
+        print(f"{f}: scores={scores}, avg={avg:.2f}, 10-score={score_10}, label={label}")
+
     else:
-        formatted[f] = {"score": 5.0, "label": "NEUTRAL"}  # default if no sentences
-        print(f"Feature '{f}': No sentences matched. Default Score_10 = 5.0, Label = NEUTRAL")
+        formatted[f] = {"score": 5.0, "label": "NEUTRAL"}
+        print(f"{f}: no matched sentences -> default score=5.0")
+
 
 final = {"sentiment-by-part": formatted}
 
-# -----------------------------
-# 5. FINAL RESULT
-# -----------------------------
-
-print()
-print("------------------------")
-print("FINAL CLASSIFICAITON: ")
+print("\n------------------------")
+print("FINAL CLASSIFICATION:")
 print(final)
