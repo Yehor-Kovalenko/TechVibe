@@ -3,6 +3,15 @@ import type { DashboardConfig } from '../types/widget.types';
 export const defaultDashboardConfig: DashboardConfig = {
   columns: 3,
   widgets: [
+      {
+        id: 'overall-summary-by-components',
+        type: 'summary-components',
+        title: 'Component Ratings',
+        height: 3,
+        width: 1,
+        categories: [],
+        dataKey: 'sentiment-by-part'
+},
     // // Overall Summary - Battery style display
     // {
     //   id: 'overall-summary-by-components',

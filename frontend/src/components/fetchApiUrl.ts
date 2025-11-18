@@ -21,10 +21,11 @@ interface JobSummaryResponse {
     labels: string[];
   }
   sentiment_by_part: {
-    device: string;
-    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-    features_verdict: any
+  [key: string]: {
+    score: number;
+    label: string;
   }
+}
 }
 
 interface TranscriptResponse {
@@ -91,18 +92,20 @@ export async function checkJobStatus(
 export async function getBackendData(
   jobId: string
 ): Promise<JobAllDataResponse> {
-  const [summary, metadata, transcript] = await Promise.all([
+  const [summary, metadata, transcript, sentimentByPart] = await Promise.all([
     getJobSummary(jobId),
     fetchVideoMetadata(jobId),
     fetchTranscript(jobId),
-  ]) as [JobSummaryResponse | undefined, VideoMetadataResponse | undefined, TranscriptResponse | undefined];
+    fetchSentimentByPart(jobId),
+  ]) as [JobSummaryResponse | undefined, VideoMetadataResponse | undefined, TranscriptResponse | undefined, any];
 
   return {
     summary: {
       ...(summary || {}),
       ...(metadata || {}),
       ...(transcript || {}),
-    }
+      ...(sentimentByPart || {}),
+    },
   };
 }
 
@@ -174,6 +177,28 @@ async function fetchTranscript(
     return await response.json();
   } catch (error) {
     console.error('Error fetching transcript:', error);
+    return undefined;
+  }
+}
+
+export async function fetchSentimentByPart(jobId: string): Promise<any> {
+  try {
+    const response = await fetch(
+      `${URL}?action=sentiment-by-part&id=${jobId}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    if (!response.ok) {
+      console.error(`HTTP error! status: ${response.status}`);
+      return undefined;
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching sentiment by part:', error);
     return undefined;
   }
 }
