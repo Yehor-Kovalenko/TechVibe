@@ -32,7 +32,7 @@ logging.info(f"[DEBUG] Features parsed: {features}")
 # -----------------------------
 # 0. MODELS
 # -----------------------------
-sentiment_model = pipeline("sentiment-analysis")
+sentiment_model = pipeline("sentiment-analysis", model="distilbert/distilbert-base-uncased-finetuned-sst-2-english")
 feature_classifier = pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
 
 # -----------------------------

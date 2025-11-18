@@ -137,7 +137,7 @@ def main(msg: QueueMessage):
 
         device, features = read_keywords()
 
-        sentiment_model = pipeline("sentiment-analysis")
+        sentiment_model = pipeline("sentiment-analysis", model="distilbert/distilbert-base-uncased-finetuned-sst-2-english")
         feature_classifier = None #pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
 
 
