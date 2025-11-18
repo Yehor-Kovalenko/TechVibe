@@ -81,7 +81,7 @@ def read_video_metadata(job_id: str) -> dict:
 def write_failed_job_metadata(job_id: str) -> None:
     """Write failed job metadata to blob storage"""
     metadata = read_job_metadata(job_id)
-    metadata["status"] = JobStatus.ERROR
+    metadata["status"] = JobStatus.FAILED
     write_blob(
         f"results/{job_id}/{JOB_METADATA_FILENAME}",
         metadata,

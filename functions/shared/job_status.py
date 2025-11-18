@@ -6,4 +6,4 @@ class JobStatus(Enum):
     TRANSCRIBED = "TRANSCRIBED"
     DONE = "DONE"
     CREATED = "CREATED"
-    ERROR = "ERROR"
+    FAILED = "FAILED"
