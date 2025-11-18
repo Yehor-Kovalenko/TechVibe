@@ -41,7 +41,7 @@ def handle_get(req: HttpRequest, action: str) -> HttpResponse:
     
     if not job_id:
         return HttpResponse(
-            json.dumps({"status": JobStatus.ERROR.value, "message": "Missing job id parameter"}),
+            json.dumps({"status": JobStatus.FAILED.value, "message": "Missing job id parameter"}),
             status_code=400,
             mimetype="application/json",
             headers=cors_headers
@@ -69,7 +69,7 @@ def handle_get(req: HttpRequest, action: str) -> HttpResponse:
     except Exception as e:
         logging.error(f"Failed to read job data for {job_id} (action={action}): {e}")
         return HttpResponse(
-            json.dumps({"status": JobStatus.ERROR.value, "message": "Data not found"}),
+            json.dumps({"status": JobStatus.FAILED.value, "message": "Data not found"}),
             status_code=404,
             mimetype="application/json",
             headers=cors_headers
@@ -88,7 +88,7 @@ def handle_post(req: HttpRequest) -> HttpResponse:
     
     if not url:
         return HttpResponse(
-            json.dumps({"status": JobStatus.ERROR.value, "message": "Missing url parameter"}),
+            json.dumps({"status": JobStatus.FAILED.value, "message": "Missing url parameter"}),
             status_code=400,
             mimetype="application/json",
             headers=cors_headers
@@ -104,7 +104,7 @@ def handle_post(req: HttpRequest) -> HttpResponse:
     except Exception as e:
         logging.error(f"Failed to enqueue or upload blob: {e}")
         return HttpResponse(
-            json.dumps({"status": JobStatus.ERROR.value, "message": str(e)}),
+            json.dumps({"status": JobStatus.FAILED.value, "message": str(e)}),
             status_code=500,
             mimetype="application/json",
             headers=cors_headers
