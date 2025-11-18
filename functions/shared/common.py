@@ -1,8 +1,11 @@
 import json
 import logging
+
 from azure.storage.blob import BlobServiceClient
 from azure.storage.queue import QueueClient, BinaryBase64EncodePolicy
-from ..shared.config import JOB_METADATA_FILENAME, STORAGE_CONN, RESULTS_CONTAINER, CONNECTION_STRING, VIDEO_METADATA_FILENAME
+
+from .job_status import JobStatus
+from ..shared.config import JOB_METADATA_FILENAME, STORAGE_CONN, RESULTS_CONTAINER, VIDEO_METADATA_FILENAME
 
 
 def get_queue_client(queue_name):
@@ -73,3 +76,13 @@ def write_job_metadata(job_id: str, url: str, status: str) -> None:
 def read_video_metadata(job_id: str) -> dict:
     """Read video metadata from blob storage"""
     return read_blob(f"results/{job_id}/{VIDEO_METADATA_FILENAME}")
+
+
+def write_failed_job_metadata(job_id: str) -> None:
+    """Write failed job metadata to blob storage"""
+    metadata = read_job_metadata(job_id)
+    metadata["status"] = JobStatus.FAILED.value
+    write_blob(
+        f"results/{job_id}/{JOB_METADATA_FILENAME}",
+        metadata,
+    )
