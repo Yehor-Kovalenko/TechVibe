@@ -1,26 +1,35 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
-import { jobId$ } from './context.ts';
+import { checkJobStatus } from './fetchApiUrl';
+import { JobStatus } from '../config/JobStatus';
+import { useJobs } from './hooks/useJobs.ts';
+import { useJob } from './hooks/useJob.ts';
+import { useView } from './hooks/useView.ts';
 
 Modal.setAppElement('#root');
 
 export const PreviousJobsModal: React.FC = () => {
+  const { setJobId } = useJob();
+  const { setView } = useView();
+  const { jobs } = useJobs();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleJobSelect = (jobId: string) => {
-    jobId$.next(jobId);
-
-    // todo: get job status
-    // const status = await api.status(jobId);
-    // todo: set view based on status
-    // if (status == ...
+    setJobId(jobId);
+    checkJobStatus(jobId)
+      .then((response) => {
+        if (response.status !== JobStatus.DONE) {
+          setView('loading');
+        } else {
+          setView('dashboard');
+        }
+      })
+      .catch((error) => {
+        console.log('Error checking job status:', error);
+        setView('landing');
+      });
 
     setIsModalOpen(false);
-  };
-
-  const getPreviousJobs = (): string[] => {
-    const jobs = localStorage.getItem('jobs');
-    return jobs ? JSON.parse(jobs) : [];
   };
 
   return (
@@ -51,12 +60,12 @@ export const PreviousJobsModal: React.FC = () => {
         </div>
 
         <div className="space-y-2">
-          {getPreviousJobs().length === 0 ? (
+          {jobs.length === 0 ? (
             <p className="text-muted-foreground text-center py-4">
               No previous jobs found
             </p>
           ) : (
-            getPreviousJobs().map((jobId, index) => (
+            jobs.map((jobId, index) => (
               <button
                 key={jobId}
                 onClick={() => handleJobSelect(jobId)}

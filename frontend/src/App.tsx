@@ -4,36 +4,18 @@ import { LandingPage } from './components/LandingPage';
 import { LoadingPage } from './components/LoadingPage';
 import { Dashboard } from './components/Dashboard';
 import { defaultDashboardConfig } from './config/dashboard.config';
-import { getBackendData } from './components/fetchApiUrl.ts';
-import { jobId$ } from './components/context.ts';
-import { useBehaviorSubjectState } from './components/hooks/useBehaviourSubjectState.ts';
-
-type View = 'landing' | 'loading' | 'dashboard';
+import { getBackendData } from './components/fetchApiUrl';
+import { useJobs } from './components/hooks/useJobs';
+import { useJob } from './components/hooks/useJob.ts';
+import { useView } from './components/hooks/useView.ts';
 
 export const App = () => {
-  const [jobId, setJobId] = useBehaviorSubjectState<string>(jobId$);
-
-  const [view, setView] = useState<View>(() => {
-    const storedJobId = sessionStorage.getItem('jobId');
-    const storedView = sessionStorage.getItem('view') as View | null;
-    if (storedJobId && storedView) {
-      return storedView;
-    }
-    return 'landing';
-  });
+  const { jobId, setJobId } = useJob();
+  const { view, setView } = useView();
+  const { addJob } = useJobs();
 
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [backendData, setBackendData] = useState(defaultDashboardConfig);
-
-  useEffect(() => {
-    if (jobId) {
-      sessionStorage.setItem('jobId', jobId);
-    }
-  }, [jobId]);
-
-  useEffect(() => {
-    sessionStorage.setItem('view', view);
-  }, [view]);
 
   useEffect(() => {
     if (!isLoaded || !jobId) return;
@@ -43,19 +25,12 @@ export const App = () => {
       console.log('Dashboard data loaded:', data);
       setView('dashboard');
     });
-  }, [isLoaded, jobId]);
+  }, [isLoaded, jobId, setView]);
 
   const handleGenerate = (id: string) => {
     setJobId(id);
     setView('loading');
-
-    const existingJobs = localStorage.getItem('jobs');
-    const jobs: string[] = existingJobs ? JSON.parse(existingJobs) : [];
-
-    if (!jobs.includes(id)) {
-      jobs.push(id);
-      localStorage.setItem('jobs', JSON.stringify(jobs));
-    }
+    addJob(id);
   };
 
   if (view === 'loading') {

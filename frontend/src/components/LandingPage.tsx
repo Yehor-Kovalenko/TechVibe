@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { createJob } from './fetchApiUrl';
-import { PreviousJobsModal } from './PreviousJobsModal.tsx';
+import { PreviousJobsModal } from './PreviousJobsModal';
 
 type LandingPageProps = { onSubmit?: (jobId: string) => void };
 
@@ -69,7 +69,6 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSubmit }) => {
 
         <PreviousJobsModal />
       </div>
-
     </main>
   );
 };
