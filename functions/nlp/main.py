@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+import torch
 
 from azure.functions import QueueMessage
 from transformers import pipeline
@@ -134,12 +135,36 @@ def main(msg: QueueMessage):
     job_id = parse_id(msg)
     try:
         transcript = read_blob(f"results/{job_id}/{TRANSCRIPT_FILENAME}")
-
         device, features = read_keywords()
 
-        sentiment_model = pipeline("sentiment-analysis", model="distilbert/distilbert-base-uncased-finetuned-sst-2-english")
-        feature_classifier = None #pipeline("zero-shot-classification", model="facebook/bart-large-mnli")
+        if torch.cuda.is_available():
+            model_device = 0  # GPU
+            logging.info("CUDA available – using GPU for NLP models")
+        else:
+            model_device = -1  # CPU
+            logging.info("CUDA not available – using CPU for NLP models")
 
+        try:
+            sentiment_model = pipeline(
+                "sentiment-analysis",
+                model="distilbert/distilbert-base-uncased-finetuned-sst-2-english",
+                device=model_device
+            )
+            logging.info(f"Sentiment model initialized on {'GPU' if model_device == 0 else 'CPU'}")
+        except Exception as e:
+            logging.error(f"Failed to initialize sentiment model: {e}")
+            raise
+
+        try:
+            feature_classifier = pipeline(
+                "zero-shot-classification",
+                model="facebook/bart-large-mnli",
+                device=model_device
+            )
+            logging.info(f"Zero-shot classifier initialized on {'GPU' if model_device == 0 else 'CPU'}")
+        except Exception as e:
+            logging.error(f"Failed to initialize zero-shot classifier: {e}")
+            raise
 
         sentences = extract_sentences(transcript)
 
