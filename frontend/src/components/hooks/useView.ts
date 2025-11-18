@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
-import { useBehaviorSubjectState } from './useBehaviourSubjectState.ts';
-import { view$ } from '../context.ts';
+import { useBehaviorSubjectState } from './useBehaviourSubjectState';
+import { view$ } from '../context';
 
 export const useView = () => {
   const [view, setView] = useBehaviorSubjectState(view$);
