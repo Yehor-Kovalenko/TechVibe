@@ -27,6 +27,10 @@ interface JobSummaryResponse {
   }
 }
 
+interface TranscriptResponse {
+  "full-text": string;
+}
+
 interface VideoMetadataResponse {
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   "video-metadata": any
@@ -86,17 +90,18 @@ export async function checkJobStatus(
 //  External method to retrieve all data from the backend
 export async function getBackendData(
   jobId: string
-): Promise<JobAllDataResponse | undefined> {
-  const [summary, metadata] = await Promise.all([
-      getJobSummary(jobId),
-      fetchVideoMetadata(jobId),
-      //add other calls there
-  ]) as [JobSummaryResponse | undefined, VideoMetadataResponse | undefined];
+): Promise<JobAllDataResponse> {
+  const [summary, metadata, transcript] = await Promise.all([
+    getJobSummary(jobId),
+    fetchVideoMetadata(jobId),
+    fetchTranscript(jobId),
+  ]) as [JobSummaryResponse | undefined, VideoMetadataResponse | undefined, TranscriptResponse | undefined];
 
   return {
     summary: {
       ...(summary || {}),
-      ...(metadata || {})
+      ...(metadata || {}),
+      ...(transcript || {}),
     }
   };
 }
@@ -145,6 +150,30 @@ export async function fetchVideoMetadata(jobId: string): Promise<VideoMetadataRe
     return await response.json();
   } catch (error) {
     console.error('Error checking job status:', error);
+    return undefined;
+  }
+}
+
+async function fetchTranscript(
+  jobId: string
+): Promise<TranscriptResponse | undefined> {
+  try {
+    const response = await fetch(
+      `${URL}?action=transcript&id=${jobId}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    if (!response.ok) {
+      console.error(`HTTP error! status: ${response.status}`);
+      return undefined;
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching transcript:', error);
     return undefined;
   }
 }
