@@ -115,6 +115,9 @@ export const defaultDashboardConfig: DashboardConfig = {
       fields: [
         { label: 'Uploader', value: 'John Doe' },
         { label: 'Duration', value: '58 min' },
+        { label: 'Upload Date', value: '23.01.2025' },
+        { label: 'View Count', value: '300000'},
+        { label: 'Subtitle Type', value: 'AI Generated'},
       ],
       dataKey: "video-metadata"
     },

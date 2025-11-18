@@ -19,7 +19,17 @@ interface DashboardProps {
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
 const WidgetRenderer: React.FC<{ config: WidgetConfig, backendData: Record<string, any> | undefined }> = ({ config, backendData }) => {
   const widgetData = config.dataKey ? backendData?.[config.dataKey] : null;
-  // exchange with data from the backend
+
+  if (config.type === 'metadata' && widgetData) {
+    const metadataConfig = config as MetadataWidgetConfig;
+
+    const fields = Object.entries(widgetData).map(([key, value]) => ({
+      label: key.charAt(0).toUpperCase() + key.slice(1).replace(/_/g, ' '),
+      value: String(value)
+    }));
+
+    return <MetadataWidget config={{ ...metadataConfig, fields }} />;
+  }
   if (widgetData) {
     config = {...config, ...widgetData};
   }
