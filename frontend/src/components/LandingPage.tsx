@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { createJob } from './fetchApiUrl';
+import { PreviousJobsModal } from './PreviousJobsModal.tsx';
 
 type LandingPageProps = { onSubmit?: (jobId: string) => void };
 
-const LandingPage: React.FC<LandingPageProps> = ({ onSubmit }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ onSubmit }) => {
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -65,9 +66,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSubmit }) => {
           The tool integrates reviews from multiple platforms and distills hours
           of content into key pros, cons, and takeaways.
         </div>
+
+        <PreviousJobsModal />
       </div>
+
     </main>
   );
 };
-
-export default LandingPage;
