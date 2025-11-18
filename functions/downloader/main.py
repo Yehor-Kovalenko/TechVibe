@@ -2,7 +2,7 @@
 from azure.functions import QueueMessage
 from ..shared.common import read_blob, read_job_metadata, write_job_metadata
 from ..shared.logs import logging
-from .strategies import YTDownloader, TTDownloader, ISDownloader
+from .strategies import YTDownloader
 
 
 def main(msg: QueueMessage):
@@ -27,10 +27,6 @@ def main(msg: QueueMessage):
         # Determine which downloader to use based on URL
         if "youtube.com" in url or "youtu.be" in url:
             downloader = YTDownloader(job_id, url)
-        elif "tiktok.com" in url:
-            downloader = TTDownloader(job_id, url)
-        elif "instagram.com" in url:
-            downloader = ISDownloader(job_id, url)
         else:
             raise ValueError(f"Unsupported platform for URL: {url}")
         
