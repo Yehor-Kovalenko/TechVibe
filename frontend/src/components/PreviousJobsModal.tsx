@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import Modal from 'react-modal';
 import { checkJobStatus } from './fetchApiUrl';
 import { JobStatus } from '../config/JobStatus';
-import { useJobs } from './hooks/useJobs.ts';
-import { useJob } from './hooks/useJob.ts';
-import { useView } from './hooks/useView.ts';
+import { useJobs } from './hooks/useJobs';
+import { useJob } from './hooks/useJob';
+import { useView } from './hooks/useView';
 
 Modal.setAppElement('#root');
 

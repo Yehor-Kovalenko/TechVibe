@@ -6,8 +6,8 @@ import { Dashboard } from './components/Dashboard';
 import { defaultDashboardConfig } from './config/dashboard.config';
 import { getBackendData } from './components/fetchApiUrl';
 import { useJobs } from './components/hooks/useJobs';
-import { useJob } from './components/hooks/useJob.ts';
-import { useView } from './components/hooks/useView.ts';
+import { useJob } from './components/hooks/useJob';
+import { useView } from './components/hooks/useView';
 
 export const App = () => {
   const { jobId, setJobId } = useJob();

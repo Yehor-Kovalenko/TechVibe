@@ -1,5 +1,5 @@
-import { useBehaviorSubjectState } from './useBehaviourSubjectState.ts';
-import { jobs$ } from '../context.ts';
+import { useBehaviorSubjectState } from './useBehaviourSubjectState';
+import { jobs$ } from '../context';
 
 export const useJobs = () => {
   const [jobs] = useBehaviorSubjectState(jobs$);

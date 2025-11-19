@@ -1,5 +1,5 @@
-import { jobId$ } from '../context.ts';
-import { useBehaviorSubjectState } from './useBehaviourSubjectState.ts';
+import { jobId$ } from '../context';
+import { useBehaviorSubjectState } from './useBehaviourSubjectState';
 import { useEffect } from 'react';
 
 export const useJob = () => {

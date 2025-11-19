@@ -5,7 +5,8 @@ export type View = 'landing' | 'loading' | 'dashboard';
 const getInitialJobs = (): string[] => {
   try {
     return JSON.parse(localStorage.getItem('jobs') || '[]');
-  } catch {
+  } catch (e) {
+    console.error('Failed to parse jobs from localStorage:', e);
     return [];
   }
 };
