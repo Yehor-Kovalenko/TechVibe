@@ -121,13 +121,18 @@ export const defaultDashboardConfig: DashboardConfig = {
       height: 2,
       width: 2,
       // order: 10,
-      fields: [
-        { label: 'Uploader', value: 'John Doe' },
-        { label: 'Duration', value: '58 min' },
-        { label: 'Upload Date', value: '23.01.2025' },
-        { label: 'View Count', value: '300000'},
-        { label: 'Subtitle Type', value: 'AI Generated'},
-      ],
+      // fields: [
+      //   { label: 'Uploader', value: 'John Doe' },
+      //   { label: 'Duration', value: '58 min' },
+      //   { label: 'Upload Date', value: '23.01.2025' },
+      //   { label: 'View Count', value: '300000'},
+      //   { label: 'Subtitle Type', value: 'AI Generated'},
+      // ],
+      duration: 58,
+      uploader: 'John Doe',
+      upload_date: '23.01.2025',
+      view_count: 300000,
+      subtitle_type: 'AI Generated',
       dataKey: "video-metadata"
     },
     // Review Text Widget

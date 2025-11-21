@@ -61,8 +61,12 @@ export interface ReviewTextWidgetConfig extends BaseWidgetConfig {
 
 export interface MetadataWidgetConfig extends BaseWidgetConfig {
   type: 'metadata';
-  fields: Array<{ label: string; value: string }>;
-  dataKey: string;
+  title: string;
+  duration: number;
+  uploader: string;
+  upload_date: string;
+  view_count: number;
+  subtitle_type: string;
 }
 
 export type WidgetConfig =
