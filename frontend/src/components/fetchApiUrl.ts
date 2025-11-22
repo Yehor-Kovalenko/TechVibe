@@ -21,10 +21,15 @@ interface JobSummaryResponse {
     labels: string[];
   }
   sentiment_by_part: {
-    device: string;
-    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-    features_verdict: any
+  [key: string]: {
+    score: number;
+    label: string;
   }
+}
+}
+
+interface TranscriptResponse {
+  "full-text": string;
 }
 
 interface VideoMetadataResponse {
@@ -86,18 +91,22 @@ export async function checkJobStatus(
 //  External method to retrieve all data from the backend
 export async function getBackendData(
   jobId: string
-): Promise<JobAllDataResponse | undefined> {
-  const [summary, metadata] = await Promise.all([
-      getJobSummary(jobId),
-      fetchVideoMetadata(jobId),
-      //add other calls there
-  ]) as [JobSummaryResponse | undefined, VideoMetadataResponse | undefined];
+): Promise<JobAllDataResponse> {
+  const [summary, metadata, transcript, sentimentByPart] = await Promise.all([
+    getJobSummary(jobId),
+    fetchVideoMetadata(jobId),
+    fetchTranscript(jobId),
+    fetchSentimentByPart(jobId),
+      // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+  ]) as [JobSummaryResponse | undefined, VideoMetadataResponse | undefined, TranscriptResponse | undefined, any];
 
   return {
     summary: {
       ...(summary || {}),
-      ...(metadata || {})
-    }
+      ...(metadata || {}),
+      ...(transcript || {}),
+      ...(sentimentByPart || {}),
+    },
   };
 }
 
@@ -145,6 +154,53 @@ export async function fetchVideoMetadata(jobId: string): Promise<VideoMetadataRe
     return await response.json();
   } catch (error) {
     console.error('Error checking job status:', error);
+    return undefined;
+  }
+}
+
+async function fetchTranscript(
+  jobId: string
+): Promise<TranscriptResponse | undefined> {
+  try {
+    const response = await fetch(
+      `${URL}?action=transcript&id=${jobId}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    if (!response.ok) {
+      console.error(`HTTP error! status: ${response.status}`);
+      return undefined;
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching transcript:', error);
+    return undefined;
+  }
+}
+
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
+export async function fetchSentimentByPart(jobId: string): Promise<any> {
+  try {
+    const response = await fetch(
+      `${URL}?action=sentiment-by-part&id=${jobId}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+    if (!response.ok) {
+      console.error(`HTTP error! status: ${response.status}`);
+      return undefined;
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching sentiment by part:', error);
     return undefined;
   }
 }

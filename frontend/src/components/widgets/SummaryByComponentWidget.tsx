@@ -5,6 +5,17 @@ interface SummaryWidgetProps {
   config: SummaryByComponentsWidgetConfig;
 }
 
+const componentIcons: Record<string, string> = {
+  design: '🎨',
+  display: '📺',
+  camera: '📷',
+  audio: '🔊',
+  performance: '⚡',
+  battery: '🔋',
+  connectivity: '📡',
+  software: '💻',
+};
+
 const getRatingColor = (rating: number) => {
   if (rating >= 8.5) return 'text-emerald-400';
   if (rating >= 7) return 'text-green-400';
@@ -34,76 +45,59 @@ export const SummaryByComponentWidget: React.FC<SummaryWidgetProps> = ({
 }) => {
   const { title, categories, overallRating = 0 } = config;
 
+  const avgRating = overallRating ||
+    (categories.length > 0
+      ? categories.reduce((sum, cat) => sum + (cat.rating || 0), 0) / categories.length
+      : 0);
+
   return (
-    <div className="widget-card h-full flex flex-col">
+    <div className="relative bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 border border-slate-700/50 shadow-2xl">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold opacity-80">{title}</h3>
-      </div>
+      <h3 className="text-2xl font-bold mb-6 text-white">{title}</h3>
 
       {/* Overall Rating - Large Circular Display */}
-      <div className="flex items-center justify-center mb-8">
+      <div className="flex justify-center mb-8">
         <div className="relative">
           {/* Outer glow ring */}
-          <div
-            className={`absolute inset-0 rounded-full blur-xl ${getRatingGlow(overallRating)}`}
-            style={{
-              background: `conic-gradient(from 0deg, transparent ${100 - overallRating * 10}%, rgba(74, 222, 128, 0.3) ${100 - overallRating * 10}%)`,
-            }}
-          ></div>
+          <div className={`absolute inset-0 rounded-full bg-gradient-to-br ${getRatingBg(avgRating)} opacity-20 blur-xl ${getRatingGlow(avgRating)}`} />
 
           {/* Main circle */}
-          <div
-            className="relative w-40 h-40 rounded-full flex items-center justify-center"
-            style={{
-              background: `conic-gradient(from -90deg, 
-                   ${overallRating >= 8.5 ? '#10b981' : overallRating >= 7 ? '#22c55e' : overallRating >= 5.5 ? '#eab308' : overallRating >= 4 ? '#f97316' : '#ef4444'} 
-                   ${(overallRating / 10) * 100}%, 
-                   rgba(255,255,255,0.05) ${(overallRating / 10) * 100}%)`,
-            }}
-          >
-            <div className="w-[90%] h-[90%] rounded-full bg-[#0f0f14] flex flex-col items-center justify-center">
-              <div
-                className={`text-5xl font-bold ${getRatingColor(overallRating)} mb-1`}
-              >
-                {overallRating.toFixed(1)}
+          <div className="relative w-32 h-32 rounded-full bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center border-4 border-slate-700/50">
+            <div className="text-center">
+              <div className={`text-4xl font-bold ${getRatingColor(avgRating)}`}>
+                {avgRating.toFixed(1)}
               </div>
-              <div className="text-xs opacity-50 tracking-wider">OUT OF 10</div>
+              <div className="text-xs text-slate-400 mt-1">Overall</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Category Mini Cards */}
-      <div className="grid grid-cols-5 gap-2 mt-auto">
+      <div className="grid grid-cols-2 gap-3">
         {categories.map((category) => (
           <div
             key={category.id}
-            className="group relative overflow-hidden rounded-lg bg-white/5 hover:bg-white/10 transition-all duration-300 cursor-pointer"
+            className="relative bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 hover:border-slate-600 transition-all duration-300 overflow-hidden group"
           >
             {/* Gradient background on hover */}
-            <div
-              className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity bg-gradient-to-br ${getRatingBg(category.rating ?? 0)}`}
-              style={{ opacity: 0.1 }}
-            ></div>
+            <div className={`absolute inset-0 bg-gradient-to-br ${getRatingBg(category.rating || 0)} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
 
-            <div className="relative p-3 flex flex-col items-center gap-2">
-              <span className="text-2xl">{category.icon}</span>
-              <div
-                className={`text-lg font-bold ${getRatingColor(category.rating ?? 0)}`}
-              >
-                {category.rating?.toFixed(1)}
-              </div>
-              <div className="text-[10px] opacity-60 text-center leading-tight">
-                {category.label}
+            <div className="relative flex items-center gap-3">
+              <div className="text-2xl">{category.icon || componentIcons[category.id] || '📦'}</div>
+              <div className="flex-1 min-w-0">
+                <div className={`text-lg font-bold ${getRatingColor(category.rating || 0)}`}>
+                  {category.rating?.toFixed(1)}
+                </div>
+                <div className="text-xs text-slate-400 truncate">{category.label}</div>
               </div>
             </div>
 
             {/* Rating bar at bottom */}
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/5">
+            <div className="mt-3 h-1 bg-slate-700 rounded-full overflow-hidden">
               <div
-                className={`h-full bg-gradient-to-r ${getRatingBg(category.rating ?? 0)} transition-all duration-500`}
-                style={{ width: `${((category.rating ?? 0) / 10) * 100}%` }}
+                className={`h-full bg-gradient-to-r ${getRatingBg(category.rating || 0)} transition-all duration-500`}
+                style={{ width: `${((category.rating || 0) / 10) * 100}%` }}
               />
             </div>
           </div>
