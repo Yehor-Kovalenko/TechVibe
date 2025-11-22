@@ -3,6 +3,7 @@ import type {
   DashboardConfig,
   MetadataWidgetConfig,
   WidgetConfig,
+  ReviewTextWidgetConfig,
 } from '../types/widget.types';
 import { StatsWidget } from './widgets/StatsWidget';
 import { SummaryByComponentWidget } from './widgets/SummaryByComponentWidget.tsx';
@@ -73,7 +74,7 @@ const WidgetRenderer: React.FC<{ config: WidgetConfig, backendData: Record<strin
     case 'metadata':
       return <MetadataWidget config={config as MetadataWidgetConfig} />;
     case 'review-text':
-      return <ReviewTextWidget config={config} />;
+      return <ReviewTextWidget config={config as ReviewTextWidgetConfig} />;
     default:
       return null;
   }

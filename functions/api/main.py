@@ -119,58 +119,126 @@ def handle_post(req: HttpRequest) -> HttpResponse:
     )
 
 
+
+def _extract_transcript_payload(raw: Any, job_id: str) -> dict[str, str]:
+    """
+    Привести данные транскрипта к объекту:
+    {
+        "id": <строка>,
+        "transcript": <строка>
+    }
+    """
+    transcript_id = job_id
+    transcript_text = "Transcript not available yet"
+
+    # Если это bytes — декодируем
+    if isinstance(raw, bytes):
+        try:
+            raw = raw.decode("utf-8", errors="ignore")
+        except Exception:
+            return {"id": transcript_id, "transcript": transcript_text}
+
+    # Если это сразу строка — пробуем распарсить как JSON или как repr(dict)
+    if isinstance(raw, str):
+        # Сначала пытаемся JSON
+        try:
+            loaded = json.loads(raw)
+            raw = loaded
+        except json.JSONDecodeError:
+            # Потом пытаемся ast.literal_eval для строк вида "{'id': '...', 'transcript': '...'}"
+            try:
+                loaded = ast.literal_eval(raw)
+                raw = loaded
+            except Exception:
+                # Это просто текст транскрипта (id тогда берём из job_id)
+                transcript_text = raw
+                return {"id": transcript_id, "transcript": transcript_text}
+
+    # Если после всего этого у нас dict — пробуем вытащить id и текст
+    if isinstance(raw, dict):
+        # id внутри файла (если есть) приоритетнее job_id
+        if "id" in raw and isinstance(raw["id"], str):
+            transcript_id = raw["id"]
+
+        if "text" in raw and isinstance(raw["text"], str):
+            transcript_text = raw["text"]
+        elif "transcript" in raw and isinstance(raw["transcript"], str):
+            transcript_text = raw["transcript"]
+        elif "segments" in raw and isinstance(raw["segments"], list):
+            transcript_text = " ".join(seg.get("text", "") for seg in raw["segments"])
+
+        return {"id": transcript_id, "transcript": transcript_text}
+
+    # Фоллбек
+    return {"id": transcript_id, "transcript": transcript_text}
+
+
 def handle_get(req: HttpRequest, action: str) -> HttpResponse:
     """Handle GET request - check job status, summary, or metadata"""
     job_id = req.params.get("id")
 
     if not job_id:
         return HttpResponse(
-            json.dumps({"status": JobStatus.FAILED.value, "message": "Missing job id parameter"}),
+            json.dumps(
+                {
+                    "status": JobStatus.FAILED.value,
+                    "message": "Missing job id parameter",
+                }
+            ),
             status_code=400,
             mimetype="application/json",
-            headers=cors_headers
+            headers=cors_headers,
         )
 
     try:
-        response = {}
+        response: Any = {}
+
         if action == "summary":
             logging.info("ACTION == SUMMARY, accessed")
             try:
                 response = read_blob(f"results/{job_id}/{SUMMARY_FILENAME}")
-            except:
+            except Exception:
                 response = {"status": "Didn't get the summary file bro, sorry"}
+
         elif action == "metadata":
             response = read_video_metadata(job_id)
-        elif action == "transcript":  # НОВИЙ ЕНДПОІНТ
+
+        elif action == "transcript":
             logging.info("ACTION == TRANSCRIPT, accessed")
             try:
                 transcript_data = read_blob(f"results/{job_id}/{TRANSCRIPT_FILENAME}")
-                # Витягуємо текст з транскрипту
-                if isinstance(transcript_data, dict) and "text" in transcript_data:
-                    response = {"full-text": transcript_data["text"]}
-                elif isinstance(transcript_data, dict) and "segments" in transcript_data:
-                    # Якщо транскрипт має segments, з'єднуємо їх
-                    text = " ".join([seg.get("text", "") for seg in transcript_data["segments"]])
-                    response = {"full-text": text}
-                else:
-                    response = {"full-text": str(transcript_data)}
+                payload = _extract_transcript_payload(transcript_data, job_id)
+                # ВАЖНО: теперь full-text — объект с id и transcript
+                response = {"full-text": payload}
             except Exception as e:
                 logging.error(f"Failed to read transcript for {job_id}: {e}")
-                response = {"full-text": "Transcript not available yet"}
+                response = {
+                    "full-text": {
+                        "id": job_id,
+                        "transcript": "Transcript not available yet",
+                    }
+                }
+
         else:
             response = read_job_metadata(job_id)
 
         return HttpResponse(
-            json.dumps(response),
+            json.dumps(response, ensure_ascii=False),
             status_code=200,
             mimetype="application/json",
-            headers=cors_headers
+            headers=cors_headers,
         )
+
     except Exception as e:
         logging.error(f"Failed to read job data for {job_id} (action={action}): {e}")
         return HttpResponse(
-            json.dumps({"status": JobStatus.FAILED.value, "message": "Data not found"}),
+            json.dumps(
+                {
+                    "status": JobStatus.FAILED.value,
+                    "message": "Data not found",
+                }
+            ),
             status_code=404,
             mimetype="application/json",
-            headers=cors_headers
+            headers=cors_headers,
         )
