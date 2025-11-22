@@ -119,58 +119,115 @@ def handle_post(req: HttpRequest) -> HttpResponse:
     )
 
 
+
+def _extract_transcript_payload(raw, job_id: str) -> dict[str, str]:
+    """
+    {
+        "id": ""<>"",
+        "transcript": ""
+    }
+    """
+    transcript_id = job_id
+    transcript_text = "Transcript not available yet"
+
+    # check if bytes
+    if isinstance(raw, bytes):
+        try:
+            raw = raw.decode("utf-8", errors="ignore")
+        except Exception:
+            return {"id": transcript_id, "transcript": transcript_text}
+
+    # if string just use it
+    if isinstance(raw, str):
+        try:
+            loaded = json.loads(raw)
+            raw = loaded
+        except Exception:
+            transcript_text = raw
+            return {"id": transcript_id, "transcript": transcript_text}
+
+
+    if isinstance(raw, dict):
+        if "id" in raw and isinstance(raw["id"], str):
+            transcript_id = raw["id"]
+
+        if "text" in raw and isinstance(raw["text"], str):
+            transcript_text = raw["text"]
+        elif "transcript" in raw and isinstance(raw["transcript"], str):
+            transcript_text = raw["transcript"]
+        elif "segments" in raw and isinstance(raw["segments"], list):
+            transcript_text = " ".join(seg.get("text", "") for seg in raw["segments"])
+
+        return {"id": transcript_id, "transcript": transcript_text}
+
+    return {"id": transcript_id, "transcript": transcript_text}
+
+
 def handle_get(req: HttpRequest, action: str) -> HttpResponse:
     """Handle GET request - check job status, summary, or metadata"""
     job_id = req.params.get("id")
 
     if not job_id:
         return HttpResponse(
-            json.dumps({"status": JobStatus.FAILED.value, "message": "Missing job id parameter"}),
+            json.dumps(
+                {
+                    "status": JobStatus.FAILED.value,
+                    "message": "Missing job id parameter",
+                }
+            ),
             status_code=400,
             mimetype="application/json",
-            headers=cors_headers
+            headers=cors_headers,
         )
 
     try:
         response = {}
+
         if action == "summary":
             logging.info("ACTION == SUMMARY, accessed")
             try:
                 response = read_blob(f"results/{job_id}/{SUMMARY_FILENAME}")
-            except:
+            except Exception:
                 response = {"status": "Didn't get the summary file bro, sorry"}
+
         elif action == "metadata":
             response = read_video_metadata(job_id)
-        elif action == "transcript":  # НОВИЙ ЕНДПОІНТ
+
+        elif action == "transcript":
             logging.info("ACTION == TRANSCRIPT, accessed")
             try:
                 transcript_data = read_blob(f"results/{job_id}/{TRANSCRIPT_FILENAME}")
-                # Витягуємо текст з транскрипту
-                if isinstance(transcript_data, dict) and "text" in transcript_data:
-                    response = {"full-text": transcript_data["text"]}
-                elif isinstance(transcript_data, dict) and "segments" in transcript_data:
-                    # Якщо транскрипт має segments, з'єднуємо їх
-                    text = " ".join([seg.get("text", "") for seg in transcript_data["segments"]])
-                    response = {"full-text": text}
-                else:
-                    response = {"full-text": str(transcript_data)}
+                payload = _extract_transcript_payload(transcript_data, job_id)
+                response = {"full-text": payload}
             except Exception as e:
                 logging.error(f"Failed to read transcript for {job_id}: {e}")
-                response = {"full-text": "Transcript not available yet"}
+                response = {
+                    "full-text": {
+                        "id": job_id,
+                        "transcript": "Transcript not available yet",
+                    }
+                }
+
         else:
             response = read_job_metadata(job_id)
 
         return HttpResponse(
-            json.dumps(response),
+            json.dumps(response, ensure_ascii=False),
             status_code=200,
             mimetype="application/json",
-            headers=cors_headers
+            headers=cors_headers,
         )
+
     except Exception as e:
         logging.error(f"Failed to read job data for {job_id} (action={action}): {e}")
         return HttpResponse(
-            json.dumps({"status": JobStatus.FAILED.value, "message": "Data not found"}),
+            json.dumps(
+                {
+                    "status": JobStatus.FAILED.value,
+                    "message": "Data not found",
+                }
+            ),
             status_code=404,
             mimetype="application/json",
-            headers=cors_headers
+            headers=cors_headers,
         )
