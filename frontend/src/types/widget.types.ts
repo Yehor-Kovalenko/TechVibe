@@ -55,8 +55,8 @@ export interface ChartWidgetConfig extends BaseWidgetConfig {
 
 export interface ReviewTextWidgetConfig extends BaseWidgetConfig {
   type: 'review-text';
-  text: string;
-  dataKey: string;
+  id: string;
+  transcript: string;
 }
 
 export interface MetadataWidgetConfig extends BaseWidgetConfig {

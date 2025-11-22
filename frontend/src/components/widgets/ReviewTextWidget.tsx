@@ -9,19 +9,20 @@ interface ReviewTextWidgetProps {
 export const ReviewTextWidget: React.FC<ReviewTextWidgetProps> = ({
   config,
 }) => {
-  const { title, text } = config;
+  // const { title, transcript } = config;
   const [showFullText, setShowFullText] = useState(false);
 
   Modal.setAppElement?.('#root');
-
-  const displayText = text || "Loading transcript...";
+  console.log(config);
+  console.log(config.transcript)
+  const displayText = config.transcript || "Loading transcript...";
   const previewText = displayText.length > 200
     ? displayText.slice(0, 200).trim() + '…'
     : displayText;
 
   return (
     <div className="h-full flex flex-col bg-gradient-to-br from-gray-900 to-gray-950 rounded-xl p-6 border border-white/10">
-      <h2 className="text-xl font-bold text-white mb-4">{title}</h2>
+      <h2 className="text-xl font-bold text-white mb-4">{config.title}</h2>
 
       <div className="flex-1 overflow-y-auto">
         <p className="text-gray-300 leading-relaxed">
