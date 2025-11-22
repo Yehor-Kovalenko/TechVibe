@@ -120,43 +120,34 @@ def handle_post(req: HttpRequest) -> HttpResponse:
 
 
 
-def _extract_transcript_payload(raw: Any, job_id: str) -> dict[str, str]:
+def _extract_transcript_payload(raw, job_id: str) -> dict[str, str]:
     """
-    Привести данные транскрипта к объекту:
     {
-        "id": <строка>,
-        "transcript": <строка>
+        "id": ""<>"",
+        "transcript": ""
     }
     """
     transcript_id = job_id
     transcript_text = "Transcript not available yet"
 
-    # Если это bytes — декодируем
+    # check if bytes
     if isinstance(raw, bytes):
         try:
             raw = raw.decode("utf-8", errors="ignore")
         except Exception:
             return {"id": transcript_id, "transcript": transcript_text}
 
-    # Если это сразу строка — пробуем распарсить как JSON или как repr(dict)
+    # if string just use it
     if isinstance(raw, str):
-        # Сначала пытаемся JSON
         try:
             loaded = json.loads(raw)
             raw = loaded
-        except json.JSONDecodeError:
-            # Потом пытаемся ast.literal_eval для строк вида "{'id': '...', 'transcript': '...'}"
-            try:
-                loaded = ast.literal_eval(raw)
-                raw = loaded
-            except Exception:
-                # Это просто текст транскрипта (id тогда берём из job_id)
-                transcript_text = raw
-                return {"id": transcript_id, "transcript": transcript_text}
+        except Exception:
+            transcript_text = raw
+            return {"id": transcript_id, "transcript": transcript_text}
 
-    # Если после всего этого у нас dict — пробуем вытащить id и текст
+
     if isinstance(raw, dict):
-        # id внутри файла (если есть) приоритетнее job_id
         if "id" in raw and isinstance(raw["id"], str):
             transcript_id = raw["id"]
 
@@ -169,7 +160,6 @@ def _extract_transcript_payload(raw: Any, job_id: str) -> dict[str, str]:
 
         return {"id": transcript_id, "transcript": transcript_text}
 
-    # Фоллбек
     return {"id": transcript_id, "transcript": transcript_text}
 
 
@@ -191,7 +181,7 @@ def handle_get(req: HttpRequest, action: str) -> HttpResponse:
         )
 
     try:
-        response: Any = {}
+        response = {}
 
         if action == "summary":
             logging.info("ACTION == SUMMARY, accessed")
@@ -208,7 +198,6 @@ def handle_get(req: HttpRequest, action: str) -> HttpResponse:
             try:
                 transcript_data = read_blob(f"results/{job_id}/{TRANSCRIPT_FILENAME}")
                 payload = _extract_transcript_payload(transcript_data, job_id)
-                # ВАЖНО: теперь full-text — объект с id и transcript
                 response = {"full-text": payload}
             except Exception as e:
                 logging.error(f"Failed to read transcript for {job_id}: {e}")

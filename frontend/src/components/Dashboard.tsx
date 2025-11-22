@@ -30,7 +30,7 @@ const componentIcons: Record<string, string> = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function transformSentimentByPart(sentimentData: any) {
   if (!sentimentData) return [];
-
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   return Object.entries(sentimentData).map(([key, value]: [string, any]) => ({
     id: key,
     label: key.charAt(0).toUpperCase() + key.slice(1),
