@@ -97,6 +97,7 @@ export async function getBackendData(
     fetchVideoMetadata(jobId),
     fetchTranscript(jobId),
     fetchSentimentByPart(jobId),
+      // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   ]) as [JobSummaryResponse | undefined, VideoMetadataResponse | undefined, TranscriptResponse | undefined, any];
 
   return {
@@ -181,6 +182,7 @@ async function fetchTranscript(
   }
 }
 
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 export async function fetchSentimentByPart(jobId: string): Promise<any> {
   try {
     const response = await fetch(
