@@ -17,29 +17,16 @@ interface DashboardProps {
   config: DashboardConfig;
 }
 
-const componentIcons: Record<string, string> = {
-  design: '🎨',
-  display: '📺',
-  camera: '📷',
-  audio: '🔊',
-  performance: '⚡',
-  battery: '🔋',
-  connectivity: '📡',
-  software: '💻',
-};
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function transformSentimentByPart(sentimentData: any) {
-  if (!sentimentData) return [];
-  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  return Object.entries(sentimentData).map(([key, value]: [string, any]) => ({
-    id: key,
-    label: key.charAt(0).toUpperCase() + key.slice(1),
-    rating: value.score,
-    icon: componentIcons[key] || '📦'
-  }));
-}
-
+//const componentIcons: Record<string, string> = {
+//  design: '🎨',
+//  display: '📺',
+//  camera: '📷',
+//  audio: '🔊',
+//  performance: '⚡',
+//  battery: '🔋',
+//  connectivity: '📡',
+//  software: '💻',
+//};
 
 // any should be preserved
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
