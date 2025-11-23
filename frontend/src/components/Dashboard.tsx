@@ -4,6 +4,7 @@ import type {
   MetadataWidgetConfig,
   WidgetConfig,
   ReviewTextWidgetConfig,
+  SummaryByComponentsWidgetConfig,
 } from '../types/widget.types';
 import { StatsWidget } from './widgets/StatsWidget';
 import { SummaryByComponentWidget } from './widgets/SummaryByComponentWidget.tsx';
@@ -54,18 +55,18 @@ const WidgetRenderer: React.FC<{ config: WidgetConfig, backendData: Record<strin
     case 'stats':
       return <StatsWidget config={config} />;
     case 'summary-components': {
-      if (widgetData && !config.categories?.length) {
-        config.categories = transformSentimentByPart(widgetData);
-      }
-
-      // calculating overall rating overallRating
-      let overallRatingNumber: number = 0.0;
-      if (config.categories && config.categories.length > 0) {
-        config.categories.forEach((c) => (overallRatingNumber += c.rating ?? 0));
-        overallRatingNumber /= config.categories.length;
-        config.overallRating = overallRatingNumber;
-      }
-      return <SummaryByComponentWidget config={config} />;
+      // if (widgetData && !config.categories?.length) {
+      //   config.categories = transformSentimentByPart(widgetData);
+      // }
+      //
+      // // calculating overall rating overallRating
+      // let overallRatingNumber: number = 0.0;
+      // if (config.categories && config.categories.length > 0) {
+      //   config.categories.forEach((c) => (overallRatingNumber += c.rating ?? 0));
+      //   overallRatingNumber /= config.categories.length;
+      //   config.overallRating = overallRatingNumber;
+      // }
+      return <SummaryByComponentWidget config={config as SummaryByComponentsWidgetConfig} />;
     }
     case 'verdict':
       return <VerdictWidget config={config} />;
