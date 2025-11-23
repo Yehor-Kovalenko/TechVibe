@@ -123,7 +123,7 @@ export const LoadingPage: React.FC<LoadingPageProps> = ({
               No speech detected
             </h2>
             <p className="text-lg text-muted-foreground max-w-md mx-auto">
-              The video you provided doesn't contain any spoken content or subtitles we can analyze.
+              The video you provided does not contain any spoken content or subtitles we can analyze.
             </p>
           </div>
 
