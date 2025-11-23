@@ -9,57 +9,42 @@ export const defaultDashboardConfig: DashboardConfig = {
         title: 'Component Ratings',
         height: 3,
         width: 1,
-        categories: [
+        features_verdict:
           {
-            id: '1',
-            label: 'design',
-            rating: 10,
-            icon: '🎨'
-          },
-          {
-            id: '2',
-            label: 'display',
-            rating: 5.0,
-            icon: '🖥️'
-          },
-          {
-            id: '3',
-            label: 'camera',
-            rating: 3.4,
-            icon: '📷'
-          },
-          {
-            id: '4',
-            label: 'audio',
-            rating: 6.7,
-            icon: '🔊'
-          },
-          {
-            id: '5',
-            label: 'performance',
-            rating: 7.0,
-            icon: '⚡'
-          },
-          {
-            id: '6',
-            label: 'battery',
-            rating: 5.0,
-            icon: '🔋'
-          },
-          {
-            id: '7',
-            label: 'connectivity',
-            rating: 6.1,
-            icon: '📶'
-          },
-          {
-            id: '8',
-            label: 'software',
-            rating: 0.3,
-            icon: '💻'
-          }
-        ],
-        dataKey: 'sentiment-by-part'
+            design: {
+                score: 2.6,
+                label: "POSITIVE"
+            },
+            display: {
+                score: 2.8,
+                label: "POSITIVE"
+            },
+            camera: {
+                score: 2.0,
+                label: "POSITIVE"
+            },
+            audio: {
+                score: 2.0,
+                label: "POSITIVE"
+            },
+            performance: {
+                score: 2.0,
+                label: "POSITIVE"
+            },
+            battery: {
+                score: 2.0,
+                label: "POSITIVE"
+            },
+            connectivity: {
+                score: 2.1,
+                label: "POSITIVE"
+            },
+            software: {
+                score: 2.9,
+                label: "POSITIVE"
+            }
+        },
+        dataKey: 'sentiment_by_part'
     },
     // Final Verdict
     {
