@@ -29,12 +29,41 @@ export interface StatsWidgetConfig extends BaseWidgetConfig {
 export interface SummaryByComponentsWidgetConfig extends BaseWidgetConfig {
   type: 'summary-components';
   overallRating?: number; // 0-10 scale
-  categories: Array<{
-    id: string;
-    label: string;
-    rating?: number; // 0-10 scale
-    icon?: string;
-  }>;
+  features_verdict:
+    {
+    design: {
+      score: number;
+      label: 'POSITIVE' | 'NEGATIVE' | 'NEUTRAL';
+    };
+    display: {
+      score: number;
+      label: 'POSITIVE' | 'NEGATIVE' | 'NEUTRAL';
+    };
+    camera: {
+      score: number;
+      label: 'POSITIVE' | 'NEGATIVE' | 'NEUTRAL';
+    };
+    audio: {
+      score: number;
+      label: 'POSITIVE' | 'NEGATIVE' | 'NEUTRAL';
+    };
+    performance: {
+      score: number;
+      label: 'POSITIVE' | 'NEGATIVE' | 'NEUTRAL';
+    };
+    battery: {
+      score: number;
+      label: 'POSITIVE' | 'NEGATIVE' | 'NEUTRAL';
+    };
+    connectivity: {
+      score: number;
+      label: 'POSITIVE' | 'NEGATIVE' | 'NEUTRAL';
+    };
+    software: {
+      score: number;
+      label: 'POSITIVE' | 'NEGATIVE' | 'NEUTRAL';
+    };
+  };
 }
 
 // Verdict Widget - final recommendation
