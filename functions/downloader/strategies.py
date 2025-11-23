@@ -16,7 +16,7 @@ from ..shared.logs import logging
 class BaseDownloader(ABC):
     """
     Abstract base class for platform-specific downloaders.
-    
+
     Each platform implements its own download logic but shares
     the common interface for blob storage and queue management.
     """
@@ -32,18 +32,14 @@ class BaseDownloader(ABC):
         writes results, and enqueues to appropriate queue.
         """
         try:
-            # Load existing job metadata
             self.job_metadata = read_job_metadata(self.job_id)
-
-            # Platform-specific download logic
             result = self._download()
 
-            # Write results to blob storage
+            if result is None:
+                return
+
             self._save_results(result)
-
-            # Update metadata and enqueue to next step
             self._finalize()
-
             logging.info(f"Downloader processed job {self.job_id}")
 
         except Exception as e:
@@ -83,7 +79,7 @@ class YTDownloader(BaseDownloader):
     def _download(self) -> dict:
         """
         Download transcript using yt-dlp.
-        Returns dict with transcript text and metadata.
+        Returns dict with transcript text and metadata, or None if no speech.
         """
         logging.info(f"Downloading YouTube transcript for job {self.job_id}")
 
@@ -100,23 +96,19 @@ class YTDownloader(BaseDownloader):
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(self.url, download=False)
 
-            # Try to get manual subtitles first, fall back to auto-generated
             subtitles = info.get('subtitles', {})
             auto_captions = info.get('automatic_captions', {})
 
             transcript_data = None
             subtitle_type = None
 
-            # Prefer manual subtitles
             if 'en' in subtitles:
                 subtitle_type = 'manual'
-                # Get the json3 format subtitle URL
                 for sub in subtitles['en']:
                     if sub.get('ext') == 'json3':
                         transcript_data = sub
                         break
 
-            # Fall back to auto-generated
             if not transcript_data and 'en' in auto_captions:
                 subtitle_type = 'auto'
                 for sub in auto_captions['en']:
@@ -125,18 +117,23 @@ class YTDownloader(BaseDownloader):
                         break
 
             if not transcript_data:
-                raise Exception("No English subtitles or captions available")
+                logging.info(f"No English subtitles available for job {self.job_id}")
+                self.job_metadata["status"] = JobStatus.NO_SPEECH.value
+                write_job_metadata(
+                    self.job_id,
+                    self.job_metadata.get("url"),
+                    self.job_metadata.get("status")
+                )
+                logging.info(f"YTDownloader updated job {self.job_id} metadata to NO_SPEECH")
+                return None
 
-            # Download the subtitle content
             import urllib.request
             with urllib.request.urlopen(transcript_data['url']) as response:
                 import json
                 subtitle_json = json.loads(response.read().decode('utf-8'))
 
-            # Extract text from json3 format
             transcript_text = self._parse_json3_transcript(subtitle_json)
 
-            # Extract useful video metadata
             video_metadata = {
                 'title': info.get('title'),
                 'duration': info.get('duration'),
@@ -172,7 +169,6 @@ class YTDownloader(BaseDownloader):
         """
         Save transcript and video metadata to blob storage.
         """
-        # Save transcript
         write_blob(
             f"results/{self.job_id}/{TRANSCRIPT_FILENAME}",
             {
@@ -182,7 +178,6 @@ class YTDownloader(BaseDownloader):
         )
         logging.info(f"YTDownloader saved job {self.job_id} transcript to blob")
 
-        # Save video metadata
         write_blob(
             f"results/{self.job_id}/{VIDEO_METADATA_FILENAME}",
             {
