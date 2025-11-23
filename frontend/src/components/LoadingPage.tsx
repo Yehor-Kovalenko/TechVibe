@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { checkJobStatus } from './fetchApiUrl';
 import { JobStatus } from '../config/JobStatus';
+import { useView } from './hooks/useView';
 
 type LoadingPageProps = {
   jobId: string;
@@ -13,6 +14,7 @@ export const LoadingPage: React.FC<LoadingPageProps> = ({
   onDone,
   delayMs = 60_000,
 }) => {
+  const { setView } = useView();
   const [status, setStatus] = useState<string>('Waiting for processing...');
 
   useEffect(() => {
@@ -66,8 +68,18 @@ export const LoadingPage: React.FC<LoadingPageProps> = ({
     };
   }, [jobId, onDone, delayMs]);
 
+  const handleClick = useCallback(() => {
+    setView('landing');
+  }, [setView]);
+
   return (
-    <main className="min-h-screen grid place-items-center px-6">
+    <main className="min-h-screen grid place-items-center px-6 relative">
+      <button
+        className="absolute top-6 right-6 px-4 py-3 rounded-md bg-primary text-primary-foreground hover:opacity-90"
+        onClick={handleClick}
+      >
+        Create New
+      </button>
       <div className="max-w-xl w-full text-center space-y-6">
         <div
           className="mx-auto h-16 w-16 rounded-full border-4 border-primary/30 border-t-primary animate-spin"

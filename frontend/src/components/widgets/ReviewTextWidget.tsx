@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Modal from 'react-modal';
-import type { ReviewTextWidgetConfig } from '../../types/widget.types.ts';
+import type { ReviewTextWidgetConfig } from '../../types/widget.types';
 
 interface ReviewTextWidgetProps {
   config: ReviewTextWidgetConfig;
