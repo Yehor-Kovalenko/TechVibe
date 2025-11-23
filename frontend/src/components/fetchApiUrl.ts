@@ -9,6 +9,7 @@ interface JobStatusResponse {
   id: string;
   url: string;
   status: string;
+  message?: string;
 }
 
 interface JobSummaryResponse {
