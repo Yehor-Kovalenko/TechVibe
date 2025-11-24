@@ -31,12 +31,15 @@ interface DashboardProps {
 
 // any should be preserved
 // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-const WidgetRenderer: React.FC<{ config: WidgetConfig, backendData: Record<string, any> | undefined }> = ({ config, backendData }) => {
+const WidgetRenderer: React.FC<{
+  config: WidgetConfig;
+  backendData: Record<string, any> | undefined;
+}> = ({ config, backendData }) => {
   const widgetData = config.dataKey ? backendData?.[config.dataKey] : null;
 
   // exchange with data from the backend
   if (widgetData) {
-    config = {...config, ...widgetData};
+    config = { ...config, ...widgetData };
   }
 
   switch (config.type) {
@@ -54,7 +57,11 @@ const WidgetRenderer: React.FC<{ config: WidgetConfig, backendData: Record<strin
       //   overallRatingNumber /= config.categories.length;
       //   config.overallRating = overallRatingNumber;
       // }
-      return <SummaryByComponentWidget config={config as SummaryByComponentsWidgetConfig} />;
+      return (
+        <SummaryByComponentWidget
+          config={config as SummaryByComponentsWidgetConfig}
+        />
+      );
     }
     case 'verdict':
       return <VerdictWidget config={config} />;

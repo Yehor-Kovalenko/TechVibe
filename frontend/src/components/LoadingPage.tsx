@@ -70,7 +70,8 @@ export const LoadingPage: React.FC<LoadingPageProps> = ({
             return;
           }
 
-          const statusMsg = STATUS_MESSAGES[statusResponse.status] || 'Processing...';
+          const statusMsg =
+            STATUS_MESSAGES[statusResponse.status] || 'Processing...';
           setMessage(statusMsg);
 
           if (statusResponse.status === JobStatus.DONE) {
@@ -137,7 +138,8 @@ export const LoadingPage: React.FC<LoadingPageProps> = ({
               No speech detected
             </h2>
             <p className="text-lg text-muted-foreground max-w-md mx-auto">
-              The video you provided does not contain any spoken content or subtitles we can analyze.
+              The video you provided does not contain any spoken content or
+              subtitles we can analyze.
             </p>
           </div>
 

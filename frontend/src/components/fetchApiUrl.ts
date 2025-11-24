@@ -20,22 +20,22 @@ interface JobSummaryResponse {
   sentiment_series_chart: {
     y: number[];
     labels: string[];
-  }
+  };
   sentiment_by_part: {
-  [key: string]: {
-    score: number;
-    label: string;
-  }
-}
+    [key: string]: {
+      score: number;
+      label: string;
+    };
+  };
 }
 
 interface TranscriptResponse {
-  "full-text": string;
+  'full-text': string;
 }
 
 interface VideoMetadataResponse {
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  "video-metadata": any
+  'video-metadata': any;
 }
 
 interface JobAllDataResponse {
@@ -93,13 +93,18 @@ export async function checkJobStatus(
 export async function getBackendData(
   jobId: string
 ): Promise<JobAllDataResponse> {
-  const [summary, metadata, transcript, sentimentByPart] = await Promise.all([
+  const [summary, metadata, transcript, sentimentByPart] = (await Promise.all([
     getJobSummary(jobId),
     fetchVideoMetadata(jobId),
     fetchTranscript(jobId),
     fetchSentimentByPart(jobId),
-      // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  ]) as [JobSummaryResponse | undefined, VideoMetadataResponse | undefined, TranscriptResponse | undefined, any];
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+  ])) as [
+    JobSummaryResponse | undefined,
+    VideoMetadataResponse | undefined,
+    TranscriptResponse | undefined,
+    any,
+  ];
 
   return {
     summary: {
@@ -116,15 +121,12 @@ async function getJobSummary(
   jobId: string
 ): Promise<JobSummaryResponse | undefined> {
   try {
-    const response = await fetch(
-      `${URL}?action=summary&id=${jobId}`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    const response = await fetch(`${URL}?action=summary&id=${jobId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
     if (!response.ok) {
       console.error(`HTTP error! status: ${response.status}`);
@@ -138,14 +140,16 @@ async function getJobSummary(
   }
 }
 
-export async function fetchVideoMetadata(jobId: string): Promise<VideoMetadataResponse | undefined> {
-  try {const response = await fetch(`${URL}?action=metadata&id=${jobId}`, {
+export async function fetchVideoMetadata(
+  jobId: string
+): Promise<VideoMetadataResponse | undefined> {
+  try {
+    const response = await fetch(`${URL}?action=metadata&id=${jobId}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
       },
     });
-
 
     if (!response.ok) {
       console.error(`HTTP error! status: ${response.status}`);
@@ -163,15 +167,12 @@ async function fetchTranscript(
   jobId: string
 ): Promise<TranscriptResponse | undefined> {
   try {
-    const response = await fetch(
-      `${URL}?action=transcript&id=${jobId}`,
-      {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    const response = await fetch(`${URL}?action=transcript&id=${jobId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
     if (!response.ok) {
       console.error(`HTTP error! status: ${response.status}`);
       return undefined;
