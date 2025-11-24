@@ -1,5 +1,5 @@
 import { jobId$ } from '../context';
-import { useBehaviorSubjectState } from './useBehaviourSubjectState';
+import { useBehaviorSubjectState } from './useBehaviorSubjectState.ts';
 import { useEffect } from 'react';
 import { useJobs } from './useJobs';
 
@@ -8,8 +8,10 @@ export const useJob = () => {
   const { addJob } = useJobs();
 
   useEffect(() => {
-    sessionStorage.setItem('jobId', jobId);
-    addJob(jobId);
+    if (jobId) {
+      sessionStorage.setItem('jobId', jobId);
+      addJob(jobId);
+    }
   }, [addJob, jobId]);
 
   return { jobId, setJobId };

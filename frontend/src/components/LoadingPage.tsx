@@ -107,7 +107,7 @@ export const LoadingPage: React.FC<LoadingPageProps> = ({
             className="absolute top-6 right-6 px-4 py-3 rounded-md bg-primary text-primary-foreground hover:opacity-90"
             onClick={handleClick}
           >
-            Create new
+            Create New
           </button>
         </header>
         <div className="max-w-xl w-full text-center space-y-8">

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import './globals.css';
 import { LandingPage } from './components/LandingPage';
 import { LoadingPage } from './components/LoadingPage';
@@ -27,11 +27,14 @@ export const App = () => {
     });
   }, [isLoaded, jobId, setView]);
 
-  const handleGenerate = (id: string) => {
-    setJobId(id);
-    setView('loading');
-    addJob(id);
-  };
+  const handleGenerate = useCallback(
+    (id: string) => {
+      setJobId(id);
+      setView('loading');
+      addJob(id);
+    },
+    [setJobId, setView, addJob]
+  );
 
   if (view === 'loading') {
     return (
