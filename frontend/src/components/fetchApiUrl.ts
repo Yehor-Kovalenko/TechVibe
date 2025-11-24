@@ -98,11 +98,11 @@ export async function getBackendData(
     fetchVideoMetadata(jobId),
     fetchTranscript(jobId),
     fetchSentimentByPart(jobId),
-    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
   ])) as [
     JobSummaryResponse | undefined,
     VideoMetadataResponse | undefined,
     TranscriptResponse | undefined,
+    // eslint-disable-next-line  @typescript-eslint/no-explicit-any
     any,
   ];
 

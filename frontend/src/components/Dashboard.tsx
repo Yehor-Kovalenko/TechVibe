@@ -30,9 +30,9 @@ interface DashboardProps {
 //};
 
 // any should be preserved
-// eslint-disable-next-line  @typescript-eslint/no-explicit-any
 const WidgetRenderer: React.FC<{
   config: WidgetConfig;
+// eslint-disable-next-line  @typescript-eslint/no-explicit-any
   backendData: Record<string, any> | undefined;
 }> = ({ config, backendData }) => {
   const widgetData = config.dataKey ? backendData?.[config.dataKey] : null;
