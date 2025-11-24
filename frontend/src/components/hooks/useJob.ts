@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useJobs } from './useJobs';
 
 export const useJob = () => {
-  const [jobId, setJobId] = useBehaviorSubjectState(jobId$);
+  const [jobId, setJobId] = useBehaviorSubjectState<string>(jobId$);
   const { addJob } = useJobs();
 
   useEffect(() => {

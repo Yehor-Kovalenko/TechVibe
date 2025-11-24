@@ -1,9 +1,9 @@
 import { useCallback, useEffect } from 'react';
 import { useBehaviorSubjectState } from './useBehaviorSubjectState.ts';
-import { view$ } from '../context';
+import { type View, view$ } from '../context';
 
 export const useView = () => {
-  const [view, setView] = useBehaviorSubjectState(view$);
+  const [view, setView] = useBehaviorSubjectState<View>(view$);
 
   const setViewCallback = useCallback(
     (v: typeof view) => setView(v),

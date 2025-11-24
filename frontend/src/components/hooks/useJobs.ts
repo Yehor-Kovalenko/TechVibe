@@ -3,7 +3,7 @@ import { jobs$ } from '../context';
 import { useCallback } from 'react';
 
 export const useJobs = () => {
-  const [jobs] = useBehaviorSubjectState(jobs$);
+  const [jobs] = useBehaviorSubjectState<string[]>(jobs$);
 
   const addJob = useCallback(
     (jobId: string) => {
