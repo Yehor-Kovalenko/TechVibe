@@ -29,6 +29,11 @@ def main(msg: QueueMessage):
 
         # Determine which downloader to use based on URL
         if "youtube.com" in url or "youtu.be" in url:
+            # convert shorts into basic video
+            if "shorts/" in url:
+                url = url.replace("shorts/", "watch?v=")
+                logging.info(f"YT Shorts detected. Changing shorts url into video url {url}")
+
             downloader = YTDownloader(job_id, url)
         else:
             raise ValueError(f"Unsupported platform for URL: {url}")
