@@ -3,8 +3,8 @@ export const JobStatus = {
   TRANSCRIBED: 'TRANSCRIBED',
   DONE: 'DONE',
   FAILED: 'FAILED',
-  NO_SPEECH: "NO_SPEECH",
-  CREATED: "CREATED"
+  NO_SPEECH: 'NO_SPEECH',
+  CREATED: 'CREATED',
 } as const;
 
 export type JobStatus = (typeof JobStatus)[keyof typeof JobStatus];

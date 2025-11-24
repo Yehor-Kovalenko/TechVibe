@@ -45,10 +45,17 @@ export const SummaryByComponentWidget: React.FC<SummaryWidgetProps> = ({
 }) => {
   const { title, features_verdict, overallRating = 0 } = config;
 
-  const avgRating = overallRating ||
-    (features_verdict.display.score + features_verdict.design.score + features_verdict.connectivity.score +
-    features_verdict.software.score + features_verdict.audio.score + features_verdict.performance.score +
-    features_verdict.battery.score  + features_verdict.camera.score) / 8;
+  const avgRating =
+    overallRating ||
+    (features_verdict.display.score +
+      features_verdict.design.score +
+      features_verdict.connectivity.score +
+      features_verdict.software.score +
+      features_verdict.audio.score +
+      features_verdict.performance.score +
+      features_verdict.battery.score +
+      features_verdict.camera.score) /
+      8;
 
   return (
     <div className="relative bg-gradient-to-br from-slate-900 to-slate-800 rounded-2xl p-6 border border-slate-700/50 shadow-2xl">
@@ -59,12 +66,16 @@ export const SummaryByComponentWidget: React.FC<SummaryWidgetProps> = ({
       <div className="flex justify-center mb-8">
         <div className="relative">
           {/* Outer glow ring */}
-          <div className={`absolute inset-0 rounded-full bg-gradient-to-br ${getRatingBg(avgRating)} opacity-20 blur-xl ${getRatingGlow(avgRating)}`} />
+          <div
+            className={`absolute inset-0 rounded-full bg-gradient-to-br ${getRatingBg(avgRating)} opacity-20 blur-xl ${getRatingGlow(avgRating)}`}
+          />
 
           {/* Main circle */}
           <div className="relative w-32 h-32 rounded-full bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center border-4 border-slate-700/50">
             <div className="text-center">
-              <div className={`text-4xl font-bold ${getRatingColor(avgRating)}`}>
+              <div
+                className={`text-4xl font-bold ${getRatingColor(avgRating)}`}
+              >
                 {avgRating.toFixed(1)}
               </div>
               <div className="text-xs text-slate-400 mt-1">Overall</div>
@@ -75,198 +86,236 @@ export const SummaryByComponentWidget: React.FC<SummaryWidgetProps> = ({
 
       {/* Category Mini Cards */}
       <div className="grid grid-cols-2 gap-3">
-        <div
-            className="relative bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 hover:border-slate-600 transition-all duration-300 overflow-hidden group"
-          >
-            {/* Gradient background on hover */}
-            <div className={`absolute inset-0 bg-gradient-to-br ${getRatingBg(features_verdict.design.score || 0)} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
+        <div className="relative bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 hover:border-slate-600 transition-all duration-300 overflow-hidden group">
+          {/* Gradient background on hover */}
+          <div
+            className={`absolute inset-0 bg-gradient-to-br ${getRatingBg(features_verdict.design.score || 0)} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}
+          />
 
-            <div className="relative flex items-center gap-3">
-              <div className="text-2xl">{componentIcons['design'] || '📦'}</div>
-              <div className="flex-1 min-w-0">
-                <div className={`text-lg font-bold ${getRatingColor(features_verdict.design.score || 0)}`}>
-                  {features_verdict.design.score?.toFixed(1)}
-                </div>
-                <div className="text-xs text-slate-400 truncate">Design</div>
-              </div>
-            </div>
-
-            {/* Rating bar at bottom */}
-            <div className="mt-3 h-1 bg-slate-700 rounded-full overflow-hidden">
+          <div className="relative flex items-center gap-3">
+            <div className="text-2xl">{componentIcons['design'] || '📦'}</div>
+            <div className="flex-1 min-w-0">
               <div
-                className={`h-full bg-gradient-to-r ${getRatingBg(features_verdict.design.score || 0)} transition-all duration-500`}
-                style={{ width: `${((features_verdict.design.score || 0) / 10) * 100}%` }}
-              />
+                className={`text-lg font-bold ${getRatingColor(features_verdict.design.score || 0)}`}
+              >
+                {features_verdict.design.score?.toFixed(1)}
+              </div>
+              <div className="text-xs text-slate-400 truncate">Design</div>
             </div>
           </div>
-        <div
-            className="relative bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 hover:border-slate-600 transition-all duration-300 overflow-hidden group"
-          >
-            {/* Gradient background on hover */}
-            <div className={`absolute inset-0 bg-gradient-to-br ${getRatingBg(features_verdict.display.score || 0)} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
 
-            <div className="relative flex items-center gap-3">
-              <div className="text-2xl">{componentIcons['display'] || '📦'}</div>
-              <div className="flex-1 min-w-0">
-                <div className={`text-lg font-bold ${getRatingColor(features_verdict.display.score || 0)}`}>
-                  {features_verdict.display.score?.toFixed(1)}
-                </div>
-                <div className="text-xs text-slate-400 truncate">Display</div>
-              </div>
-            </div>
+          {/* Rating bar at bottom */}
+          <div className="mt-3 h-1 bg-slate-700 rounded-full overflow-hidden">
+            <div
+              className={`h-full bg-gradient-to-r ${getRatingBg(features_verdict.design.score || 0)} transition-all duration-500`}
+              style={{
+                width: `${((features_verdict.design.score || 0) / 10) * 100}%`,
+              }}
+            />
+          </div>
+        </div>
+        <div className="relative bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 hover:border-slate-600 transition-all duration-300 overflow-hidden group">
+          {/* Gradient background on hover */}
+          <div
+            className={`absolute inset-0 bg-gradient-to-br ${getRatingBg(features_verdict.display.score || 0)} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}
+          />
 
-            {/* Rating bar at bottom */}
-            <div className="mt-3 h-1 bg-slate-700 rounded-full overflow-hidden">
+          <div className="relative flex items-center gap-3">
+            <div className="text-2xl">{componentIcons['display'] || '📦'}</div>
+            <div className="flex-1 min-w-0">
               <div
-                className={`h-full bg-gradient-to-r ${getRatingBg(features_verdict.display.score || 0)} transition-all duration-500`}
-                style={{ width: `${((features_verdict.display.score || 0) / 10) * 100}%` }}
-              />
+                className={`text-lg font-bold ${getRatingColor(features_verdict.display.score || 0)}`}
+              >
+                {features_verdict.display.score?.toFixed(1)}
+              </div>
+              <div className="text-xs text-slate-400 truncate">Display</div>
             </div>
           </div>
-        <div
-            className="relative bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 hover:border-slate-600 transition-all duration-300 overflow-hidden group"
-          >
-            {/* Gradient background on hover */}
-            <div className={`absolute inset-0 bg-gradient-to-br ${getRatingBg(features_verdict.camera.score || 0)} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
 
-            <div className="relative flex items-center gap-3">
-              <div className="text-2xl">{componentIcons['camera'] || '📦'}</div>
-              <div className="flex-1 min-w-0">
-                <div className={`text-lg font-bold ${getRatingColor(features_verdict.camera.score || 0)}`}>
-                  {features_verdict.camera.score?.toFixed(1)}
-                </div>
-                <div className="text-xs text-slate-400 truncate">Camera</div>
-              </div>
-            </div>
+          {/* Rating bar at bottom */}
+          <div className="mt-3 h-1 bg-slate-700 rounded-full overflow-hidden">
+            <div
+              className={`h-full bg-gradient-to-r ${getRatingBg(features_verdict.display.score || 0)} transition-all duration-500`}
+              style={{
+                width: `${((features_verdict.display.score || 0) / 10) * 100}%`,
+              }}
+            />
+          </div>
+        </div>
+        <div className="relative bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 hover:border-slate-600 transition-all duration-300 overflow-hidden group">
+          {/* Gradient background on hover */}
+          <div
+            className={`absolute inset-0 bg-gradient-to-br ${getRatingBg(features_verdict.camera.score || 0)} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}
+          />
 
-            {/* Rating bar at bottom */}
-            <div className="mt-3 h-1 bg-slate-700 rounded-full overflow-hidden">
+          <div className="relative flex items-center gap-3">
+            <div className="text-2xl">{componentIcons['camera'] || '📦'}</div>
+            <div className="flex-1 min-w-0">
               <div
-                className={`h-full bg-gradient-to-r ${getRatingBg(features_verdict.camera.score || 0)} transition-all duration-500`}
-                style={{ width: `${((features_verdict.camera.score || 0) / 10) * 100}%` }}
-              />
+                className={`text-lg font-bold ${getRatingColor(features_verdict.camera.score || 0)}`}
+              >
+                {features_verdict.camera.score?.toFixed(1)}
+              </div>
+              <div className="text-xs text-slate-400 truncate">Camera</div>
             </div>
           </div>
-        <div
-            className="relative bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 hover:border-slate-600 transition-all duration-300 overflow-hidden group"
-          >
-            {/* Gradient background on hover */}
-            <div className={`absolute inset-0 bg-gradient-to-br ${getRatingBg(features_verdict.audio.score || 0)} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
 
-            <div className="relative flex items-center gap-3">
-              <div className="text-2xl">{componentIcons['audio'] || '📦'}</div>
-              <div className="flex-1 min-w-0">
-                <div className={`text-lg font-bold ${getRatingColor(features_verdict.audio.score || 0)}`}>
-                  {features_verdict.audio.score?.toFixed(1)}
-                </div>
-                <div className="text-xs text-slate-400 truncate">Audio</div>
-              </div>
-            </div>
+          {/* Rating bar at bottom */}
+          <div className="mt-3 h-1 bg-slate-700 rounded-full overflow-hidden">
+            <div
+              className={`h-full bg-gradient-to-r ${getRatingBg(features_verdict.camera.score || 0)} transition-all duration-500`}
+              style={{
+                width: `${((features_verdict.camera.score || 0) / 10) * 100}%`,
+              }}
+            />
+          </div>
+        </div>
+        <div className="relative bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 hover:border-slate-600 transition-all duration-300 overflow-hidden group">
+          {/* Gradient background on hover */}
+          <div
+            className={`absolute inset-0 bg-gradient-to-br ${getRatingBg(features_verdict.audio.score || 0)} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}
+          />
 
-            {/* Rating bar at bottom */}
-            <div className="mt-3 h-1 bg-slate-700 rounded-full overflow-hidden">
+          <div className="relative flex items-center gap-3">
+            <div className="text-2xl">{componentIcons['audio'] || '📦'}</div>
+            <div className="flex-1 min-w-0">
               <div
-                className={`h-full bg-gradient-to-r ${getRatingBg(features_verdict.audio.score || 0)} transition-all duration-500`}
-                style={{ width: `${((features_verdict.audio.score || 0) / 10) * 100}%` }}
-              />
+                className={`text-lg font-bold ${getRatingColor(features_verdict.audio.score || 0)}`}
+              >
+                {features_verdict.audio.score?.toFixed(1)}
+              </div>
+              <div className="text-xs text-slate-400 truncate">Audio</div>
             </div>
           </div>
-        <div
-            className="relative bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 hover:border-slate-600 transition-all duration-300 overflow-hidden group"
-          >
-            {/* Gradient background on hover */}
-            <div className={`absolute inset-0 bg-gradient-to-br ${getRatingBg(features_verdict.performance.score || 0)} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
 
-            <div className="relative flex items-center gap-3">
-              <div className="text-2xl">{componentIcons['performance'] || '📦'}</div>
-              <div className="flex-1 min-w-0">
-                <div className={`text-lg font-bold ${getRatingColor(features_verdict.performance.score || 0)}`}>
-                  {features_verdict.performance.score?.toFixed(1)}
-                </div>
-                <div className="text-xs text-slate-400 truncate">Performance</div>
-              </div>
+          {/* Rating bar at bottom */}
+          <div className="mt-3 h-1 bg-slate-700 rounded-full overflow-hidden">
+            <div
+              className={`h-full bg-gradient-to-r ${getRatingBg(features_verdict.audio.score || 0)} transition-all duration-500`}
+              style={{
+                width: `${((features_verdict.audio.score || 0) / 10) * 100}%`,
+              }}
+            />
+          </div>
+        </div>
+        <div className="relative bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 hover:border-slate-600 transition-all duration-300 overflow-hidden group">
+          {/* Gradient background on hover */}
+          <div
+            className={`absolute inset-0 bg-gradient-to-br ${getRatingBg(features_verdict.performance.score || 0)} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}
+          />
+
+          <div className="relative flex items-center gap-3">
+            <div className="text-2xl">
+              {componentIcons['performance'] || '📦'}
             </div>
-
-            {/* Rating bar at bottom */}
-            <div className="mt-3 h-1 bg-slate-700 rounded-full overflow-hidden">
+            <div className="flex-1 min-w-0">
               <div
-                className={`h-full bg-gradient-to-r ${getRatingBg(features_verdict.performance.score || 0)} transition-all duration-500`}
-                style={{ width: `${((features_verdict.performance.score || 0) / 10) * 100}%` }}
-              />
+                className={`text-lg font-bold ${getRatingColor(features_verdict.performance.score || 0)}`}
+              >
+                {features_verdict.performance.score?.toFixed(1)}
+              </div>
+              <div className="text-xs text-slate-400 truncate">Performance</div>
             </div>
           </div>
-        <div
-            className="relative bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 hover:border-slate-600 transition-all duration-300 overflow-hidden group"
-          >
-            {/* Gradient background on hover */}
-            <div className={`absolute inset-0 bg-gradient-to-br ${getRatingBg(features_verdict.battery.score || 0)} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
 
-            <div className="relative flex items-center gap-3">
-              <div className="text-2xl">{componentIcons['battery'] || '📦'}</div>
-              <div className="flex-1 min-w-0">
-                <div className={`text-lg font-bold ${getRatingColor(features_verdict.battery.score || 0)}`}>
-                  {features_verdict.battery.score?.toFixed(1)}
-                </div>
-                <div className="text-xs text-slate-400 truncate">Battery</div>
-              </div>
-            </div>
+          {/* Rating bar at bottom */}
+          <div className="mt-3 h-1 bg-slate-700 rounded-full overflow-hidden">
+            <div
+              className={`h-full bg-gradient-to-r ${getRatingBg(features_verdict.performance.score || 0)} transition-all duration-500`}
+              style={{
+                width: `${((features_verdict.performance.score || 0) / 10) * 100}%`,
+              }}
+            />
+          </div>
+        </div>
+        <div className="relative bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 hover:border-slate-600 transition-all duration-300 overflow-hidden group">
+          {/* Gradient background on hover */}
+          <div
+            className={`absolute inset-0 bg-gradient-to-br ${getRatingBg(features_verdict.battery.score || 0)} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}
+          />
 
-            {/* Rating bar at bottom */}
-            <div className="mt-3 h-1 bg-slate-700 rounded-full overflow-hidden">
+          <div className="relative flex items-center gap-3">
+            <div className="text-2xl">{componentIcons['battery'] || '📦'}</div>
+            <div className="flex-1 min-w-0">
               <div
-                className={`h-full bg-gradient-to-r ${getRatingBg(features_verdict.battery.score || 0)} transition-all duration-500`}
-                style={{ width: `${((features_verdict.battery.score || 0) / 10) * 100}%` }}
-              />
+                className={`text-lg font-bold ${getRatingColor(features_verdict.battery.score || 0)}`}
+              >
+                {features_verdict.battery.score?.toFixed(1)}
+              </div>
+              <div className="text-xs text-slate-400 truncate">Battery</div>
             </div>
           </div>
-        <div
-            className="relative bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 hover:border-slate-600 transition-all duration-300 overflow-hidden group"
-          >
-            {/* Gradient background on hover */}
-            <div className={`absolute inset-0 bg-gradient-to-br ${getRatingBg(features_verdict.connectivity.score || 0)} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
 
-            <div className="relative flex items-center gap-3">
-              <div className="text-2xl">{componentIcons['connectivity'] || '📦'}</div>
-              <div className="flex-1 min-w-0">
-                <div className={`text-lg font-bold ${getRatingColor(features_verdict.connectivity.score || 0)}`}>
-                  {features_verdict.connectivity.score?.toFixed(1)}
-                </div>
-                <div className="text-xs text-slate-400 truncate">Connectivity</div>
+          {/* Rating bar at bottom */}
+          <div className="mt-3 h-1 bg-slate-700 rounded-full overflow-hidden">
+            <div
+              className={`h-full bg-gradient-to-r ${getRatingBg(features_verdict.battery.score || 0)} transition-all duration-500`}
+              style={{
+                width: `${((features_verdict.battery.score || 0) / 10) * 100}%`,
+              }}
+            />
+          </div>
+        </div>
+        <div className="relative bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 hover:border-slate-600 transition-all duration-300 overflow-hidden group">
+          {/* Gradient background on hover */}
+          <div
+            className={`absolute inset-0 bg-gradient-to-br ${getRatingBg(features_verdict.connectivity.score || 0)} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}
+          />
+
+          <div className="relative flex items-center gap-3">
+            <div className="text-2xl">
+              {componentIcons['connectivity'] || '📦'}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div
+                className={`text-lg font-bold ${getRatingColor(features_verdict.connectivity.score || 0)}`}
+              >
+                {features_verdict.connectivity.score?.toFixed(1)}
+              </div>
+              <div className="text-xs text-slate-400 truncate">
+                Connectivity
               </div>
             </div>
-
-            {/* Rating bar at bottom */}
-            <div className="mt-3 h-1 bg-slate-700 rounded-full overflow-hidden">
-              <div
-                className={`h-full bg-gradient-to-r ${getRatingBg(features_verdict.connectivity.score || 0)} transition-all duration-500`}
-                style={{ width: `${((features_verdict.connectivity.score || 0) / 10) * 100}%` }}
-              />
-            </div>
           </div>
-        <div
-            className="relative bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 hover:border-slate-600 transition-all duration-300 overflow-hidden group"
-          >
-            {/* Gradient background on hover */}
-            <div className={`absolute inset-0 bg-gradient-to-br ${getRatingBg(features_verdict.software.score || 0)} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
 
-            <div className="relative flex items-center gap-3">
-              <div className="text-2xl">{componentIcons['software'] || '📦'}</div>
-              <div className="flex-1 min-w-0">
-                <div className={`text-lg font-bold ${getRatingColor(features_verdict.software.score || 0)}`}>
-                  {features_verdict.software.score?.toFixed(1)}
-                </div>
-                <div className="text-xs text-slate-400 truncate">Software</div>
+          {/* Rating bar at bottom */}
+          <div className="mt-3 h-1 bg-slate-700 rounded-full overflow-hidden">
+            <div
+              className={`h-full bg-gradient-to-r ${getRatingBg(features_verdict.connectivity.score || 0)} transition-all duration-500`}
+              style={{
+                width: `${((features_verdict.connectivity.score || 0) / 10) * 100}%`,
+              }}
+            />
+          </div>
+        </div>
+        <div className="relative bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 hover:border-slate-600 transition-all duration-300 overflow-hidden group">
+          {/* Gradient background on hover */}
+          <div
+            className={`absolute inset-0 bg-gradient-to-br ${getRatingBg(features_verdict.software.score || 0)} opacity-0 group-hover:opacity-10 transition-opacity duration-300`}
+          />
+
+          <div className="relative flex items-center gap-3">
+            <div className="text-2xl">{componentIcons['software'] || '📦'}</div>
+            <div className="flex-1 min-w-0">
+              <div
+                className={`text-lg font-bold ${getRatingColor(features_verdict.software.score || 0)}`}
+              >
+                {features_verdict.software.score?.toFixed(1)}
               </div>
-            </div>
-
-            {/* Rating bar at bottom */}
-            <div className="mt-3 h-1 bg-slate-700 rounded-full overflow-hidden">
-              <div
-                className={`h-full bg-gradient-to-r ${getRatingBg(features_verdict.software.score || 0)} transition-all duration-500`}
-                style={{ width: `${((features_verdict.software.score || 0) / 10) * 100}%` }}
-              />
+              <div className="text-xs text-slate-400 truncate">Software</div>
             </div>
           </div>
+
+          {/* Rating bar at bottom */}
+          <div className="mt-3 h-1 bg-slate-700 rounded-full overflow-hidden">
+            <div
+              className={`h-full bg-gradient-to-r ${getRatingBg(features_verdict.software.score || 0)} transition-all duration-500`}
+              style={{
+                width: `${((features_verdict.software.score || 0) / 10) * 100}%`,
+              }}
+            />
+          </div>
+        </div>
       </div>
     </div>
   );

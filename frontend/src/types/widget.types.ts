@@ -29,8 +29,7 @@ export interface StatsWidgetConfig extends BaseWidgetConfig {
 export interface SummaryByComponentsWidgetConfig extends BaseWidgetConfig {
   type: 'summary-components';
   overallRating?: number; // 0-10 scale
-  features_verdict:
-    {
+  features_verdict: {
     design: {
       score: number;
       label: 'POSITIVE' | 'NEGATIVE' | 'NEUTRAL';
@@ -112,5 +111,5 @@ export interface DashboardConfig {
   columns?: number;
   // to disable errors related to using 'any' keyword
   // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  summary?: Record<string, any>
+  summary?: Record<string, any>;
 }
