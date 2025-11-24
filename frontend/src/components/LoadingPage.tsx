@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { checkJobStatus } from './fetchApiUrl';
 import { JobStatus } from '../config/JobStatus';
+import { useView } from './hooks/useView';
 
 const STATUS_MESSAGES: Record<string, string> = {
   CREATED: 'Collecting video reviews...',
@@ -22,6 +23,7 @@ export const LoadingPage: React.FC<LoadingPageProps> = ({
   onDone,
   delayMs = 60_000,
 }) => {
+  const { setView } = useView();
   const [message, setMessage] = useState<string>('Initializing...');
   const [error, setError] = useState<string | null>(null);
   const [noSpeech, setNoSpeech] = useState<boolean>(false);
@@ -92,9 +94,21 @@ export const LoadingPage: React.FC<LoadingPageProps> = ({
     };
   }, [jobId, onDone, delayMs]);
 
+  const handleClick = useCallback(() => {
+    setView('landing');
+  }, [setView]);
+
   if (noSpeech) {
     return (
       <main className="min-h-screen grid place-items-center px-6 bg-gradient-to-b from-background to-muted/20">
+        <header>
+          <button
+            className="absolute top-6 right-6 px-4 py-3 rounded-md bg-primary text-primary-foreground hover:opacity-90"
+            onClick={handleClick}
+          >
+            Create new
+          </button>
+        </header>
         <div className="max-w-xl w-full text-center space-y-8">
           <h1 className="text-4xl font-bold tracking-tight mb-12">
             TechVibe: Review Summaries
@@ -146,6 +160,14 @@ export const LoadingPage: React.FC<LoadingPageProps> = ({
   if (error) {
     return (
       <main className="min-h-screen grid place-items-center px-6 bg-gradient-to-b from-background to-muted/20">
+        <header>
+          <button
+            className="absolute top-6 right-6 px-4 py-3 rounded-md bg-primary text-primary-foreground hover:opacity-90"
+            onClick={handleClick}
+          >
+            Create new
+          </button>
+        </header>
         <div className="max-w-xl w-full text-center space-y-8">
           <h1 className="text-4xl font-bold tracking-tight mb-12">
             TechVibe: Review Summaries
@@ -196,6 +218,14 @@ export const LoadingPage: React.FC<LoadingPageProps> = ({
 
   return (
     <main className="min-h-screen grid place-items-center px-6 bg-gradient-to-b from-background to-muted/20">
+      <header>
+        <button
+          className="absolute top-6 right-6 px-4 py-3 rounded-md bg-primary text-primary-foreground hover:opacity-90"
+          onClick={handleClick}
+        >
+          Create new
+        </button>
+      </header>
       <div className="max-w-xl w-full text-center space-y-8">
         <h1 className="text-4xl font-bold tracking-tight mb-12">
           TechVibe: Review Summaries
