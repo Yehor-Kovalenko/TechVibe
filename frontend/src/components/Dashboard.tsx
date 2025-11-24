@@ -1,71 +1,67 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import type {
   DashboardConfig,
   MetadataWidgetConfig,
   WidgetConfig,
   ReviewTextWidgetConfig,
+  SummaryByComponentsWidgetConfig,
 } from '../types/widget.types';
 import { StatsWidget } from './widgets/StatsWidget';
-import { SummaryByComponentWidget } from './widgets/SummaryByComponentWidget.tsx';
+import { SummaryByComponentWidget } from './widgets/SummaryByComponentWidget';
 import { VerdictWidget } from './widgets/VerdictWidget';
-import { ChartWidget } from './widgets/ChartWidget.tsx';
+import { ChartWidget } from './widgets/ChartWidget';
 import { MetadataWidget } from './widgets/MetadataWidget';
-import { ReviewTextWidget } from './widgets/ReviewTextWidget.tsx';
+import { ReviewTextWidget } from './widgets/ReviewTextWidget';
+import { useView } from './hooks/useView';
 
 interface DashboardProps {
   config: DashboardConfig;
 }
 
-const componentIcons: Record<string, string> = {
-  design: '🎨',
-  display: '📺',
-  camera: '📷',
-  audio: '🔊',
-  performance: '⚡',
-  battery: '🔋',
-  connectivity: '📡',
-  software: '💻',
-};
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function transformSentimentByPart(sentimentData: any) {
-  if (!sentimentData) return [];
-  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
-  return Object.entries(sentimentData).map(([key, value]: [string, any]) => ({
-    id: key,
-    label: key.charAt(0).toUpperCase() + key.slice(1),
-    rating: value.score,
-    icon: componentIcons[key] || '📦'
-  }));
-}
-
+//const componentIcons: Record<string, string> = {
+//  design: '🎨',
+//  display: '📺',
+//  camera: '📷',
+//  audio: '🔊',
+//  performance: '⚡',
+//  battery: '🔋',
+//  connectivity: '📡',
+//  software: '💻',
+//};
 
 // any should be preserved
-// eslint-disable-next-line  @typescript-eslint/no-explicit-any
-const WidgetRenderer: React.FC<{ config: WidgetConfig, backendData: Record<string, any> | undefined }> = ({ config, backendData }) => {
+const WidgetRenderer: React.FC<{
+  config: WidgetConfig;
+  // eslint-disable-next-line  @typescript-eslint/no-explicit-any
+  backendData: Record<string, any> | undefined;
+}> = ({ config, backendData }) => {
   const widgetData = config.dataKey ? backendData?.[config.dataKey] : null;
 
   // exchange with data from the backend
   if (widgetData) {
-    config = {...config, ...widgetData};
+    config = { ...config, ...widgetData };
   }
 
   switch (config.type) {
     case 'stats':
       return <StatsWidget config={config} />;
     case 'summary-components': {
-      if (widgetData && !config.categories?.length) {
-        config.categories = transformSentimentByPart(widgetData);
-      }
-
-      // calculating overall rating overallRating
-      let overallRatingNumber: number = 0.0;
-      if (config.categories && config.categories.length > 0) {
-        config.categories.forEach((c) => (overallRatingNumber += c.rating ?? 0));
-        overallRatingNumber /= config.categories.length;
-        config.overallRating = overallRatingNumber;
-      }
-      return <SummaryByComponentWidget config={config} />;
+      // if (widgetData && !config.categories?.length) {
+      //   config.categories = transformSentimentByPart(widgetData);
+      // }
+      //
+      // // calculating overall rating overallRating
+      // let overallRatingNumber: number = 0.0;
+      // if (config.categories && config.categories.length > 0) {
+      //   config.categories.forEach((c) => (overallRatingNumber += c.rating ?? 0));
+      //   overallRatingNumber /= config.categories.length;
+      //   config.overallRating = overallRatingNumber;
+      // }
+      return (
+        <SummaryByComponentWidget
+          config={config as SummaryByComponentsWidgetConfig}
+        />
+      );
     }
     case 'verdict':
       return <VerdictWidget config={config} />;
@@ -81,6 +77,7 @@ const WidgetRenderer: React.FC<{ config: WidgetConfig, backendData: Record<strin
 };
 
 export const Dashboard: React.FC<DashboardProps> = ({ config }) => {
+  const { setView } = useView();
   const { widgets, columns = 3, summary } = config;
 
   // Sort widgets by order if specified
@@ -88,21 +85,35 @@ export const Dashboard: React.FC<DashboardProps> = ({ config }) => {
     (a, b) => (a.order ?? 0) - (b.order ?? 0)
   );
 
+  const handleClick = useCallback(() => {
+    setView('landing');
+  }, [setView]);
+
   return (
     <div className="min-h-screen p-6 md:p-8">
       <div className="max-w-7xl mx-auto">
         <header className="mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
-            Dashboard Summary
-          </h1>
-          <p className="text-sm opacity-50 mt-2">
-            {new Date().toLocaleDateString('en-US', {
-              weekday: 'long',
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}
-          </p>
+          <div className="flex justify-between items-center gap-4">
+            <div>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-white to-white/60 bg-clip-text text-transparent">
+                Dashboard Summary
+              </h1>
+              <p className="text-sm opacity-50 mt-2">
+                {new Date().toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </p>
+            </div>
+            <button
+              className="px-4 py-3 rounded-md bg-primary text-primary-foreground hover:opacity-90"
+              onClick={handleClick}
+            >
+              Create New
+            </button>
+          </div>
         </header>
 
         <div

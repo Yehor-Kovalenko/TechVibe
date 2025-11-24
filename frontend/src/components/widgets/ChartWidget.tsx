@@ -48,9 +48,9 @@ export const ChartWidget: React.FC<ChartWidgetProps> = ({ config }) => {
     .map((xVal, i) => {
       const x1 = scaleX(xVal);
       const y1 = scaleY(y[i]);
-      return `${i === 0 ? "M" : "L"} ${x1} ${y1}`;
+      return `${i === 0 ? 'M' : 'L'} ${x1} ${y1}`;
     })
-    .join(" ");
+    .join(' ');
 
   // Generate grid lines
   const gridLinesY = Array.from({ length: 5 }, (_, i) => {
@@ -81,7 +81,7 @@ export const ChartWidget: React.FC<ChartWidgetProps> = ({ config }) => {
         <svg
           viewBox={`0 0 ${width} ${height}`}
           className="w-full h-full"
-          style={{ maxHeight: "100%" }}
+          style={{ maxHeight: '100%' }}
         >
           {/* Background sections */}
           <rect
@@ -118,18 +118,18 @@ export const ChartWidget: React.FC<ChartWidgetProps> = ({ config }) => {
               strokeWidth="1"
             />
           ))}
-          {x && gridLinesX.map((line, i) => (
-            <line
-              key={`grid-x-${i}`}
-              x1={line.xPos}
-              y1={padding.top}
-              x2={line.xPos}
-              y2={height - padding.bottom}
-              stroke="rgba(255,255,255,0.1)"
-              strokeWidth="1"
-            />
-          ))}
-
+          {x &&
+            gridLinesX.map((line, i) => (
+              <line
+                key={`grid-x-${i}`}
+                x1={line.xPos}
+                y1={padding.top}
+                x2={line.xPos}
+                y2={height - padding.bottom}
+                stroke="rgba(255,255,255,0.1)"
+                strokeWidth="1"
+              />
+            ))}
 
           {/* Axes */}
           <line
@@ -165,18 +165,19 @@ export const ChartWidget: React.FC<ChartWidgetProps> = ({ config }) => {
           ))}
 
           {/* X-axis labels */}
-          {x && gridLinesX.map((line, i) => (
-            <text
-              key={`label-x-${i}`}
-              x={line.xPos}
-              y={height - padding.bottom + 20}
-              textAnchor="middle"
-              fill="rgba(255,255,255,0.6)"
-              fontSize="12"
-            >
-              {line.value.toFixed(1)}
-            </text>
-          ))}
+          {x &&
+            gridLinesX.map((line, i) => (
+              <text
+                key={`label-x-${i}`}
+                x={line.xPos}
+                y={height - padding.bottom + 20}
+                textAnchor="middle"
+                fill="rgba(255,255,255,0.6)"
+                fontSize="12"
+              >
+                {line.value.toFixed(1)}
+              </text>
+            ))}
 
           {/* Axis names */}
           {yAxisName && (

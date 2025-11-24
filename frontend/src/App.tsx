@@ -1,16 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import './globals.css';
-import LandingPage from './components/LandingPage';
+import { LandingPage } from './components/LandingPage';
 import { LoadingPage } from './components/LoadingPage';
 import { Dashboard } from './components/Dashboard';
 import { defaultDashboardConfig } from './config/dashboard.config';
-import { getBackendData } from './components/fetchApiUrl.ts';
-
-type View = 'landing' | 'loading' | 'dashboard';
+import { getBackendData } from './components/fetchApiUrl';
+import { useJobs } from './components/hooks/useJobs';
+import { useJob } from './components/hooks/useJob';
+import { useView } from './components/hooks/useView';
 
 export const App = () => {
-  const [view, setView] = useState<View>('landing');
-  const [jobId, setJobId] = useState<string>('');
+  const { jobId, setJobId } = useJob();
+  const { view, setView } = useView();
+  const { addJob } = useJobs();
+
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [backendData, setBackendData] = useState(defaultDashboardConfig);
 
@@ -19,15 +22,19 @@ export const App = () => {
 
     getBackendData(jobId).then((data) => {
       setBackendData({ ...defaultDashboardConfig, ...data });
-      console.log(data);
-      console.log(backendData);
+      console.log('Dashboard data loaded:', data);
       setView('dashboard');
     });
-  }, [isLoaded, jobId]);
-  const handleGenerate = (id: string) => {
-    setJobId(id);
-    setView('loading');
-  };
+  }, [isLoaded, jobId, setView]);
+
+  const handleGenerate = useCallback(
+    (id: string) => {
+      setJobId(id);
+      setView('loading');
+      addJob(id);
+    },
+    [setJobId, setView, addJob]
+  );
 
   if (view === 'loading') {
     return (
@@ -37,10 +44,9 @@ export const App = () => {
         onDone={() => setIsLoaded(true)}
       />
     );
-  }
-  if (view === 'dashboard') {
-    // load dashboard config (summary)
+  } else if (view === 'dashboard') {
     return <Dashboard config={backendData} />;
+  } else {
+    return <LandingPage onSubmit={handleGenerate} />;
   }
-  return <LandingPage onSubmit={handleGenerate} />;
 };
