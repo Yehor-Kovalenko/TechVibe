@@ -76,7 +76,6 @@ except Exception as e:
 if sentiment_model is None or feature_classifier is None:
     raise RuntimeError("One or more NLP models failed to initialize – stopping execution.")
 
-
 # -----------------------------
 # 3. ASSURE TRANSCRIPT EXISTS
 # -----------------------------
