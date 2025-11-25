@@ -3,21 +3,23 @@ title TechVibe sequences
 
 actor User
 
+participant Frontend
 participant Api
-queue New
+participant New <<queue>>
 participant Downloader
-queue Downloaded
+participant Downloaded <<queue>>
 participant SpeechToText
-queue Transcribed
+participant Transcribed <<queue>>
 participant NLP
 
 
-database Storage
+database "Azure Blob Storage" as Storage
 
-User -> Api : POST
+User -> Frontend : inserts the video link
+Frontend -> Api : POST
 Api -> Storage : new metadata
 Api -> New : send message
-Api -> User : 201 'Created'
+Api -> Frontend : 201 'Created'
 Downloader --> New : read message
 Downloader -> Downloaded : send message
 SpeechToText --> Downloaded : read message
@@ -25,10 +27,10 @@ SpeechToText -> Transcribed : send message
 NLP --> Transcribed : read message
 NLP -> Storage : save result
 
-User -> Api : GET
+Frontend -> Api : GET
 Api --> Storage : read result+metadata
-Api -> User : send result
-
+Api -> Frontend : send result
+Frontend -> User : show the result
 
 
 @enduml
