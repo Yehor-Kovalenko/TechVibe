@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from 'react-modal';
-import { checkJobStatus } from './fetchApiUrl';
+import { checkJobStatus, fetchVideoMetadata } from './fetchApiUrl';
 import { JobStatus } from '../config/JobStatus';
 import { useJobs } from './hooks/useJobs';
 import { useJob } from './hooks/useJob';
 import { useView } from './hooks/useView';
+
 
 Modal.setAppElement('#root');
 
@@ -13,6 +14,25 @@ export const PreviousJobsModal: React.FC = () => {
   const { setView } = useView();
   const { jobs } = useJobs();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [videoTitles, setVideoTitles] = useState<{[key: string]: string}>({});
+
+  useEffect(() => {
+  const fetchTitles = async () => {
+    const titles: {[key: string]: string} = {};
+    for (const jobId of jobs) {
+      try {
+        const metadata = await fetchVideoMetadata(jobId);
+        titles[jobId] = metadata?.
+       ['video-metadata'].title || jobId;
+      } catch {
+        titles[jobId] = jobId;
+      }
+    }
+    setVideoTitles(titles);
+  };
+  fetchTitles();
+}, [jobs]);
+
 
   const handleJobSelect = (jobId: string) => {
     setJobId(jobId);
@@ -65,13 +85,13 @@ export const PreviousJobsModal: React.FC = () => {
               No previous jobs found
             </p>
           ) : (
-            jobs.map((jobId, index) => (
+            jobs.map((jobId) => (
               <button
                 key={jobId}
                 onClick={() => handleJobSelect(jobId)}
                 className="w-full px-4 py-3 text-left rounded-md bg-secondary hover:bg-secondary/80 border transition-colors"
               >
-                Job #{index + 1}: {jobId}
+                {videoTitles[jobId] || jobId}
               </button>
             ))
           )}
