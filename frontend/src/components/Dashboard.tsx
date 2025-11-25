@@ -116,29 +116,32 @@ export const Dashboard: React.FC<DashboardProps> = ({ config }) => {
           </div>
         </header>
 
+        {/* Masonry Grid Layout */}
         <div
-          className="masonry-container grid gap-6"
+          className="grid gap-5 auto-rows-[140px]"
           style={{
-            gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
-            gridAutoRows: '100px', // base dimension unit
-            gridAutoFlow: 'dense',
+            gridTemplateColumns: `repeat(auto-fill, minmax(300px, 1fr))`,
           }}
         >
-          {sortedWidgets.map((widget) => (
-            <div
-              key={widget.id}
-              className="widget-masonry-item mb-6"
-              style={{
-                gridColumn: widget.width
-                  ? `span ${Math.min(widget.width, columns)}`
-                  : 'span 1',
-                gridRow: widget.height ? `span ${widget.height}` : 'span 2',
-              }}
-            >
-              <WidgetRenderer config={widget} backendData={summary} />
-            </div>
-          ))}
+          {sortedWidgets.map((widget) => {
+            const colSpan = widget.width ?? 1;
+            const rowSpan = widget.height ?? 2;
+
+            return (
+              <div
+                key={widget.id}
+                className="transition-all duration-300 overflow-hidden"
+                style={{
+                  gridColumn: `span ${Math.min(colSpan, columns)}`,
+                  gridRow: `span ${rowSpan}`,
+                }}
+              >
+                <WidgetRenderer config={widget} backendData={summary} />
+              </div>
+            );
+          })}
         </div>
+
       </div>
     </div>
   );
