@@ -9,3 +9,7 @@ def base_url():
 @pytest.fixture(scope="session")
 def video_url():
     return "https://www.youtube.com/shorts/Qfb2IjEbIAI"
+
+@pytest.fixture(scope="session")
+def invalid_video_url():
+    return "https://www.youtube.com/watch?v=INVALID_VIDEO_ID_12345"
