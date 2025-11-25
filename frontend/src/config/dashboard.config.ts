@@ -7,7 +7,7 @@ export const defaultDashboardConfig: DashboardConfig = {
       id: 'overall-summary-by-components',
       type: 'summary-components',
       title: 'Component Ratings',
-      height: 3,
+      height: 5,
       width: 1,
       features_verdict: {
         design: {
@@ -45,19 +45,19 @@ export const defaultDashboardConfig: DashboardConfig = {
       },
       dataKey: 'sentiment_by_part',
     },
-    // Final Verdict
+      // Review Text Widget
     {
-      id: 'verdict',
-      type: 'verdict',
-      title: 'Final Verdict',
-      height: 1,
-      width: 1,
-      // order: 2,
-      verdict: 'NEUTRAL',
-      score: 0.9,
-      dataKey: 'verdict',
+      id: 'review-text-1',
+      type: 'review-text',
+      title: 'Review Full Text',
+      height: 2,
+      width: 3,
+      // order: 8,
+      transcript:
+        'This product has an outstanding performance that exceeds expectations. The design is sleek and modern, making it a pleasure to use daily. However, the features are somewhat lacking compared to competitors, which is a downside. Overall, it offers great value for its price point and is user-friendly for all experience levels. Highly recommended for those seeking reliability and efficiency in their tech devices.',
+      dataKey: 'full-text',
     },
-    // overall sentiment series chart
+      // overall sentiment series chart
     {
       id: 'chart-overall-sentiment-series',
       type: 'chart',
@@ -66,33 +66,33 @@ export const defaultDashboardConfig: DashboardConfig = {
       y: [-1, 1, 0.3, -0.2, 0.0, 0.74, -0.46, 1.0],
       yAxisName: 'Sentiment',
       width: 2,
-      height: 4,
+      height: 3,
       dataKey: 'sentiment_series_chart',
+    },
+        // Final Verdict
+    {
+      id: 'verdict',
+      type: 'verdict',
+      title: 'Final Verdict',
+      height: 2,
+      width: 1,
+      // order: 2,
+      verdict: 'NEUTRAL',
+      score: 0.9,
+      dataKey: 'verdict',
     },
     {
       id: 'widget-metadata',
       type: 'metadata',
       title: 'Metadata',
       height: 2,
-      width: 2,
+      width: 3,
       duration: 58,
       uploader: 'John Doe',
       upload_date: '23.01.2025',
       view_count: 300000,
       subtitle_type: 'AI Generated',
       dataKey: 'video-metadata',
-    },
-    // Review Text Widget
-    {
-      id: 'review-text-1',
-      type: 'review-text',
-      title: 'Review Full Text',
-      height: 2,
-      width: 2,
-      // order: 8,
-      transcript:
-        'This product has an outstanding performance that exceeds expectations. The design is sleek and modern, making it a pleasure to use daily. However, the features are somewhat lacking compared to competitors, which is a downside. Overall, it offers great value for its price point and is user-friendly for all experience levels. Highly recommended for those seeking reliability and efficiency in their tech devices.',
-      dataKey: 'full-text',
     },
   ],
   summary: {
